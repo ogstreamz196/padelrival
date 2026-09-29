@@ -14,13 +14,207 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      achievements: {
+        Row: {
+          code: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_players: {
+        Row: {
+          created_at: string
+          guest_name: string | null
+          id: string
+          match_id: string
+          rating_before: number | null
+          rating_delta: number
+          team: number
+          user_id: string | null
+          xp_gained: number
+        }
+        Insert: {
+          created_at?: string
+          guest_name?: string | null
+          id?: string
+          match_id: string
+          rating_before?: number | null
+          rating_delta?: number
+          team: number
+          user_id?: string | null
+          xp_gained?: number
+        }
+        Update: {
+          created_at?: string
+          guest_name?: string | null
+          id?: string
+          match_id?: string
+          rating_before?: number | null
+          rating_delta?: number
+          team?: number
+          user_id?: string | null
+          xp_gained?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_players_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_players_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      matches: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          match_type: string
+          sets: Json
+          venue: string | null
+          winner_team: number
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          match_type?: string
+          sets: Json
+          venue?: string | null
+          winner_team: number
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          match_type?: string
+          sets?: Json
+          venue?: string | null
+          winner_team?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar: string
+          avatar_color: string
+          best_streak: number
+          court_side: string
+          created_at: string
+          current_streak: number
+          display_name: string
+          id: string
+          losses: number
+          rating: number
+          username: string
+          wins: number
+          xp: number
+        }
+        Insert: {
+          avatar?: string
+          avatar_color?: string
+          best_streak?: number
+          court_side?: string
+          created_at?: string
+          current_streak?: number
+          display_name: string
+          id: string
+          losses?: number
+          rating?: number
+          username: string
+          wins?: number
+          xp?: number
+        }
+        Update: {
+          avatar?: string
+          avatar_color?: string
+          best_streak?: number
+          court_side?: string
+          created_at?: string
+          current_streak?: number
+          display_name?: string
+          id?: string
+          losses?: number
+          rating?: number
+          username?: string
+          wins?: number
+          xp?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_rivalries: {
+        Args: { _user: string }
+        Returns: {
+          avatar: string
+          avatar_color: string
+          display_name: string
+          last_played: string
+          last_winner: string
+          losses: number
+          matches: number
+          opponent_id: string
+          rating: number
+          sets_lost: number
+          sets_won: number
+          username: string
+          wins: number
+        }[]
+      }
+      record_match: {
+        Args: {
+          _match_type: string
+          _players: Json
+          _sets: Json
+          _venue: string
+        }
+        Returns: Json
+      }
+      weekly_leaderboard: {
+        Args: never
+        Returns: {
+          avatar: string
+          avatar_color: string
+          display_name: string
+          matches: number
+          rating: number
+          rating_gain: number
+          user_id: string
+          username: string
+          xp_gain: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
