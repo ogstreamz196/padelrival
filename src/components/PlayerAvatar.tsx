@@ -17,7 +17,7 @@ export function PlayerAvatar({
     <div
       className={cn(
         "grid shrink-0 place-items-center rounded-2xl font-bold",
-        avatar ? AVATAR_COLORS[color ?? "lime"] ?? AVATAR_COLORS.lime : "bg-muted text-muted-foreground",
+        avatar ? AVATAR_COLORS[color ?? "lime"] ?? AVATAR_COLORS["lime"] : "bg-muted text-muted-foreground",
         sizes[size],
         className,
       )}

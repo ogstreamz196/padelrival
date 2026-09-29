@@ -79,7 +79,7 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
           <div className="min-w-0">
             <h1 className="truncate text-2xl font-black">{p.display_name}</h1>
             <p className="text-sm text-muted-foreground">
-              @{p.username} · {p.court_side === "both" ? "Both sides" : `${p.court_side[0].toUpperCase()}${p.court_side.slice(1)} side`}
+              @{p.username} · {p.court_side === "both" ? "Both sides" : `${p.court_side.charAt(0).toUpperCase()}${p.court_side.slice(1)} side`}
             </p>
           </div>
         </div>
@@ -148,7 +148,7 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
         {rivals.data?.length ? (
           <div className="space-y-3">
             {rivals.data.slice(0, 3).map((r) => (
-              <RivalryCard key={r.opponent_id} r={r} meId={userId} showRevenge={isMe} />
+              <RivalryCard key={r.opponent_id} r={r} meId={userId} showRevenge={!!isMe} />
             ))}
           </div>
         ) : (

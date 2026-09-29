@@ -22,7 +22,7 @@ function Onboarding() {
       <p className="text-sm font-bold uppercase tracking-[0.3em] text-primary">Player setup</p>
       <h1 className="mb-8 mt-2 text-3xl font-black">Build your player card</h1>
       <ProfileForm
-        initial={{ display_name: (user?.user_metadata?.full_name as string) ?? "" }}
+        initial={{ display_name: (user?.user_metadata?.["full_name"] as string) ?? "" }}
         submitLabel="Start at 1000 Elo"
         onSubmit={async (v) => {
           const { error } = await supabase.from("profiles").insert({ id: user!.id, ...v });

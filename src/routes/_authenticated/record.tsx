@@ -57,7 +57,10 @@ function RecordMatch() {
     const players = [{ team: 1, user_id: profile.id }, toP(partner, 1), toP(opp1, 2), toP(opp2, 2)];
     const { data, error } = await supabase.rpc("record_match", { _players: players, _sets: sets, _venue: venue, _match_type: type });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     sessionStorage.setItem(
       "lastMatch",
       JSON.stringify({ ...(data as object), sets, opponents: [opp1, opp2].map((o) => ({ user_id: o.user_id, display_name: o.display_name })), partner: partner.display_name }),
