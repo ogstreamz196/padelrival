@@ -7,6 +7,8 @@ import { PlayerAvatar } from "./PlayerAvatar";
 import { RivalryCard, type Rivalry } from "./RivalryCard";
 import { cn } from "@/lib/utils";
 
+type MP = { team: number; guest_name: string | null; user_id: string | null; profiles: { display_name: string } | null };
+
 type HistoryRow = {
   rating_delta: number;
   xp_gained: number;
@@ -18,7 +20,7 @@ type HistoryRow = {
     match_type: string;
     sets: SetScore[];
     winner_team: number;
-    match_players: { team: number; guest_name: string | null; user_id: string | null; profiles: { display_name: string } | null }[];
+    match_players: MP[];
   } | null;
 };
 
@@ -163,8 +165,7 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
               const m = h.matches;
               if (!m) return null;
               const won = m.winner_team === h.team;
-              const name = (x: HistoryRow["matches"] extends infer M ? M extends { match_players: (infer P)[] } ? P : never : never) =>
-                x.profiles?.display_name ?? x.guest_name ?? "Guest";
+              const name = (x: MP) => x.profiles?.display_name ?? x.guest_name ?? "Guest";
               const mine = m.match_players.filter((x) => x.team === h.team && x.user_id !== userId).map(name);
               const opp = m.match_players.filter((x) => x.team !== h.team).map(name);
               return (
