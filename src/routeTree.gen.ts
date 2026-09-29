@@ -12,10 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedCelebrateRouteImport } from './routes/_authenticated/celebrate'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated/leaderboard'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedRecordRouteImport } from './routes/_authenticated/record'
 import { Route as AuthenticatedRivalsRouteImport } from './routes/_authenticated/rivals'
 import { Route as AuthenticatedPlayerIdRouteImport } from './routes/_authenticated/player.$id'
 
@@ -32,6 +34,11 @@ const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedCelebrateRoute = AuthenticatedCelebrateRouteImport.update({
+  id: '/celebrate',
+  path: '/celebrate',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   id: '/home',
@@ -54,6 +61,11 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRecordRoute = AuthenticatedRecordRouteImport.update({
+  id: '/record',
+  path: '/record',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedRivalsRoute = AuthenticatedRivalsRouteImport.update({
   id: '/rivals',
   path: '/rivals',
@@ -68,20 +80,24 @@ const AuthenticatedPlayerIdRoute = AuthenticatedPlayerIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/celebrate': typeof AuthenticatedCelebrateRoute
   '/home': typeof AuthenticatedHomeRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/me': typeof AuthenticatedMeRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/record': typeof AuthenticatedRecordRoute
   '/rivals': typeof AuthenticatedRivalsRoute
   '/player/$id': typeof AuthenticatedPlayerIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/celebrate': typeof AuthenticatedCelebrateRoute
   '/home': typeof AuthenticatedHomeRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/me': typeof AuthenticatedMeRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/record': typeof AuthenticatedRecordRoute
   '/rivals': typeof AuthenticatedRivalsRoute
   '/player/$id': typeof AuthenticatedPlayerIdRoute
 }
@@ -90,10 +106,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/celebrate': typeof AuthenticatedCelebrateRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/me': typeof AuthenticatedMeRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/record': typeof AuthenticatedRecordRoute
   '/_authenticated/rivals': typeof AuthenticatedRivalsRoute
   '/_authenticated/player/$id': typeof AuthenticatedPlayerIdRoute
 }
@@ -102,20 +120,24 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/celebrate'
     | '/home'
     | '/leaderboard'
     | '/me'
     | '/onboarding'
+    | '/record'
     | '/rivals'
     | '/player/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/celebrate'
     | '/home'
     | '/leaderboard'
     | '/me'
     | '/onboarding'
+    | '/record'
     | '/rivals'
     | '/player/$id'
   id:
@@ -123,10 +145,12 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/celebrate'
     | '/_authenticated/home'
     | '/_authenticated/leaderboard'
     | '/_authenticated/me'
     | '/_authenticated/onboarding'
+    | '/_authenticated/record'
     | '/_authenticated/rivals'
     | '/_authenticated/player/$id'
   fileRoutesById: FileRoutesById
@@ -160,6 +184,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/celebrate': {
+      id: '/_authenticated/celebrate'
+      path: '/celebrate'
+      fullPath: '/celebrate'
+      preLoaderRoute: typeof AuthenticatedCelebrateRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/home': {
       id: '/_authenticated/home'
       path: '/home'
@@ -188,6 +219,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/record': {
+      id: '/_authenticated/record'
+      path: '/record'
+      fullPath: '/record'
+      preLoaderRoute: typeof AuthenticatedRecordRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/rivals': {
       id: '/_authenticated/rivals'
       path: '/rivals'
@@ -206,19 +244,23 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCelebrateRoute: typeof AuthenticatedCelebrateRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
   AuthenticatedMeRoute: typeof AuthenticatedMeRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedRecordRoute: typeof AuthenticatedRecordRoute
   AuthenticatedRivalsRoute: typeof AuthenticatedRivalsRoute
   AuthenticatedPlayerIdRoute: typeof AuthenticatedPlayerIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCelebrateRoute: AuthenticatedCelebrateRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
   AuthenticatedMeRoute: AuthenticatedMeRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedRecordRoute: AuthenticatedRecordRoute,
   AuthenticatedRivalsRoute: AuthenticatedRivalsRoute,
   AuthenticatedPlayerIdRoute: AuthenticatedPlayerIdRoute,
 }
