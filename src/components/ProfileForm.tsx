@@ -1,0 +1,64 @@
+import { useState } from "react";
+import { AVATARS, AVATAR_COLORS } from "@/lib/game";
+import { PlayerAvatar } from "./PlayerAvatar";
+import { cn } from "@/lib/utils";
+
+export type ProfileValues = { display_name: string; username: string; avatar: string; avatar_color: string; court_side: string };
+
+export function ProfileForm({ initial, submitLabel, onSubmit }: { initial?: Partial<ProfileValues>; submitLabel: string; onSubmit: (v: ProfileValues) => Promise<void> }) {
+  const [v, setV] = useState<ProfileValues>({
+    display_name: initial?.display_name ?? "",
+    username: initial?.username ?? "",
+    avatar: initial?.avatar ?? "🎾",
+    avatar_color: initial?.avatar_color ?? "lime",
+    court_side: initial?.court_side ?? "both",
+  });
+  const [busy, setBusy] = useState(false);
+  const input = "w-full rounded-2xl border bg-card px-4 py-4 text-base outline-none focus:border-primary";
+
+  return (
+    <form
+      className="space-y-5"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setBusy(true);
+        await onSubmit({ ...v, username: v.username.toLowerCase() });
+        setBusy(false);
+      }}
+    >
+      <div className="flex justify-center">
+        <PlayerAvatar avatar={v.avatar} color={v.avatar_color} size="xl" className="animate-pop" />
+      </div>
+      <div className="grid grid-cols-6 gap-2">
+        {AVATARS.map((a) => (
+          <button type="button" key={a} onClick={() => setV({ ...v, avatar: a })} className={cn("aspect-square rounded-xl border text-2xl", v.avatar === a && "border-primary bg-primary/15")}>
+            {a}
+          </button>
+        ))}
+      </div>
+      <div className="flex justify-center gap-3">
+        {Object.entries(AVATAR_COLORS).map(([k, cls]) => (
+          <button type="button" key={k} onClick={() => setV({ ...v, avatar_color: k })} aria-label={k} className={cn("size-9 rounded-full", cls, v.avatar_color === k && "ring-4 ring-foreground/60")} />
+        ))}
+      </div>
+      <input className={input} required maxLength={40} placeholder="Display name" value={v.display_name} onChange={(e) => setV({ ...v, display_name: e.target.value })} />
+      <div className="relative">
+        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
+        <input className={cn(input, "pl-9")} required pattern="[a-zA-Z0-9_]{3,20}" title="3–20 letters, numbers or _" placeholder="username" value={v.username} onChange={(e) => setV({ ...v, username: e.target.value })} />
+      </div>
+      <div>
+        <div className="mb-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Preferred court side</div>
+        <div className="grid grid-cols-3 gap-2">
+          {["left", "right", "both"].map((s) => (
+            <button type="button" key={s} onClick={() => setV({ ...v, court_side: s })} className={cn("rounded-2xl border py-3 font-bold capitalize", v.court_side === s ? "border-primary bg-primary text-primary-foreground" : "bg-card")}>
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
+      <button disabled={busy} className="w-full rounded-2xl bg-primary py-4 font-display font-black uppercase text-primary-foreground glow disabled:opacity-60">
+        {busy ? "…" : submitLabel}
+      </button>
+    </form>
+  );
+}
