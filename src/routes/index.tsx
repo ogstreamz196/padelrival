@@ -31,7 +31,7 @@ function Landing() {
 
       <div className="animate-rise">
         <p className="mb-4 text-sm font-bold uppercase tracking-[0.3em] text-primary">Season 1 is live</p>
-        <h1 className="text-5xl font-black leading-[0.95]">
+        <h1 className="text-[2.5rem] font-black leading-[0.95]">
           Every match
           <br />
           counts.
