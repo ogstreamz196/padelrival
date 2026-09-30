@@ -300,22 +300,32 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
               const mine = m.match_players.filter((x) => x.team === h.team && x.user_id !== userId).map(name);
               const opp = m.match_players.filter((x) => x.team !== h.team).map(name);
               return (
-                <div key={m.id} className="flex items-center gap-3 rounded-2xl border bg-card p-3">
-                  <div className={cn("grid size-10 shrink-0 place-items-center rounded-xl font-display font-black", won ? "bg-win/20 text-win" : "bg-destructive/20 text-destructive")}>
-                    {won ? "W" : "L"}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-semibold">
-                      w/ {mine.join(", ") || "—"} <span className="text-muted-foreground">vs</span> {opp.join(" & ")}
+                <div key={m.id} className="rounded-2xl border bg-card p-3">
+                  <div className="flex items-center gap-3">
+                    <div className={cn("grid size-10 shrink-0 place-items-center rounded-xl font-display font-black", won ? "bg-win/20 text-win" : "bg-destructive/20 text-destructive")}>
+                      {won ? "W" : "L"}
                     </div>
-                    <div className="truncate text-xs text-muted-foreground">
-                      {formatSets(m.sets, h.team === 2)} · {m.venue || m.match_type} · {new Date(m.created_at).toLocaleDateString()}
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-sm font-semibold">
+                        w/ {mine.join(", ") || "—"} <span className="text-muted-foreground">vs</span> {opp.join(" & ")}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="truncate text-xs text-muted-foreground">
+                          {formatSets(m.sets, h.team === 2)} · {m.venue || m.match_type} · {new Date(m.created_at).toLocaleDateString()}
+                        </span>
+                        {h.court_side && show("show_court_side") && (
+                          <span className="shrink-0 rounded-full border px-1.5 text-[10px] font-black uppercase text-muted-foreground">
+                            {h.court_side === "left" ? "L" : "R"}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className={cn("font-display text-sm font-black tabular-nums", h.rating_delta >= 0 ? "text-win" : "text-destructive")}>
+                      {h.rating_delta >= 0 ? "+" : ""}
+                      {h.rating_delta}
                     </div>
                   </div>
-                  <div className={cn("font-display text-sm font-black tabular-nums", h.rating_delta >= 0 ? "text-win" : "text-destructive")}>
-                    {h.rating_delta >= 0 ? "+" : ""}
-                    {h.rating_delta}
-                  </div>
+                  {m.notes && <p className="mt-2 border-t pt-2 text-xs italic text-muted-foreground">“{m.notes}”</p>}
                 </div>
               );
             })}
