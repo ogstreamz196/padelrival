@@ -11,6 +11,7 @@ import { ProfileForm } from "@/components/ProfileForm";
 import { PlayerProfile } from "@/components/PlayerProfile";
 import { ClaimGuestMatches } from "@/components/ClaimGuestMatches";
 import { BossPulse, BossTools } from "@/components/BossControls";
+import { PageGuide, resetGuides } from "@/components/PageGuide";
 
 
 export const Route = createFileRoute("/_authenticated/me")({
@@ -90,6 +91,8 @@ function Me() {
         </section>
       )}
 
+      <PageGuide id="me" />
+
       {profile && <PlayerProfile userId={profile.id} isMe />}
 
 
@@ -120,6 +123,17 @@ function Me() {
             <div className="mt-6">
               <ClaimGuestMatches defaultName={profile.display_name} />
             </div>
+
+            <button
+              onClick={() => {
+                resetGuides();
+                toast.success("Page tips will show again");
+                setEditing(false);
+              }}
+              className="mt-6 w-full rounded-2xl border py-4 font-bold text-muted-foreground"
+            >
+              Show page tips again
+            </button>
 
             <button
               onClick={async () => {
