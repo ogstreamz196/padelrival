@@ -1,14 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Minus, Plus, UserPlus, X } from "lucide-react";
+import { Minus, Plus, Repeat, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { useMyProfile } from "@/hooks/use-auth";
+import { SET_PRESETS, STB_PRESETS, validateSet, type SetScore } from "@/lib/game";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/_authenticated/record")({
   validateSearch: z.object({ opp: z.string().optional() }),
