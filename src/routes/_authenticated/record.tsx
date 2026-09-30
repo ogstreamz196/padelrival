@@ -34,6 +34,8 @@ function RecordMatch() {
   const [superTb, setSuperTb] = useState(false);
   const [venue, setVenue] = useState("");
   const [type, setType] = useState("friendly");
+  const [mySide, setMySide] = useState<"left" | "right" | null>(null);
+  const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
