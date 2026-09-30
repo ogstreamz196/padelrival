@@ -207,6 +207,35 @@ function RecordMatch() {
         </div>
       </div>
 
+      <div className="mt-4 rounded-2xl border bg-card p-3">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Which side did you play?</span>
+          {mySide && (
+            <button onClick={() => { haptic(); setMySide(null); }} className="text-[11px] font-bold text-muted-foreground">
+              Clear
+            </button>
+          )}
+        </div>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          {(["left", "right"] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => { haptic(); setMySide(mySide === s ? null : s); }}
+              className={cn("rounded-2xl border py-3 text-sm font-black capitalize", mySide === s ? "border-primary bg-primary text-primary-foreground" : "text-muted-foreground")}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          {mySide && partner
+            ? `${partner.display_name} is logged on the ${mySide === "left" ? "right" : "left"}.`
+            : "Optional — tag your position to unlock left/right win rates."}
+        </p>
+      </div>
+
+
+
       <div className="mb-3 mt-8 flex items-center justify-between">
         <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Set scores</h2>
         <button
