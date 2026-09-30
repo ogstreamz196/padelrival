@@ -4,7 +4,7 @@ export const Route = createFileRoute("/terms")({
   head: () => ({
     meta: [
       { title: "Terms of Service — Padel Rival" },
-      { name: "description", content: "The rules for using Padel Rival: accounts, fair play, match results, ratings and account deletion." },
+      { name: "description", content: "The rules for using Padel Rival: accounts, fair play, match results, ratings, liability, governing law and account deletion." },
       { property: "og:title", content: "Terms of Service — Padel Rival" },
       { property: "og:description", content: "The rules for using Padel Rival: accounts, fair play and match results." },
       { property: "og:type", content: "website" },
@@ -34,16 +34,24 @@ function Terms() {
       <p className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Last updated 30 September 2026</p>
 
       <P>
-        By creating an account or using Padel Rival you agree to these terms. If you do not agree, please do not use the
-        app.
+        These terms are an agreement between you and the operator of Padel Rival ("we", "us"), contactable at{" "}
+        <a href="mailto:Ogbot196@gmail.com" className="font-semibold text-primary underline">
+          Ogbot196@gmail.com
+        </a>
+        . By creating an account or using Padel Rival you agree to these terms and to our{" "}
+        <Link to="/privacy" className="font-semibold text-primary underline">
+          Privacy Policy
+        </Link>
+        . If you do not agree, please do not use the app.
       </P>
 
       <H>Your account</H>
       <ul className="list-disc pl-5">
         <Li>You must be at least 13 years old to create an account.</Li>
         <Li>Give accurate details and keep your password private. You are responsible for activity on your account.</Li>
-        <Li>One account per person. Do not impersonate another player.</Li>
-        <Li>You can delete your account at any time from Profile → Edit.</Li>
+        <Li>One account per person. Do not impersonate another player, and do not create an account for someone else.</Li>
+        <Li>You can delete your account at any time from Profile → Edit. Deleting your account ends this agreement.</Li>
+        <Li>If you sign in with Google, you must keep that Google account in good standing; Google's own terms also apply to that sign-in.</Li>
       </ul>
 
       <H>Match results and fair play</H>
@@ -53,7 +61,8 @@ function Terms() {
       </P>
       <ul className="list-disc pl-5">
         <Li>Do not log matches that did not happen, or inflate scores to gain rating.</Li>
-        <Li>Do not add another player to a match they did not play in.</Li>
+        <Li>Do not add another player to a match they did not play in, and do not use offensive or misleading guest names.</Li>
+        <Li>Do not create multiple accounts to manipulate ratings, streaks or leaderboards.</Li>
         <Li>The player who logged a match can undo it within 15 minutes if it was recorded incorrectly.</Li>
         <Li>
           We may correct, void or remove matches, adjust ratings, or suspend accounts where results appear manipulated.
@@ -62,48 +71,79 @@ function Terms() {
 
       <H>Ratings, XP and rankings</H>
       <P>
-        Ratings, levels, badges, leagues and leaderboard positions are features of the app. They have no monetary value,
-        cannot be bought, sold or transferred, and may be recalculated or reset if we change how the system works or
-        need to correct an error.
+        Ratings, levels, badges, leagues and leaderboard positions are entertainment features of the app. They have no
+        monetary value, cannot be bought, sold or transferred, and may be recalculated or reset if we change how the
+        system works or need to correct an error. Decisions about them are final.
       </P>
 
       <H>Content you enter</H>
       <P>
         You are responsible for the names, venues and profile details you enter. Do not enter offensive, misleading or
-        unlawful content, and do not enter another person's private information. We may remove content that breaks
-        these rules.
+        unlawful content, and do not enter another person's private information. If you post content that breaks these
+        rules, we may remove it and suspend your account.
       </P>
 
       <H>Guests</H>
       <P>
         You may log matches against people without an account by entering a name. Only enter a name the person is happy
-        to be identified by. Guests have no rating and gain no stats until they create an account and claim the matches.
+        to be identified by. Guests have no rating and gain no stats until they create an account and claim the
+        matches.
       </P>
 
-      <H>Availability</H>
+      <H>Acceptable use</H>
+      <ul className="list-disc pl-5">
+        <Li>Do not attack, disrupt, reverse-engineer, scrape or overload the service, or try to access other players' accounts or data.</Li>
+        <Li>Do not use automated tools to create accounts, log matches or interact with the app.</Li>
+      </ul>
+
+      <H>Paid features</H>
       <P>
-        The app is provided "as is". We aim to keep it running but do not guarantee uninterrupted service, and we may
-        add, change or remove features at any time.
+        Some features may be offered as paid subscriptions in future. Before any payment is taken, we will show the
+        price, what is included, the billing period and how to cancel. Subscriptions renew automatically until
+        cancelled, and you can cancel at any time. Statutory cancellation rights apply.
+      </P>
+
+      <H>Availability and changes</H>
+      <P>
+        The app is provided "as is". We aim to keep it running but do not guarantee uninterrupted or error-free
+        service, and we may add, change, suspend or remove features at any time. If a change significantly reduces what
+        you get, you may delete your account and stop using the app.
       </P>
 
       <H>Liability</H>
       <P>
         To the extent permitted by law, we are not liable for indirect or consequential loss arising from your use of
-        the app, including disputes between players over results or rankings. Nothing in these terms limits liability
-        that cannot be limited by law.
+        the app, including disputes between players over results or rankings, lost data on your device, or missed
+        games. Nothing in these terms limits liability for death or personal injury caused by negligence, for fraud, or
+        for any other liability that cannot be limited by law.
       </P>
 
       <H>Ending access</H>
       <P>
-        We may suspend or close an account that breaks these terms. You may stop using the app and delete your account
-        at any time.
+        We may suspend or close an account that breaks these terms, with notice where reasonable. You may stop using
+        the app and delete your account at any time. Sections that should survive ending (liability, governing law,
+        data retention) continue to apply.
+      </P>
+
+      <H>Changes to these terms</H>
+      <P>
+        We may update these terms. If a change is material we will update the date at the top of this page and, where
+        reasonable, notify you in the app. Continuing to use the app after a change means you accept the updated
+        terms.
+      </P>
+
+      <H>Governing law and disputes</H>
+      <P>
+        These terms are governed by the laws of England and Wales. The courts of England and Wales have exclusive
+        jurisdiction over any dispute arising from them. Nothing here affects your statutory consumer rights, including
+        your right to bring proceedings in your country of residence where applicable law gives you that right.
       </P>
 
       <H>Contact</H>
       <P>
         Questions about these terms:{" "}
-        <a href="mailto:ogstreamz196@gmail.com" className="font-semibold text-primary underline">
-          ogstreamz196@gmail.com
+        <a href="mailto:Ogbot196@gmail.com" className="font-semibold text-primary underline">
+          Ogbot196@gmail.com
         </a>
       </P>
 
