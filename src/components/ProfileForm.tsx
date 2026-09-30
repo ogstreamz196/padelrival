@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AVATARS, AVATAR_COLORS } from "@/lib/game";
-import { PlayerAvatar } from "./PlayerAvatar";
+import { PlayerAvatar, isImageAvatar } from "./PlayerAvatar";
 import { cn } from "@/lib/utils";
 
 export type ProfileValues = { display_name: string; username: string; avatar: string; avatar_color: string; court_side: string };
@@ -30,12 +30,23 @@ export function ProfileForm({ initial, submitLabel, onSubmit }: { initial?: Part
         <PlayerAvatar avatar={v.avatar} color={v.avatar_color} size="xl" className="animate-pop" />
       </div>
       <div className="grid grid-cols-6 gap-2">
+        {isImageAvatar(initial?.avatar) && (
+          <button
+            type="button"
+            onClick={() => setV({ ...v, avatar: initial!.avatar! })}
+            aria-label="Use your picture"
+            className={cn("aspect-square overflow-hidden rounded-xl border", v.avatar === initial?.avatar && "border-primary ring-2 ring-primary")}
+          >
+            <img src={initial!.avatar!} alt="" className="size-full object-cover" />
+          </button>
+        )}
         {AVATARS.map((a) => (
           <button type="button" key={a} onClick={() => setV({ ...v, avatar: a })} className={cn("aspect-square rounded-xl border text-2xl", v.avatar === a && "border-primary bg-primary/15")}>
             {a}
           </button>
         ))}
       </div>
+
       <div className="flex justify-center gap-3">
         {Object.entries(AVATAR_COLORS).map(([k, cls]) => (
           <button type="button" key={k} onClick={() => setV({ ...v, avatar_color: k })} aria-label={k} className={cn("size-9 rounded-full", cls, v.avatar_color === k && "ring-4 ring-foreground/60")} />
