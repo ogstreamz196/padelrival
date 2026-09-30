@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
+type MP = { team: number; user_id: string | null; guest_name: string | null; rating_before: number; profiles: { display_name: string } | null };
 type Row = {
   team: number;
   rating_delta: number;
@@ -12,7 +13,7 @@ type Row = {
     match_type: string;
     sets: [number, number][];
     winner_team: number;
-    match_players: { team: number; user_id: string | null; guest_name: string | null; rating_before: number; profiles: { display_name: string } | null }[];
+    match_players: MP[];
   } | null;
 };
 
@@ -40,7 +41,7 @@ export const getMatchInsights = createServerFn({ method: "POST" })
       .sort((a, b) => a.matches!.created_at.localeCompare(b.matches!.created_at))
       .map((r) => {
         const m = r.matches!;
-        const name = (p: Row["matches"] extends infer M ? any : never) => p.profiles?.display_name ?? p.guest_name ?? "Guest";
+        const name = (p: MP) => p.profiles?.display_name ?? p.guest_name ?? "Guest";
         const partner = m.match_players.filter((p) => p.team === r.team && p.user_id !== uid).map(name).join(", ");
         const opps = m.match_players.filter((p) => p.team !== r.team);
         const oppAvg = Math.round(opps.reduce((s, p) => s + (p.rating_before ?? 1000), 0) / Math.max(opps.length, 1));
