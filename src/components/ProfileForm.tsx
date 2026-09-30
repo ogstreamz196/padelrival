@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { AVATARS, AVATAR_COLORS } from "@/lib/game";
+import { AVATAR_GROUPS, AVATAR_COLORS } from "@/lib/game";
 import { PlayerAvatar, isImageAvatar } from "./PlayerAvatar";
-import { cn } from "@/lib/utils";
+import { cn, haptic } from "@/lib/utils";
 
 export type ProfileValues = { display_name: string; username: string; avatar: string; avatar_color: string; court_side: string };
 
@@ -13,6 +13,8 @@ export function ProfileForm({ initial, submitLabel, onSubmit }: { initial?: Part
     avatar_color: initial?.avatar_color ?? "lime",
     court_side: initial?.court_side ?? "both",
   });
+  const tabs = [...(isImageAvatar(initial?.avatar) ? ["Yours"] : []), ...AVATAR_GROUPS.map((g) => g.label)];
+  const [tab, setTab] = useState(tabs[0]!);
   const [busy, setBusy] = useState(false);
   const input = "w-full rounded-2xl border bg-card px-4 py-4 text-base outline-none focus:border-primary";
 
@@ -29,28 +31,64 @@ export function ProfileForm({ initial, submitLabel, onSubmit }: { initial?: Part
       <div className="flex justify-center">
         <PlayerAvatar avatar={v.avatar} color={v.avatar_color} size="xl" className="animate-pop" />
       </div>
-      <div className="grid grid-cols-6 gap-2">
-        {isImageAvatar(initial?.avatar) && (
-          <button
-            type="button"
-            onClick={() => setV({ ...v, avatar: initial!.avatar! })}
-            aria-label="Use your picture"
-            className={cn("aspect-square overflow-hidden rounded-xl border", v.avatar === initial?.avatar && "border-primary ring-2 ring-primary")}
-          >
-            <img src={initial!.avatar!} alt="" className="size-full object-cover" />
-          </button>
-        )}
-        {AVATARS.map((a) => (
-          <button type="button" key={a} onClick={() => setV({ ...v, avatar: a })} className={cn("aspect-square rounded-xl border text-2xl", v.avatar === a && "border-primary bg-primary/15")}>
-            {a}
-          </button>
-        ))}
-      </div>
 
-      <div className="flex justify-center gap-3">
-        {Object.entries(AVATAR_COLORS).map(([k, cls]) => (
-          <button type="button" key={k} onClick={() => setV({ ...v, avatar_color: k })} aria-label={k} className={cn("size-9 rounded-full", cls, v.avatar_color === k && "ring-4 ring-foreground/60")} />
-        ))}
+      <div className="rounded-3xl border bg-card p-4">
+        <div className="mb-3 flex gap-2 overflow-x-auto">
+          {tabs.map((t) => (
+            <button
+              type="button"
+              key={t}
+              onClick={() => setTab(t)}
+              className={cn(
+                "rounded-full border px-3 py-1.5 text-xs font-black uppercase tracking-wider",
+                tab === t ? "border-primary bg-primary/15 text-primary" : "text-muted-foreground",
+              )}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-6 gap-2">
+          {tab === "Yours" && isImageAvatar(initial?.avatar) && (
+            <button
+              type="button"
+              onClick={() => setV({ ...v, avatar: initial!.avatar! })}
+              aria-label="Use your picture"
+              className={cn("aspect-square overflow-hidden rounded-xl border", v.avatar === initial?.avatar && "border-primary ring-2 ring-primary")}
+            >
+              <img src={initial!.avatar!} alt="" className="size-full object-cover" />
+            </button>
+          )}
+          {(AVATAR_GROUPS.find((g) => g.label === tab)?.icons ?? []).map((a) => (
+            <button
+              type="button"
+              key={a}
+              onClick={() => {
+                haptic();
+                setV({ ...v, avatar: a });
+              }}
+              className={cn("aspect-square rounded-xl border text-2xl transition active:scale-90", v.avatar === a && "border-primary bg-primary/15")}
+            >
+              {a}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-4 flex flex-wrap justify-center gap-3 border-t pt-4">
+          {Object.entries(AVATAR_COLORS).map(([k, cls]) => (
+            <button
+              type="button"
+              key={k}
+              onClick={() => {
+                haptic();
+                setV({ ...v, avatar_color: k });
+              }}
+              aria-label={k}
+              className={cn("size-9 rounded-full", cls, v.avatar_color === k && "ring-4 ring-foreground/60")}
+            />
+          ))}
+        </div>
       </div>
       <input className={input} required maxLength={40} placeholder="Display name" value={v.display_name} onChange={(e) => setV({ ...v, display_name: e.target.value })} />
       <div className="relative">

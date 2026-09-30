@@ -39,21 +39,34 @@ export function tierProgress(rating: number) {
 }
 
 
-export const ACHIEVEMENTS: Record<string, { name: string; desc: string; icon: string }> = {
-  first_win: { name: "First Win", desc: "Win your first match", icon: "🏆" },
-  streak_3: { name: "Heating Up", desc: "Win 3 matches in a row", icon: "🔥" },
-  streak_5: { name: "Unstoppable", desc: "Win 5 matches in a row", icon: "⚡" },
-  giant_killer: { name: "Giant Killer", desc: "Beat a team rated 100+ higher", icon: "🗡️" },
-  rivalry_victor: { name: "Rivalry Victor", desc: "Beat the same rival 3 times", icon: "👑" },
+export const ACHIEVEMENTS: Record<string, { name: string; desc: string; icon: string; lore: string }> = {
+  first_win: { name: "First Win", desc: "Win your first match", icon: "🏆", lore: "Everyone remembers their first one. The ladder starts here." },
+  streak_3: { name: "Heating Up", desc: "Win 3 matches in a row", icon: "🔥", lore: "Three on the bounce. The court is starting to feel yours." },
+  streak_5: { name: "Unstoppable", desc: "Win 5 matches in a row", icon: "⚡", lore: "Five straight. Opponents are checking your rating before they book." },
+  giant_killer: { name: "Giant Killer", desc: "Beat a team rated 100+ higher", icon: "🗡️", lore: "You took down a team you weren't supposed to beat." },
+  rivalry_victor: { name: "Rivalry Victor", desc: "Beat the same rival 3 times", icon: "👑", lore: "Three wins over one rival. That head-to-head belongs to you." },
 };
 
 export const AVATARS = ["🎾", "🦁", "🐺", "🦅", "🐉", "🦈", "🔥", "⚡", "👑", "🥷", "🤖", "🐯"];
+
+/** Curated avatar collections for the avatar studio. */
+export const AVATAR_GROUPS: { label: string; icons: string[] }[] = [
+  { label: "Padel", icons: ["🎾", "🏓", "🥇", "🧱", "🪃", "🎯", "🧤", "🏟️"] },
+  { label: "Beasts", icons: ["🦁", "🐺", "🦅", "🐉", "🦈", "🐯", "🐍", "🦂"] },
+  { label: "Icons", icons: ["🔥", "⚡", "👑", "🥷", "🤖", "💎", "☠️", "🚀"] },
+];
+
 export const AVATAR_COLORS: Record<string, string> = {
   lime: "bg-primary text-primary-foreground",
   court: "bg-court text-court-foreground",
   fire: "bg-fire text-primary-foreground",
   win: "bg-win text-primary-foreground",
   red: "bg-destructive text-destructive-foreground",
+  sunset: "bg-gradient-to-br from-fire to-destructive text-primary-foreground",
+  electric: "bg-gradient-to-br from-primary to-court text-primary-foreground",
+  carbon: "bg-gradient-to-br from-muted to-background text-foreground",
+  solar: "bg-gradient-to-br from-primary to-fire text-primary-foreground",
+  prism: "bg-gradient-to-br from-court via-primary to-fire text-primary-foreground",
 };
 
 export type SetScore = [number, number];

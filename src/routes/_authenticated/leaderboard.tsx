@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
 import { PageGuide } from "@/components/PageGuide";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { RankCrest } from "@/components/RankCrest";
 import { levelInfo } from "@/lib/game";
 import { cn } from "@/lib/utils";
 
@@ -83,7 +84,10 @@ function Leaderboard() {
             </div>
             <PlayerAvatar avatar={r.avatar} color={r.avatar_color} size="sm" />
             <div className="min-w-0 flex-1">
-              <div className="truncate font-bold">{r.display_name}</div>
+              <div className="flex items-center gap-1.5">
+                <span className="truncate font-bold">{r.display_name}</span>
+                {scope === "global" && <RankCrest rating={r.value} size="sm" />}
+              </div>
               <div className="text-xs text-muted-foreground">@{r.username} · {r.sub}</div>
             </div>
             <div className="font-display text-lg font-black tabular-nums">
