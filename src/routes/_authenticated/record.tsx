@@ -52,6 +52,11 @@ function RecordMatch() {
     setSets((s) => s.map((x, j) => (j === i ? (x.map((v, k) => (k === side ? Math.max(0, Math.min(max, v + d)) : v)) as [number, number]) : x)));
   }
 
+  function setOne(i: number, score: SetScore) {
+    setSets((s) => s.map((x, j) => (j === i ? score : x)));
+  }
+
+
   const t1 = sets.filter(([a, b]) => a > b).length;
   const t2 = sets.filter(([a, b]) => b > a).length;
   const setErrors = sets.map((s, i) => validateSet(s, isDecider(i)));
