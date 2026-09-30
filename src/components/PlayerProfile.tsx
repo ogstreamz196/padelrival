@@ -4,6 +4,8 @@ import { Flame, Trophy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ACHIEVEMENTS, formatSets, levelInfo, rankTier, type SetScore } from "@/lib/game";
 import { PlayerAvatar } from "./PlayerAvatar";
+import { FormStrip, TierProgress } from "./RankProgress";
+
 import { RivalryCard, type Rivalry } from "./RivalryCard";
 import { cn } from "@/lib/utils";
 
