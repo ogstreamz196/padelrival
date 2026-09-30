@@ -22,7 +22,7 @@ export function PrivacySettings({ profile }: { profile: { id: string } & Partial
   const flip = async (k: PrivacyKey) => {
     const next = !vals[k];
     setVals((v) => ({ ...v, [k]: next }));
-    const { error } = await supabase.from("profiles").update({ [k]: next }).eq("id", profile.id);
+    const { error } = await supabase.from("profiles").update({ [k]: next } as Record<PrivacyKey, boolean>).eq("id", profile.id);
     if (error) {
       setVals((v) => ({ ...v, [k]: !next }));
       toast.error(error.message);
