@@ -10,6 +10,7 @@ import { AppShell } from "@/components/AppShell";
 import { ProfileForm } from "@/components/ProfileForm";
 import { PlayerProfile } from "@/components/PlayerProfile";
 import { ClaimGuestMatches } from "@/components/ClaimGuestMatches";
+import { AppPassword } from "@/components/AppPassword";
 import { BossPulse, BossTools } from "@/components/BossControls";
 import { PageGuide, resetGuides } from "@/components/PageGuide";
 import { ProModal, ProTeaser } from "@/components/ProUpgrade";
@@ -143,6 +144,10 @@ function Me() {
                 }
               }}
             />
+
+            <div className="mt-6">
+              <AppPassword />
+            </div>
 
             <div className="mt-6">
               <ClaimGuestMatches defaultName={profile.display_name} />
