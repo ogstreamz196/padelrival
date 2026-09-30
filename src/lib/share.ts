@@ -156,6 +156,17 @@ export function buildPlayerText(d: PlayerCardData) {
   return lines.join("\n");
 }
 
+
+function loadImage(src: string): Promise<HTMLImageElement | null> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
 /** Draws a 1080x1920 collectible player card and returns it as a PNG blob. */
 export async function renderPlayerCard(d: PlayerCardData): Promise<Blob | null> {
   const W = 1080;
