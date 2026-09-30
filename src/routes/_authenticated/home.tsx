@@ -72,6 +72,9 @@ function Home() {
 
       {profile && <WeeklyLeague meId={user.id} rating={profile.rating} />}
 
+      <InstallBanner />
+
+
       <Link
         to="/record"
         className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-primary py-4 font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]"
