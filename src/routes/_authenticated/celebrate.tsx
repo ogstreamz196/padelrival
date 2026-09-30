@@ -1,10 +1,13 @@
-import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, Navigate, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Flame } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ACHIEVEMENTS, formatSets, levelInfo, type SetScore } from "@/lib/game";
 import type { Rivalry } from "@/components/RivalryCard";
+import { ShareResult } from "@/components/ShareResult";
+import { useMyProfile } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/celebrate")({
