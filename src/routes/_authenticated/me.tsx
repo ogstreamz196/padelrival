@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Crown, Settings, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Crown, LogOut, RefreshCw, Settings, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyProfile } from "@/hooks/use-auth";
@@ -38,6 +38,13 @@ function Me() {
   const deleteAccount = useServerFn(deleteMyAccount);
   const [editing, setEditing] = useState(false);
   const [boss, setBoss] = useState(false);
+
+  const handleSignOut = async () => {
+    await qc.cancelQueries();
+    qc.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  };
 
 
   return (
