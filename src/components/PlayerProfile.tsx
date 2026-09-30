@@ -216,6 +216,21 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
         )}
       </section>
 
+      <button
+        onClick={shareCard}
+        disabled={sharing}
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-primary/60 bg-primary/10 py-3.5 font-display text-sm font-black uppercase tracking-wide text-primary active:scale-[0.98] disabled:opacity-50"
+      >
+        <Share2 className="size-4" />
+        {sharing ? "Making your card…" : "Share player card"}
+      </button>
+
+      {show("show_court_side") && hasSides && (
+        <section>
+          <SectionTitle>Court side split</SectionTitle>
+          <CourtSideSplit left={leftSide} right={rightSide} />
+        </section>
+      )}
 
       {isMe && (
         <Link to="/record" className="flex items-center justify-center gap-2 rounded-2xl bg-primary py-4 font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]">
