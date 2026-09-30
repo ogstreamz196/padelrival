@@ -130,7 +130,19 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
           />
           <Stat label="Best" value={p.best_streak} />
         </div>
+
+        <div className="mt-5 border-t pt-4">
+          <TierProgress rating={p.rating} compact />
+        </div>
+
+        {formResults.length > 0 && (
+          <div className="mt-4 border-t pt-4">
+            <div className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Recent form · last {formResults.length}</div>
+            <FormStrip results={formResults} netDelta={netDelta} />
+          </div>
+        )}
       </section>
+
 
       {isMe && (
         <Link to="/record" className="flex items-center justify-center gap-2 rounded-2xl bg-primary py-4 font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]">
