@@ -1,10 +1,11 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Settings, X } from "lucide-react";
+import { Crown, Settings, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyProfile } from "@/hooks/use-auth";
+import { useIsAdmin } from "@/hooks/use-admin";
 import { AppShell } from "@/components/AppShell";
 import { ProfileForm } from "@/components/ProfileForm";
 import { PlayerProfile } from "@/components/PlayerProfile";
@@ -26,6 +27,7 @@ export const Route = createFileRoute("/_authenticated/me")({
 
 function Me() {
   const { profile } = useMyProfile();
+  const { isAdmin } = useIsAdmin();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
@@ -34,6 +36,16 @@ function Me() {
     <AppShell>
       <div className="mb-5 flex items-center justify-between">
         <h1 className="text-3xl font-black">Player card</h1>
+        <div className="flex items-center gap-2">
+        {isAdmin && (
+          <Link
+            to="/admin"
+            className="flex items-center gap-1.5 rounded-full border border-primary px-3 py-2 text-xs font-black uppercase tracking-wide text-primary"
+          >
+            <Crown className="size-4" />
+            Boss
+          </Link>
+        )}
         <button
           onClick={() => setEditing(true)}
           className="flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-black uppercase tracking-wide text-muted-foreground"
@@ -41,6 +53,7 @@ function Me() {
           <Settings className="size-4" />
           Edit
         </button>
+        </div>
       </div>
 
       {profile && <PlayerProfile userId={profile.id} isMe />}
