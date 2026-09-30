@@ -13,9 +13,13 @@ export function ClaimGuestMatches({ defaultName }: { defaultName: string }) {
     setBusy(true);
     const { data, error } = await supabase.rpc("count_guest_matches", { _alias: name.trim() });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setFound(data ?? 0);
   }
+
 
   async function claim() {
     setBusy(true);
