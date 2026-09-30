@@ -292,6 +292,23 @@ function PlayerPicker({ exclude, meId, onPick, onClose }: { exclude: string[]; m
             </div>
           </button>
         )}
+        {!term.trim() && recents.length > 0 && (
+          <div className="mt-4">
+            <div className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Recently played with</div>
+            <div className="flex flex-wrap gap-2">
+              {recents.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => onPick({ user_id: p.id, display_name: p.display_name, avatar: p.avatar, avatar_color: p.avatar_color, rating: p.rating })}
+                  className="flex items-center gap-2 rounded-full border bg-card py-1.5 pl-1.5 pr-3 text-left active:scale-95"
+                >
+                  <PlayerAvatar avatar={p.avatar} color={p.avatar_color} size="xs" />
+                  <span className="max-w-28 truncate text-xs font-bold">{p.display_name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <div className="mt-3 flex-1 space-y-2 overflow-y-auto pb-10">
           {results.map((p) => (
             <button
