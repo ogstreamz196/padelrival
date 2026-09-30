@@ -148,6 +148,20 @@ function Me() {
               <ClaimGuestMatches defaultName={profile.display_name} />
             </div>
 
+            <div className="mt-6 rounded-2xl border border-primary/40 bg-primary/5 p-4">
+              <p className="font-display text-xs font-black uppercase tracking-wide text-primary">Membership</p>
+              <p className="mt-1 text-sm font-bold">Free — PRO coming soon</p>
+              <button
+                onClick={() => {
+                  setEditing(false);
+                  setPro(true);
+                }}
+                className="mt-3 w-full rounded-xl border border-primary/40 py-3 text-xs font-black uppercase tracking-wide text-primary"
+              >
+                See PRO perks
+              </button>
+            </div>
+
             <button
               onClick={() => {
                 resetGuides();
