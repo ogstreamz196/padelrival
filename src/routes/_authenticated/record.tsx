@@ -232,7 +232,7 @@ function SlotBtn({ slot, label, fixed, onClick, onClear }: { slot: Slot; label?:
 
 type PickerPlayer = { id: string; username: string; display_name: string; avatar: string; avatar_color: string; rating: number };
 
-function PlayerPicker({ exclude, meId, onPick, onClose }: { exclude: string[]; meId?: string; onPick: (s: NonNullable<Slot>) => void; onClose: () => void }) {
+function PlayerPicker({ exclude, meId, onPick, onClose }: { exclude: string[]; meId?: string | undefined; onPick: (s: NonNullable<Slot>) => void; onClose: () => void }) {
   const [term, setTerm] = useState("");
   const q = useQuery({
     queryKey: ["search", term],
