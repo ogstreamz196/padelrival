@@ -36,6 +36,16 @@ function Me() {
     <AppShell>
       <div className="mb-5 flex items-center justify-between">
         <h1 className="text-3xl font-black">Player card</h1>
+        <div className="flex items-center gap-2">
+        {isAdmin && (
+          <Link
+            to="/admin"
+            className="flex items-center gap-1.5 rounded-full border border-primary px-3 py-2 text-xs font-black uppercase tracking-wide text-primary"
+          >
+            <Crown className="size-4" />
+            Boss
+          </Link>
+        )}
         <button
           onClick={() => setEditing(true)}
           className="flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-black uppercase tracking-wide text-muted-foreground"
