@@ -117,6 +117,24 @@ function Celebrate() {
           </div>
         </div>
 
+        <div className="animate-rise mt-4" style={{ animationDelay: "700ms" }}>
+          <div className="mb-2 text-center text-xs font-black uppercase tracking-widest text-muted-foreground">Share the bragging rights</div>
+          <ShareResult
+            data={{
+              won: r.won,
+              me: profile?.display_name ?? "Me",
+              partner: r.partner,
+              opponents: r.opponents.map((o) => o.display_name),
+              sets: r.sets,
+              ratingDelta: r.rating_delta,
+              ratingAfter: r.rating_before + r.rating_delta,
+              xp: r.xp_gained,
+              streak: r.streak,
+            }}
+          />
+        </div>
+
+
         {r.unlocked.length > 0 && (
           <div className="mt-6">
             <div className="mb-2 text-center text-xs font-black uppercase tracking-widest text-primary">Badge unlocked</div>
