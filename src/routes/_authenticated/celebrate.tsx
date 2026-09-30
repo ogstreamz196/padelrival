@@ -27,6 +27,7 @@ type Result = {
   sets: SetScore[];
   partner: string;
   opponents: { user_id?: string; display_name: string }[];
+  match_id?: string;
 };
 
 function useCounter(target: number, duration = 1200, delay = 400) {
@@ -52,6 +53,10 @@ function useCounter(target: number, duration = 1200, delay = 400) {
 
 function Celebrate() {
   const { user } = Route.useRouteContext();
+  const { profile } = useMyProfile();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const [undoing, setUndoing] = useState(false);
   const [r] = useState<Result | null>(() => {
     try {
       return JSON.parse(sessionStorage.getItem("lastMatch") ?? "null");
