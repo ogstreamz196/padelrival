@@ -26,9 +26,27 @@ function Rivals() {
   return (
     <AppShell>
       <h1 className="text-3xl font-black">Rivalries</h1>
-      <p className="mb-6 mt-1 text-muted-foreground">Face someone twice and it gets personal.</p>
+      <p className="mb-4 mt-1 text-muted-foreground">Face someone twice and it gets personal.</p>
+      <PageGuide id="rivals" />
       {q.isLoading ? null : !q.data?.length ? (
-        <Empty>No rivalries yet. Play the same opponents again to unlock head-to-head records.</Empty>
+        <div className="rounded-3xl border border-dashed p-5 text-center">
+          <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-muted">
+            <Swords className="size-6 text-muted-foreground" />
+          </div>
+          <p className="mt-3 font-bold">No rivalries yet</p>
+          <p className="mt-1 text-sm text-muted-foreground">A rivalry activates automatically the second time you face the same opponent.</p>
+          <div className="mt-4 rounded-2xl border bg-card/60 p-3 text-left">
+            <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Preview</div>
+            <div className="mt-2 flex items-center justify-between">
+              <span className="font-bold text-muted-foreground">You vs Sam</span>
+              <span className="font-display text-lg font-black text-muted-foreground">3 – 2</span>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">Head-to-head record, revenge alerts and a one-tap rematch.</p>
+          </div>
+          <Link to="/record" className="mt-4 inline-block rounded-2xl bg-primary px-6 py-3 text-sm font-black uppercase tracking-wide text-primary-foreground">
+            Record a match
+          </Link>
+        </div>
       ) : (
         <div className="space-y-6">
           {revenge.length > 0 && (
