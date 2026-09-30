@@ -43,8 +43,69 @@ function RecordMatch() {
     });
   }, [opp]);
 
+  const lastLineup = useQuery({
+    queryKey: ["last-lineup", profile?.id],
+    enabled: !!profile?.id,
+    queryFn: async (): Promise<{ partner: NonNullable<Slot>; opps: NonNullable<Slot>[] } | null> => {
+      const { data: mine } = await supabase
+        .from("match_players")
+        .select("match_id,team,created_at")
+        .eq("user_id", profile!.id)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      const row = mine?.[0];
+      if (!row) return null;
+      const { data: all } = await supabase
+        .from("match_players")
+        .select("team,user_id,guest_name,profiles(id,display_name,avatar,avatar_color,rating)")
+        .eq("match_id", row.match_id);
+      if (!all) return null;
+      const toSlot = (r: (typeof all)[number]): NonNullable<Slot> => {
+        const pr = r.profiles as { id: string; display_name: string; avatar: string; avatar_color: string; rating: number } | null;
+        return pr
+          ? { user_id: pr.id, display_name: pr.display_name, avatar: pr.avatar, avatar_color: pr.avatar_color, rating: pr.rating }
+          : { guest_name: r.guest_name ?? "Guest", display_name: r.guest_name ?? "Guest" };
+      };
+      const partnerRow = all.find((r) => r.team === row.team && r.user_id !== profile!.id);
+      const oppRows = all.filter((r) => r.team !== row.team);
+      if (!partnerRow || oppRows.length < 2) return null;
+      return { partner: toSlot(partnerRow), opps: oppRows.slice(0, 2).map(toSlot) };
+    },
+  });
+
+  const venues = useQuery({
+    queryKey: ["my-venues", profile?.id],
+    enabled: !!profile?.id,
+    queryFn: async (): Promise<string[]> => {
+      const { data } = await supabase
+        .from("matches")
+        .select("venue")
+        .eq("created_by", profile!.id)
+        .not("venue", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(30);
+      const counts = new Map<string, number>();
+      for (const r of data ?? []) {
+        const v = (r.venue ?? "").trim();
+        if (v) counts.set(v, (counts.get(v) ?? 0) + 1);
+      }
+      return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([v]) => v);
+    },
+  });
+
+  const empty = !partner && !opp1 && !opp2;
+  function rematch() {
+    const d = lastLineup.data;
+    if (!d) return;
+    haptic();
+    setPartner(d.partner);
+    setOpp1(d.opps[0] ?? null);
+    setOpp2(d.opps[1] ?? null);
+  }
+
   const taken = [profile?.id, partner?.user_id, opp1?.user_id, opp2?.user_id].filter(Boolean) as string[];
   const setters = { partner: setPartner, opp1: setOpp1, opp2: setOpp2 };
+
 
   const isDecider = (i: number) => superTb && i === 2;
 
@@ -96,6 +157,23 @@ function RecordMatch() {
       <h1 className="text-3xl font-black">Record match</h1>
       <p className="mb-4 mt-1 text-muted-foreground">2v2 · takes 20 seconds</p>
       <PageGuide id="record" />
+
+      {empty && lastLineup.data && (
+        <button
+          onClick={rematch}
+          className="mb-4 flex w-full items-center gap-3 rounded-2xl border border-primary/50 bg-primary/10 p-3 text-left active:scale-[0.98]"
+        >
+          <Repeat className="size-5 shrink-0 text-primary" />
+          <div className="min-w-0">
+            <div className="text-sm font-black">Rematch last 4</div>
+            <div className="truncate text-xs text-muted-foreground">
+              w/ {lastLineup.data.partner.display_name} vs {lastLineup.data.opps.map((o) => o.display_name).join(" & ")}
+            </div>
+          </div>
+        </button>
+      )}
+
+
 
       <div className="grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
         <div className="space-y-2 rounded-3xl border-2 border-primary/50 bg-primary/5 p-2">
@@ -174,6 +252,23 @@ function RecordMatch() {
         ))}
       </div>
       <input value={venue} onChange={(e) => setVenue(e.target.value)} maxLength={120} placeholder="Venue (optional)" className="mt-3 w-full rounded-2xl border bg-card px-4 py-4 outline-none focus:border-primary" />
+      {(venues.data?.length ?? 0) > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {venues.data!.map((v) => (
+            <button
+              key={v}
+              onClick={() => {
+                haptic();
+                setVenue(venue === v ? "" : v);
+              }}
+              className={cn("max-w-full truncate rounded-full border px-3 py-1.5 text-xs font-bold", venue === v ? "border-primary bg-primary/15 text-primary" : "text-muted-foreground")}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+      )}
+
 
       <button
         disabled={!ready || busy}

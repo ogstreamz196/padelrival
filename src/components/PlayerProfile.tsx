@@ -4,6 +4,8 @@ import { Flame, Trophy } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ACHIEVEMENTS, formatSets, levelInfo, rankTier, type SetScore } from "@/lib/game";
 import { PlayerAvatar } from "./PlayerAvatar";
+import { FormStrip, TierProgress } from "./RankProgress";
+
 import { RivalryCard, type Rivalry } from "./RivalryCard";
 import { cn } from "@/lib/utils";
 
@@ -76,6 +78,10 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
   const total = p.wins + p.losses;
   const winPct = total ? Math.round((p.wins / total) * 100) : 0;
   const unlocked = new Set(achievements.data?.map((a) => a.code));
+  const recent = (history.data ?? []).slice(0, 10);
+  const formResults = recent.map((h) => (h.matches ? h.matches.winner_team === h.team : false)).reverse();
+  const netDelta = recent.reduce((s, h) => s + (h.rating_delta ?? 0), 0);
+
 
   return (
     <div className="space-y-6">
@@ -126,7 +132,19 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
           />
           <Stat label="Best" value={p.best_streak} />
         </div>
+
+        <div className="mt-5 border-t pt-4">
+          <TierProgress rating={p.rating} compact />
+        </div>
+
+        {formResults.length > 0 && (
+          <div className="mt-4 border-t pt-4">
+            <div className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Recent form · last {formResults.length}</div>
+            <FormStrip results={formResults} netDelta={netDelta} />
+          </div>
+        )}
       </section>
+
 
       {isMe && (
         <Link to="/record" className="flex items-center justify-center gap-2 rounded-2xl bg-primary py-4 font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]">

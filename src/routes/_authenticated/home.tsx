@@ -9,6 +9,8 @@ import { PageGuide } from "@/components/PageGuide";
 
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { TierProgress } from "@/components/RankProgress";
+
 import { SectionTitle } from "@/components/PlayerProfile";
 import { useMyProfile } from "@/hooks/use-auth";
 import { levelInfo, isProvisional } from "@/lib/game";
@@ -75,7 +77,14 @@ function Home() {
 
       <PageGuide id="home" />
 
+      {profile && (
+        <section className="mb-4">
+          <TierProgress rating={profile.rating} />
+        </section>
+      )}
+
       {profile && <WeeklyLeague meId={user.id} rating={profile.rating} />}
+
 
       <InstallBanner />
 

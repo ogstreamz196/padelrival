@@ -6,6 +6,14 @@ export function levelInfo(xp: number) {
   return { level, into, pct: (into / XP_PER_LEVEL) * 100, needed: XP_PER_LEVEL };
 }
 
+export const TIERS = [
+  { name: "Bronze", min: 0 },
+  { name: "Silver", min: 950 },
+  { name: "Gold", min: 1100 },
+  { name: "Platinum", min: 1250 },
+  { name: "Diamond", min: 1400 },
+] as const;
+
 export function rankTier(rating: number) {
   if (rating >= 1400) return "Diamond";
   if (rating >= 1250) return "Platinum";
@@ -13,6 +21,23 @@ export function rankTier(rating: number) {
   if (rating >= 950) return "Silver";
   return "Bronze";
 }
+
+/** Progress toward the next rank tier. `next` is null at the top tier. */
+export function tierProgress(rating: number) {
+  const i = TIERS.reduce((acc, t, j) => (rating >= t.min ? j : acc), 0);
+  const cur = TIERS[i]!;
+  const next = TIERS[i + 1] ?? null;
+  if (!next) return { current: cur.name, next: null, toGo: 0, pct: 100 };
+  const span = next.min - cur.min;
+  const done = rating - cur.min;
+  return {
+    current: cur.name,
+    next: next.name,
+    toGo: next.min - rating,
+    pct: Math.max(0, Math.min(100, (done / span) * 100)),
+  };
+}
+
 
 export const ACHIEVEMENTS: Record<string, { name: string; desc: string; icon: string }> = {
   first_win: { name: "First Win", desc: "Win your first match", icon: "🏆" },
