@@ -43,8 +43,69 @@ function RecordMatch() {
     });
   }, [opp]);
 
+  const lastLineup = useQuery({
+    queryKey: ["last-lineup", profile?.id],
+    enabled: !!profile?.id,
+    queryFn: async (): Promise<{ partner: NonNullable<Slot>; opps: NonNullable<Slot>[] } | null> => {
+      const { data: mine } = await supabase
+        .from("match_players")
+        .select("match_id,team,created_at")
+        .eq("user_id", profile!.id)
+        .order("created_at", { ascending: false })
+        .limit(1);
+      const row = mine?.[0];
+      if (!row) return null;
+      const { data: all } = await supabase
+        .from("match_players")
+        .select("team,user_id,guest_name,profiles(id,display_name,avatar,avatar_color,rating)")
+        .eq("match_id", row.match_id);
+      if (!all) return null;
+      const toSlot = (r: (typeof all)[number]): NonNullable<Slot> => {
+        const pr = r.profiles as { id: string; display_name: string; avatar: string; avatar_color: string; rating: number } | null;
+        return pr
+          ? { user_id: pr.id, display_name: pr.display_name, avatar: pr.avatar, avatar_color: pr.avatar_color, rating: pr.rating }
+          : { guest_name: r.guest_name ?? "Guest", display_name: r.guest_name ?? "Guest" };
+      };
+      const partnerRow = all.find((r) => r.team === row.team && r.user_id !== profile!.id);
+      const oppRows = all.filter((r) => r.team !== row.team);
+      if (!partnerRow || oppRows.length < 2) return null;
+      return { partner: toSlot(partnerRow), opps: oppRows.slice(0, 2).map(toSlot) };
+    },
+  });
+
+  const venues = useQuery({
+    queryKey: ["my-venues", profile?.id],
+    enabled: !!profile?.id,
+    queryFn: async (): Promise<string[]> => {
+      const { data } = await supabase
+        .from("matches")
+        .select("venue")
+        .eq("created_by", profile!.id)
+        .not("venue", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(30);
+      const counts = new Map<string, number>();
+      for (const r of data ?? []) {
+        const v = (r.venue ?? "").trim();
+        if (v) counts.set(v, (counts.get(v) ?? 0) + 1);
+      }
+      return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([v]) => v);
+    },
+  });
+
+  const empty = !partner && !opp1 && !opp2;
+  function rematch() {
+    const d = lastLineup.data;
+    if (!d) return;
+    haptic();
+    setPartner(d.partner);
+    setOpp1(d.opps[0] ?? null);
+    setOpp2(d.opps[1] ?? null);
+  }
+
   const taken = [profile?.id, partner?.user_id, opp1?.user_id, opp2?.user_id].filter(Boolean) as string[];
   const setters = { partner: setPartner, opp1: setOpp1, opp2: setOpp2 };
+
 
   const isDecider = (i: number) => superTb && i === 2;
 
