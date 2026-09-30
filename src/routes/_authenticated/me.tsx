@@ -13,6 +13,7 @@ import { ClaimGuestMatches } from "@/components/ClaimGuestMatches";
 import { AiCoach } from "@/components/AiCoach";
 import { PrivacySettings } from "@/components/PrivacySettings";
 import { AppPassword } from "@/components/AppPassword";
+import { LinkEmail } from "@/components/LinkEmail";
 import { BossPulse, BossTools } from "@/components/BossControls";
 import { PageGuide, resetGuides } from "@/components/PageGuide";
 import { ProModal, ProTeaser } from "@/components/ProUpgrade";
@@ -151,6 +152,10 @@ function Me() {
 
             <div className="mt-6">
               <PrivacySettings profile={profile} />
+            </div>
+
+            <div className="mt-6">
+              <LinkEmail />
             </div>
 
             <div className="mt-6">
