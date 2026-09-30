@@ -27,6 +27,7 @@ export const Route = createFileRoute("/_authenticated/me")({
 
 function Me() {
   const { profile } = useMyProfile();
+  const { isAdmin } = useIsAdmin();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
