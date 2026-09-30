@@ -12,6 +12,7 @@ import { PlayerProfile } from "@/components/PlayerProfile";
 import { ClaimGuestMatches } from "@/components/ClaimGuestMatches";
 import { BossPulse, BossTools } from "@/components/BossControls";
 import { PageGuide, resetGuides } from "@/components/PageGuide";
+import { ProModal, ProTeaser } from "@/components/ProUpgrade";
 import { useServerFn } from "@tanstack/react-start";
 import { deleteMyAccount } from "@/lib/account.functions";
 
