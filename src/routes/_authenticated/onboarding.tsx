@@ -1,9 +1,12 @@
 import { createFileRoute, Navigate, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { ShieldAlert } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyProfile } from "@/hooks/use-auth";
 import { ProfileForm } from "@/components/ProfileForm";
+import { LinkEmail } from "@/components/LinkEmail";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   head: () => ({ meta: [{ title: "Create your player — Padel Rival" }, { name: "description", content: "Set up your Padel Rival player card." }] }),
@@ -14,8 +17,28 @@ function Onboarding() {
   const { user, profile, loading } = useMyProfile();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const [askEmail, setAskEmail] = useState(false);
   if (loading) return null;
-  if (profile) return <Navigate to="/home" />;
+  if (profile && !askEmail) return <Navigate to="/home" />;
+
+  if (askEmail) {
+    return (
+      <div className="mx-auto max-w-md px-5 py-10">
+        <p className="text-sm font-bold uppercase tracking-[0.3em] text-primary">Last step</p>
+        <h1 className="mb-4 mt-2 text-3xl font-black">Secure your account</h1>
+        <div className="mb-5 flex gap-3 rounded-3xl border border-destructive/40 bg-destructive/10 p-4">
+          <ShieldAlert className="mt-0.5 size-5 shrink-0 text-destructive" />
+          <p className="text-sm text-foreground">
+            You signed up with a username only. If you forget your password there is <span className="font-black">no way to get back in</span> — your rating, badges and match history would be lost. Add an email and you can always reset it.
+          </p>
+        </div>
+        <LinkEmail onLinked={() => navigate({ to: "/home" })} />
+        <button onClick={() => navigate({ to: "/home" })} className="mt-4 w-full py-3 text-sm font-bold text-muted-foreground">
+          Skip for now
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-md px-5 py-10">
@@ -35,7 +58,9 @@ function Onboarding() {
           const claimed = (claim as { claimed?: number } | null)?.claimed ?? 0;
           if (claimed > 0) toast.success(`${claimed} past match${claimed > 1 ? "es" : ""} added to your record`);
           await qc.invalidateQueries();
-          navigate({ to: "/home" });
+          const needsEmail = !user?.email || user.email.endsWith("@players.padelrival.app");
+          if (needsEmail) setAskEmail(true);
+          else navigate({ to: "/home" });
         }}
       />
     </div>
