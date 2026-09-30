@@ -10,6 +10,8 @@ import { AppShell } from "@/components/AppShell";
 import { ProfileForm } from "@/components/ProfileForm";
 import { PlayerProfile } from "@/components/PlayerProfile";
 import { ClaimGuestMatches } from "@/components/ClaimGuestMatches";
+import { AiCoach } from "@/components/AiCoach";
+import { PrivacySettings } from "@/components/PrivacySettings";
 import { AppPassword } from "@/components/AppPassword";
 import { BossPulse, BossTools } from "@/components/BossControls";
 import { PageGuide, resetGuides } from "@/components/PageGuide";
@@ -116,6 +118,8 @@ function Me() {
 
       {profile && <PlayerProfile userId={profile.id} isMe />}
 
+      {profile && <AiCoach userId={profile.id} />}
+
       <ProTeaser onOpen={() => setPro(true)} />
 
       {pro && <ProModal onClose={() => setPro(false)} />}
@@ -144,6 +148,10 @@ function Me() {
                 }
               }}
             />
+
+            <div className="mt-6">
+              <PrivacySettings profile={profile} />
+            </div>
 
             <div className="mt-6">
               <AppPassword />

@@ -178,6 +178,12 @@ export type Database = {
           id: string
           losses: number
           rating: number
+          show_achievements: boolean
+          show_court_side: boolean
+          show_history: boolean
+          show_partners: boolean
+          show_record: boolean
+          show_rivalries: boolean
           username: string
           wins: number
           xp: number
@@ -193,6 +199,12 @@ export type Database = {
           id: string
           losses?: number
           rating?: number
+          show_achievements?: boolean
+          show_court_side?: boolean
+          show_history?: boolean
+          show_partners?: boolean
+          show_record?: boolean
+          show_rivalries?: boolean
           username: string
           wins?: number
           xp?: number
@@ -208,6 +220,12 @@ export type Database = {
           id?: string
           losses?: number
           rating?: number
+          show_achievements?: boolean
+          show_court_side?: boolean
+          show_history?: boolean
+          show_partners?: boolean
+          show_record?: boolean
+          show_rivalries?: boolean
           username?: string
           wins?: number
           xp?: number
