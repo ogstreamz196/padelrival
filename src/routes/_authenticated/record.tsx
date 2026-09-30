@@ -180,7 +180,17 @@ function RecordMatch() {
         onClick={submit}
         className="mt-6 w-full rounded-2xl bg-primary py-5 font-display text-lg font-black uppercase text-primary-foreground glow transition-opacity disabled:opacity-40 disabled:shadow-none"
       >
-        {busy ? "Calculating…" : firstError ? "Check the scores" : t1 === t2 ? "Need a winner" : t1 > t2 ? `Log victory ${t1}-${t2}` : `Log defeat ${t1}-${t2}`}
+        {busy
+          ? "Calculating…"
+          : !partner || !opp1 || !opp2
+            ? "Pick partner & opponents"
+            : firstError
+              ? "Check the scores"
+              : t1 === t2
+                ? "Need a winner"
+                : t1 > t2
+                  ? `Log victory ${t1}-${t2}`
+                  : `Log defeat ${t1}-${t2}`}
       </button>
 
       {picking && (
