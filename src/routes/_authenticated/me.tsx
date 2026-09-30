@@ -12,6 +12,8 @@ import { PlayerProfile } from "@/components/PlayerProfile";
 import { ClaimGuestMatches } from "@/components/ClaimGuestMatches";
 import { BossPulse, BossTools } from "@/components/BossControls";
 import { PageGuide, resetGuides } from "@/components/PageGuide";
+import { useServerFn } from "@tanstack/react-start";
+import { deleteMyAccount } from "@/lib/account.functions";
 
 
 export const Route = createFileRoute("/_authenticated/me")({
@@ -33,6 +35,7 @@ function Me() {
   const { isAdmin } = useIsAdmin();
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const deleteAccount = useServerFn(deleteMyAccount);
   const [editing, setEditing] = useState(false);
   const [boss, setBoss] = useState(false);
 

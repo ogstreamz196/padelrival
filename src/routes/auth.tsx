@@ -80,6 +80,20 @@ function AuthPage() {
         </button>
       </form>
 
+      {mode === "in" && (
+        <button
+          onClick={async () => {
+            if (!email) return toast.error("Type your email above first");
+            const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + "/reset-password" });
+            if (error) toast.error(error.message);
+            else toast.success("Check your email for a reset link");
+          }}
+          className="mt-4 text-sm font-bold text-muted-foreground underline-offset-4 hover:underline"
+        >
+          Forgot password?
+        </button>
+      )}
+
       <button onClick={() => setMode(mode === "in" ? "up" : "in")} className="mt-6 text-sm text-muted-foreground">
         {mode === "in" ? "New here? " : "Already a player? "}
         <span className="font-bold text-primary">{mode === "in" ? "Create an account" : "Sign in"}</span>
