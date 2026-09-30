@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Crown, Settings, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Crown, Settings, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyProfile } from "@/hooks/use-auth";
@@ -10,6 +10,8 @@ import { AppShell } from "@/components/AppShell";
 import { ProfileForm } from "@/components/ProfileForm";
 import { PlayerProfile } from "@/components/PlayerProfile";
 import { ClaimGuestMatches } from "@/components/ClaimGuestMatches";
+import { BossPulse, BossTools } from "@/components/BossControls";
+
 
 export const Route = createFileRoute("/_authenticated/me")({
   head: () => ({
@@ -31,6 +33,8 @@ function Me() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
+  const [boss, setBoss] = useState(false);
+
 
   return (
     <AppShell>
@@ -56,7 +60,38 @@ function Me() {
         </div>
       </div>
 
+      {isAdmin && (
+        <section className="mb-5 rounded-3xl border border-primary/50 bg-primary/5 p-4">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Crown className="size-5 text-primary" />
+              <h2 className="font-display text-lg font-black uppercase tracking-wide text-primary">Boss controls</h2>
+            </div>
+            <button
+              onClick={() => setBoss((b) => !b)}
+              className="flex items-center gap-1 rounded-full border border-primary px-3 py-1.5 text-[11px] font-black uppercase tracking-wide text-primary"
+            >
+              {boss ? "Hide" : "Open"}
+              {boss ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
+            </button>
+          </div>
+
+          {boss && (
+            <div className="mt-4">
+              <BossPulse />
+              <div className="mt-4">
+                <BossTools />
+              </div>
+              <Link to="/admin" className="mt-4 block rounded-2xl border py-3 text-center text-xs font-black uppercase tracking-wide text-muted-foreground">
+                Open full screen panel
+              </Link>
+            </div>
+          )}
+        </section>
+      )}
+
       {profile && <PlayerProfile userId={profile.id} isMe />}
+
 
       {editing && profile && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-background/95 backdrop-blur-md">
