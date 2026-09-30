@@ -219,6 +219,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_guest_matches: { Args: { _alias: string }; Returns: Json }
+      count_guest_matches: { Args: { _alias: string }; Returns: number }
       get_partners: {
         Args: { _user: string }
         Returns: {

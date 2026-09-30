@@ -59,3 +59,41 @@ export function undoLeft(createdAt: string) {
 export function isProvisional(matches: number) {
   return matches < 5;
 }
+
+/** Common padel set endings, tapped as quick presets. */
+export const SET_PRESETS: SetScore[] = [
+  [6, 0],
+  [6, 1],
+  [6, 2],
+  [6, 3],
+  [6, 4],
+  [7, 5],
+  [7, 6],
+];
+
+export const STB_PRESETS: SetScore[] = [
+  [10, 4],
+  [10, 6],
+  [10, 8],
+  [11, 9],
+  [12, 10],
+];
+
+/** Returns an error message when a set score can't happen in padel, otherwise null. */
+export function validateSet([a, b]: SetScore, decider = false): string | null {
+  const hi = Math.max(a, b);
+  const lo = Math.min(a, b);
+  if (a === b) return "A set can't end level";
+  if (decider) {
+    if (hi < 10) return "Super tie-break goes to at least 10";
+    if (hi > 10 && hi - lo !== 2) return "Past 10-8 you win the tie-break by exactly 2";
+    if (hi === 10 && lo > 8) return "10-9 isn't possible — win by 2";
+    return null;
+  }
+  if (hi < 6) return "A set is won with 6 games";
+  if (hi === 6 && lo > 4) return "6-5 isn't a finished set";
+  if (hi === 7 && lo < 5) return "7 games only happens as 7-5 or 7-6";
+  if (hi > 7) return "A padel set stops at 7 games";
+  return null;
+}
+

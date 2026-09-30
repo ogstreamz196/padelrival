@@ -1,14 +1,16 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Minus, Plus, UserPlus, X } from "lucide-react";
+import { Minus, Plus, Repeat, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { useMyProfile } from "@/hooks/use-auth";
+import { SET_PRESETS, STB_PRESETS, validateSet, type SetScore } from "@/lib/game";
 import { cn } from "@/lib/utils";
+
 
 export const Route = createFileRoute("/_authenticated/record")({
   validateSearch: z.object({ opp: z.string().optional() }),
@@ -50,12 +52,25 @@ function RecordMatch() {
     setSets((s) => s.map((x, j) => (j === i ? (x.map((v, k) => (k === side ? Math.max(0, Math.min(max, v + d)) : v)) as [number, number]) : x)));
   }
 
+  function setOne(i: number, score: SetScore) {
+    setSets((s) => s.map((x, j) => (j === i ? score : x)));
+  }
+
+
   const t1 = sets.filter(([a, b]) => a > b).length;
   const t2 = sets.filter(([a, b]) => b > a).length;
-  const ready = partner && opp1 && opp2 && t1 !== t2;
+  const setErrors = sets.map((s, i) => validateSet(s, isDecider(i)));
+  const firstError = setErrors.find(Boolean) ?? null;
+  const ready = partner && opp1 && opp2 && t1 !== t2 && !firstError;
+
 
   async function submit() {
     if (!partner || !opp1 || !opp2 || !profile || t1 === t2) return;
+    if (firstError) {
+      toast.error(firstError);
+      return;
+    }
+
     setBusy(true);
     const toP = (s: NonNullable<Slot>, team: number) => (s.user_id ? { team, user_id: s.user_id } : { team, guest_name: s.guest_name });
     const players = [{ team: 1, user_id: profile.id }, toP(partner, 1), toP(opp1, 2), toP(opp2, 2)];
@@ -107,16 +122,35 @@ function RecordMatch() {
       </div>
       <div className="space-y-2">
         {sets.map(([a, b], i) => (
-          <div key={i} className="flex items-center gap-2 rounded-2xl border bg-card p-2">
-            <span className="w-10 text-center text-[10px] font-black uppercase text-muted-foreground">{isDecider(i) ? "STB" : `S${i + 1}`}</span>
-            <Stepper value={a!} win={a! > b!} onDec={() => bump(i, 0, -1)} onInc={() => bump(i, 0, 1)} tone="primary" />
-            <span className="text-muted-foreground">–</span>
-            <Stepper value={b!} win={b! > a!} onDec={() => bump(i, 1, -1)} onInc={() => bump(i, 1, 1)} tone="court" />
-            {sets.length > 1 && (
-              <button onClick={() => setSets(sets.filter((_, j) => j !== i))} className="ml-auto p-2 text-muted-foreground" aria-label="Remove set">
-                <X className="size-4" />
+          <div key={i} className="rounded-2xl border bg-card p-2">
+            <div className="flex items-center gap-2">
+              <span className="w-10 text-center text-[10px] font-black uppercase text-muted-foreground">{isDecider(i) ? "STB" : `S${i + 1}`}</span>
+              <Stepper value={a!} win={a! > b!} onDec={() => bump(i, 0, -1)} onInc={() => bump(i, 0, 1)} tone="primary" />
+              <button onClick={() => setOne(i, [b!, a!])} className="p-1 text-muted-foreground active:scale-90" aria-label="Swap score">
+                <Repeat className="size-4" />
               </button>
-            )}
+              <Stepper value={b!} win={b! > a!} onDec={() => bump(i, 1, -1)} onInc={() => bump(i, 1, 1)} tone="court" />
+              {sets.length > 1 && (
+                <button onClick={() => setSets(sets.filter((_, j) => j !== i))} className="ml-auto p-2 text-muted-foreground" aria-label="Remove set">
+                  <X className="size-4" />
+                </button>
+              )}
+            </div>
+            <div className="mt-2 flex flex-wrap gap-1.5 pl-1">
+              {(isDecider(i) ? STB_PRESETS : SET_PRESETS).map(([x, y]) => {
+                const active = a === x && b === y;
+                return (
+                  <button
+                    key={`${x}-${y}`}
+                    onClick={() => setOne(i, [x, y])}
+                    className={cn("rounded-full border px-2.5 py-1 text-[11px] font-black tabular-nums", active ? "border-primary bg-primary/15 text-primary" : "text-muted-foreground")}
+                  >
+                    {x}-{y}
+                  </button>
+                );
+              })}
+            </div>
+            {setErrors[i] && <p className="mt-2 pl-1 text-[11px] font-bold text-destructive">{setErrors[i]}</p>}
           </div>
         ))}
         {sets.length < 3 && (
@@ -124,8 +158,9 @@ function RecordMatch() {
             + Add {superTb ? "super tie-break" : "set"}
           </button>
         )}
-        <p className="px-1 text-xs text-muted-foreground">Tie-breaks: just log 7-6. Deciding super tie-break goes up to 20 points.</p>
+        <p className="px-1 text-xs text-muted-foreground">Tap a score, or use +/–. The arrows swap who won. Deciding super tie-break goes to 10, win by 2.</p>
       </div>
+
 
       <div className="mt-6 grid grid-cols-3 gap-2">
         {["friendly", "competitive", "tournament"].map((t) => (
@@ -141,7 +176,7 @@ function RecordMatch() {
         onClick={submit}
         className="mt-6 w-full rounded-2xl bg-primary py-5 font-display text-lg font-black uppercase text-primary-foreground glow transition-opacity disabled:opacity-40 disabled:shadow-none"
       >
-        {busy ? "Calculating…" : t1 === t2 ? "Need a winner" : t1 > t2 ? `Log victory ${t1}-${t2}` : `Log defeat ${t1}-${t2}`}
+        {busy ? "Calculating…" : firstError ? "Check the scores" : t1 === t2 ? "Need a winner" : t1 > t2 ? `Log victory ${t1}-${t2}` : `Log defeat ${t1}-${t2}`}
       </button>
 
       {picking && (
