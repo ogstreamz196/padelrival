@@ -316,6 +316,30 @@ function RecordMatch() {
         </div>
       )}
 
+      <input
+        value={notes}
+        onChange={(e) => setNotes(e.target.value.slice(0, 140))}
+        maxLength={140}
+        placeholder="Add a note (optional)"
+        className="mt-3 w-full rounded-2xl border bg-card px-4 py-4 outline-none focus:border-primary"
+      />
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {["Golden point decider", "Comeback win", "Grudge match", "Brutal conditions"].map((n) => (
+          <button
+            key={n}
+            onClick={() => {
+              haptic();
+              setNotes(notes === n ? "" : n);
+            }}
+            className={cn("rounded-full border px-3 py-1.5 text-xs font-bold", notes === n ? "border-primary bg-primary/15 text-primary" : "text-muted-foreground")}
+          >
+            {n}
+          </button>
+        ))}
+      </div>
+
+
+
 
       <button
         disabled={!ready || busy}
