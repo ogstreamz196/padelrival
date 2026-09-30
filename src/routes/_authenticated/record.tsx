@@ -52,7 +52,10 @@ function RecordMatch() {
 
   const t1 = sets.filter(([a, b]) => a > b).length;
   const t2 = sets.filter(([a, b]) => b > a).length;
-  const ready = partner && opp1 && opp2 && t1 !== t2;
+  const setErrors = sets.map((s, i) => validateSet(s, isDecider(i)));
+  const firstError = setErrors.find(Boolean) ?? null;
+  const ready = partner && opp1 && opp2 && t1 !== t2 && !firstError;
+
 
   async function submit() {
     if (!partner || !opp1 || !opp2 || !profile || t1 === t2) return;
