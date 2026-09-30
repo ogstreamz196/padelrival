@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useIsNative } from "@/hooks/use-native";
+import { signInWithUsername, signUpWithUsername } from "@/lib/username-auth.functions";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -36,13 +37,19 @@ function AuthPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
-    if (mode === "up") {
-      const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin + "/home" } });
-      if (error) toast.error(error.message);
-      else if (!data.session) toast.success("Check your email to confirm your account.");
-    } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) toast.error(error.message);
+    try {
+      const id = email.trim().replace(/^@/, "");
+      if (id.includes("@")) {
+        const { error } = await supabase.auth.signInWithPassword({ email: id, password });
+        if (error) throw error;
+      } else {
+        const fn = mode === "up" ? signUpWithUsername : signInWithUsername;
+        const tokens = await fn({ data: { username: id, password } });
+        const { error } = await supabase.auth.setSession(tokens);
+        if (error) throw error;
+      }
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Something went wrong");
     }
     setBusy(false);
   }
@@ -73,7 +80,14 @@ function AuthPage() {
       )}
 
       <form onSubmit={submit} className={native ? "mt-8 space-y-3" : "space-y-3"}>
-        <input className={input} type="email" required placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+        {mode === "up" ? (
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">@</span>
+            <input className={input + " pl-9"} required pattern="@?[a-zA-Z0-9_]{3,20}" title="3–20 letters, numbers or _" placeholder="username" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" autoCapitalize="none" />
+          </div>
+        ) : (
+          <input className={input} required placeholder="@username or email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" autoCapitalize="none" />
+        )}
         <input className={input} type="password" required minLength={6} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={mode === "in" ? "current-password" : "new-password"} />
         <button disabled={busy} className="w-full rounded-2xl bg-primary py-4 font-display font-black uppercase text-primary-foreground glow disabled:opacity-60">
           {busy ? "…" : mode === "in" ? "Sign in" : "Create account"}
@@ -83,7 +97,7 @@ function AuthPage() {
       {mode === "in" && (
         <button
           onClick={async () => {
-            if (!email) { toast.error("Type your email above first"); return; }
+            if (!email.includes("@") || email.startsWith("@")) { toast.error("Password reset needs the email linked in your profile — type it above"); return; }
             const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + "/reset-password" });
             if (error) toast.error(error.message);
             else toast.success("Check your email for a reset link");
