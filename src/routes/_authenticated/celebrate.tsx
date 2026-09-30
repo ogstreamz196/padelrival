@@ -169,6 +169,24 @@ function Celebrate() {
         <div className="mt-auto grid gap-2 pt-8">
           <Link to="/home" className="rounded-2xl bg-primary py-4 text-center font-display font-black uppercase text-primary-foreground glow">Continue</Link>
           <Link to="/record" className="rounded-2xl border py-4 text-center font-bold">Record another</Link>
+          {r.match_id && (
+            <button
+              onClick={async () => {
+                if (undoing) return;
+                setUndoing(true);
+                const { error } = await supabase.rpc("void_match", { _match_id: r.match_id! });
+                setUndoing(false);
+                if (error) return toast.error(error.message);
+                sessionStorage.removeItem("lastMatch");
+                toast.success("Match removed — everyone's rating restored");
+                qc.invalidateQueries();
+                navigate({ to: "/record" });
+              }}
+              className="py-2 text-center text-sm font-bold text-muted-foreground underline"
+            >
+              {undoing ? "Undoing…" : "Wrong score? Undo this match"}
+            </button>
+          )}
         </div>
       </div>
     </div>
