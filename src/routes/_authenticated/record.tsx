@@ -6,10 +6,11 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
+import { PageGuide } from "@/components/PageGuide";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { useMyProfile } from "@/hooks/use-auth";
 import { SET_PRESETS, STB_PRESETS, validateSet, type SetScore } from "@/lib/game";
-import { cn } from "@/lib/utils";
+import { cn, haptic } from "@/lib/utils";
 
 
 export const Route = createFileRoute("/_authenticated/record")({
@@ -49,10 +50,12 @@ function RecordMatch() {
 
   function bump(i: number, side: 0 | 1, d: number) {
     const max = isDecider(i) ? 20 : 7;
+    haptic();
     setSets((s) => s.map((x, j) => (j === i ? (x.map((v, k) => (k === side ? Math.max(0, Math.min(max, v + d)) : v)) as [number, number]) : x)));
   }
 
   function setOne(i: number, score: SetScore) {
+    haptic();
     setSets((s) => s.map((x, j) => (j === i ? score : x)));
   }
 
@@ -91,7 +94,8 @@ function RecordMatch() {
   return (
     <AppShell>
       <h1 className="text-3xl font-black">Record match</h1>
-      <p className="mb-6 mt-1 text-muted-foreground">2v2 · takes 20 seconds</p>
+      <p className="mb-4 mt-1 text-muted-foreground">2v2 · takes 20 seconds</p>
+      <PageGuide id="record" />
 
       <div className="grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
         <div className="space-y-2 rounded-3xl border-2 border-primary/50 bg-primary/5 p-2">
@@ -182,6 +186,7 @@ function RecordMatch() {
       {picking && (
         <PlayerPicker
           exclude={taken}
+          meId={profile?.id}
           onClose={() => setPicking(null)}
           onPick={(s) => {
             setters[picking](s);
