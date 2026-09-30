@@ -36,3 +36,26 @@ export type SetScore = [number, number];
 export function formatSets(sets: SetScore[], flip = false) {
   return sets.map(([a, b]) => (flip ? `${b}-${a}` : `${a}-${b}`)).join("  ");
 }
+
+/** Weekly season: resets Monday 00:00 local time. */
+export function weekReset(now = new Date()) {
+  const end = new Date(now);
+  const day = (end.getDay() + 6) % 7; // 0 = Monday
+  end.setDate(end.getDate() + (7 - day));
+  end.setHours(0, 0, 0, 0);
+  const ms = end.getTime() - now.getTime();
+  const days = Math.floor(ms / 86400000);
+  const hours = Math.floor((ms % 86400000) / 3600000);
+  return { end, days, hours, label: days > 0 ? `${days}d ${hours}h left` : `${hours}h left` };
+}
+
+export const UNDO_WINDOW_MS = 15 * 60 * 1000;
+
+export function undoLeft(createdAt: string) {
+  const ms = UNDO_WINDOW_MS - (Date.now() - new Date(createdAt).getTime());
+  return ms > 0 ? Math.ceil(ms / 60000) : 0;
+}
+
+export function isProvisional(matches: number) {
+  return matches < 5;
+}

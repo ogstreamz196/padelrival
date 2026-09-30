@@ -1,10 +1,13 @@
-import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, Navigate, useNavigate } from "@tanstack/react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Flame } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ACHIEVEMENTS, formatSets, levelInfo, type SetScore } from "@/lib/game";
 import type { Rivalry } from "@/components/RivalryCard";
+import { ShareResult } from "@/components/ShareResult";
+import { useMyProfile } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/celebrate")({
@@ -24,6 +27,7 @@ type Result = {
   sets: SetScore[];
   partner: string;
   opponents: { user_id?: string; display_name: string }[];
+  match_id?: string;
 };
 
 function useCounter(target: number, duration = 1200, delay = 400) {
@@ -49,6 +53,10 @@ function useCounter(target: number, duration = 1200, delay = 400) {
 
 function Celebrate() {
   const { user } = Route.useRouteContext();
+  const { profile } = useMyProfile();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const [undoing, setUndoing] = useState(false);
   const [r] = useState<Result | null>(() => {
     try {
       return JSON.parse(sessionStorage.getItem("lastMatch") ?? "null");
@@ -117,6 +125,24 @@ function Celebrate() {
           </div>
         </div>
 
+        <div className="animate-rise mt-4" style={{ animationDelay: "700ms" }}>
+          <div className="mb-2 text-center text-xs font-black uppercase tracking-widest text-muted-foreground">Share the bragging rights</div>
+          <ShareResult
+            data={{
+              won: r.won,
+              me: profile?.display_name ?? "Me",
+              partner: r.partner,
+              opponents: r.opponents.map((o) => o.display_name),
+              sets: r.sets,
+              ratingDelta: r.rating_delta,
+              ratingAfter: r.rating_before + r.rating_delta,
+              xp: r.xp_gained,
+              streak: r.streak,
+            }}
+          />
+        </div>
+
+
         {r.unlocked.length > 0 && (
           <div className="mt-6">
             <div className="mb-2 text-center text-xs font-black uppercase tracking-widest text-primary">Badge unlocked</div>
@@ -151,6 +177,27 @@ function Celebrate() {
         <div className="mt-auto grid gap-2 pt-8">
           <Link to="/home" className="rounded-2xl bg-primary py-4 text-center font-display font-black uppercase text-primary-foreground glow">Continue</Link>
           <Link to="/record" className="rounded-2xl border py-4 text-center font-bold">Record another</Link>
+          {r.match_id && (
+            <button
+              onClick={async () => {
+                if (undoing) return;
+                setUndoing(true);
+                const { error } = await supabase.rpc("void_match", { _match_id: r.match_id! });
+                setUndoing(false);
+                if (error) {
+                  toast.error(error.message);
+                  return;
+                }
+                sessionStorage.removeItem("lastMatch");
+                toast.success("Match removed — everyone's rating restored");
+                qc.invalidateQueries();
+                navigate({ to: "/record" });
+              }}
+              className="py-2 text-center text-sm font-bold text-muted-foreground underline"
+            >
+              {undoing ? "Undoing…" : "Wrong score? Undo this match"}
+            </button>
+          )}
         </div>
       </div>
     </div>

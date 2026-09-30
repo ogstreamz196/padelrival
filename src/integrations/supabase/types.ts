@@ -48,8 +48,10 @@ export type Database = {
           match_id: string
           rating_before: number | null
           rating_delta: number
+          streak_before: number | null
           team: number
           user_id: string | null
+          xp_before: number | null
           xp_gained: number
         }
         Insert: {
@@ -59,8 +61,10 @@ export type Database = {
           match_id: string
           rating_before?: number | null
           rating_delta?: number
+          streak_before?: number | null
           team: number
           user_id?: string | null
+          xp_before?: number | null
           xp_gained?: number
         }
         Update: {
@@ -70,8 +74,10 @@ export type Database = {
           match_id?: string
           rating_before?: number | null
           rating_delta?: number
+          streak_before?: number | null
           team?: number
           user_id?: string | null
+          xp_before?: number | null
           xp_gained?: number
         }
         Relationships: [
@@ -84,6 +90,45 @@ export type Database = {
           },
           {
             foreignKeyName: "match_players_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      match_reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          match_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          match_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          match_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "match_reactions_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_reactions_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -174,6 +219,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_partners: {
+        Args: { _user: string }
+        Returns: {
+          avatar: string
+          avatar_color: string
+          display_name: string
+          last_played: string
+          losses: number
+          matches: number
+          partner_id: string
+          rating: number
+          username: string
+          wins: number
+        }[]
+      }
       get_rivalries: {
         Args: { _user: string }
         Returns: {
@@ -201,6 +261,7 @@ export type Database = {
         }
         Returns: Json
       }
+      void_match: { Args: { _match_id: string }; Returns: Json }
       weekly_leaderboard: {
         Args: never
         Returns: {

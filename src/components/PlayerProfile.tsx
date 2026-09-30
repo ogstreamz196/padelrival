@@ -61,6 +61,14 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
       return data ?? [];
     },
   });
+  const partners = useQuery({
+    queryKey: ["partners", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_partners", { _user: userId });
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const p = profile.data;
   if (!p) return <div className="mt-20 text-center text-muted-foreground">{profile.isLoading ? "Loading…" : "Player not found"}</div>;
@@ -141,6 +149,35 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
           })}
         </div>
       </section>
+
+      {/* Partner chemistry */}
+      <section>
+        <SectionTitle>Best partners</SectionTitle>
+        {partners.data?.length ? (
+          <div className="space-y-2">
+            {partners.data.slice(0, 4).map((p) => {
+              const total = Number(p.wins) + Number(p.losses);
+              const pct = total ? Math.round((Number(p.wins) / total) * 100) : 0;
+              return (
+                <Link key={p.partner_id} to="/player/$id" params={{ id: p.partner_id }} className="flex items-center gap-3 rounded-2xl border bg-card p-3">
+                  <PlayerAvatar avatar={p.avatar} color={p.avatar_color} size="sm" />
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate font-bold">{p.display_name}</div>
+                    <div className="text-xs text-muted-foreground">{p.matches} together · {p.wins}-{p.losses}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className={cn("font-display text-xl font-black tabular-nums", pct >= 50 ? "text-win" : "text-destructive")}>{pct}%</div>
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Chemistry</div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        ) : (
+          <Empty>Play with a teammate to build chemistry stats.</Empty>
+        )}
+      </section>
+
 
       {/* Rivalries */}
       <section>
