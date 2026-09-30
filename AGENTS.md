@@ -16,3 +16,4 @@
 - Social reactions live in `match_reactions` (one row per player/match/emoji) and the home feed reads matches directly through RLS, so no feed table is stored.
 - All signed-in screens live under `src/routes/_authenticated/` and wrap content in `AppShell` (bottom nav + profile-required redirect to /onboarding).
 - PWA is manifest-only (installable, no service worker/offline).
+- Native Android/iOS apps are Capacitor shells (`android/`, `ios/`, `capacitor.config.ts`) that load the live site https://padel.ogbot.co.uk via `server.url`; why: TanStack Start is SSR, so no static bundle — web updates reach the apps with no store re-release.
