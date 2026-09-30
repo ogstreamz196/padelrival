@@ -83,7 +83,7 @@ function AuthPage() {
       {mode === "in" && (
         <button
           onClick={async () => {
-            if (!email) return toast.error("Type your email above first");
+            if (!email) { toast.error("Type your email above first"); return; }
             const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + "/reset-password" });
             if (error) toast.error(error.message);
             else toast.success("Check your email for a reset link");
