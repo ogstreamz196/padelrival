@@ -302,7 +302,7 @@ function PlayerPicker({ exclude, meId, onPick, onClose }: { exclude: string[]; m
                   onClick={() => onPick({ user_id: p.id, display_name: p.display_name, avatar: p.avatar, avatar_color: p.avatar_color, rating: p.rating })}
                   className="flex items-center gap-2 rounded-full border bg-card py-1.5 pl-1.5 pr-3 text-left active:scale-95"
                 >
-                  <PlayerAvatar avatar={p.avatar} color={p.avatar_color} size="xs" />
+                  <PlayerAvatar avatar={p.avatar} color={p.avatar_color} size="sm" />
                   <span className="max-w-28 truncate text-xs font-bold">{p.display_name}</span>
                 </button>
               ))}
