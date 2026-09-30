@@ -12,6 +12,8 @@ import { PlayerProfile } from "@/components/PlayerProfile";
 import { ClaimGuestMatches } from "@/components/ClaimGuestMatches";
 import { BossPulse, BossTools } from "@/components/BossControls";
 import { PageGuide, resetGuides } from "@/components/PageGuide";
+import { useServerFn } from "@tanstack/react-start";
+import { deleteMyAccount } from "@/lib/account.functions";
 
 
 export const Route = createFileRoute("/_authenticated/me")({
@@ -33,6 +35,7 @@ function Me() {
   const { isAdmin } = useIsAdmin();
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const deleteAccount = useServerFn(deleteMyAccount);
   const [editing, setEditing] = useState(false);
   const [boss, setBoss] = useState(false);
 
@@ -143,6 +146,23 @@ function Me() {
               className="mt-6 w-full rounded-2xl border py-4 font-bold text-destructive"
             >
               Sign out
+            </button>
+
+            <button
+              onClick={async () => {
+                if (!confirm("Delete your account permanently? Your stats, badges and profile will be erased. This can't be undone.")) return;
+                try {
+                  await deleteAccount();
+                  await supabase.auth.signOut();
+                  toast.success("Account deleted");
+                  navigate({ to: "/" });
+                } catch (e) {
+                  toast.error(e instanceof Error ? e.message : "Couldn't delete account");
+                }
+              }}
+              className="mt-3 w-full py-3 text-xs font-bold uppercase tracking-widest text-destructive/80"
+            >
+              Delete my account
             </button>
           </div>
         </div>
