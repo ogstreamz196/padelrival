@@ -84,33 +84,54 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
   const netDelta = recent.reduce((s, h) => s + (h.rating_delta ?? 0), 0);
 
 
+  const theme = tierTheme(p.rating);
+  const featured = ["rivalry_victor", "giant_killer", "streak_5", "streak_3", "first_win"].find((c) => unlocked.has(c));
+  const unlockedMap = new Map((achievements.data ?? []).map((a) => [a.code, a.unlocked_at as string]));
+
   return (
     <div className="space-y-6">
-      {/* Player card */}
-      <section className="court-lines animate-rise relative overflow-hidden rounded-3xl border p-5">
+      {/* Collectible player card */}
+      <section
+        className={cn("court-lines animate-rise relative overflow-hidden rounded-3xl border-2 p-5")}
+        style={{ borderColor: theme.from, boxShadow: theme.glow }}
+      >
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{ background: `radial-gradient(120% 80% at 100% 0%, ${theme.from}22, transparent 60%)` }}
+        />
         <div className="absolute -right-6 -top-6 font-display text-[7rem] font-black leading-none text-foreground/5">{lvl.level}</div>
-        <div className="flex items-center gap-4">
-          <PlayerAvatar avatar={p.avatar} color={p.avatar_color} size="lg" />
+        <div className="relative flex items-center gap-4">
+          <PlayerAvatar avatar={p.avatar} color={p.avatar_color} size="lg" rating={p.rating} />
           <div className="min-w-0">
             <h1 className="truncate text-2xl font-black">{p.display_name}</h1>
             <p className="text-sm text-muted-foreground">
               @{p.username}
               {show("show_court_side") && <> · {p.court_side === "both" ? "Both sides" : `${p.court_side.charAt(0).toUpperCase()}${p.court_side.slice(1)} side`}</>}
             </p>
+            {featured && show("show_achievements") && (
+              <span className="mt-1.5 inline-flex items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-primary">
+                <span>{ACHIEVEMENTS[featured]!.icon}</span>
+                {ACHIEVEMENTS[featured]!.name}
+              </span>
+            )}
           </div>
         </div>
 
-        <div className="mt-5 flex items-end justify-between">
+        <div className="relative mt-5 flex items-end justify-between">
           <div>
-            <div className="text-xs font-bold uppercase tracking-widest text-primary">{rankTier(p.rating)} · Rating</div>
+            <div className={cn("flex items-center gap-1.5 text-xs font-black uppercase tracking-widest", theme.text)}>
+              <RankCrest rating={p.rating} size="sm" />
+              {rankTier(p.rating)} · Rating
+            </div>
             <div className="font-display text-5xl font-black tabular-nums">{p.rating}</div>
           </div>
+          <RankCrest rating={p.rating} size="lg" />
           <div className="text-right">
             <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Level</div>
             <div className="font-display text-3xl font-black">{lvl.level}</div>
           </div>
         </div>
-        <div className="mt-3">
+        <div className="relative mt-3">
           <div className="h-3 overflow-hidden rounded-full bg-background/60">
             <div className="h-full rounded-full bg-primary transition-all duration-700" style={{ width: `${lvl.pct}%` }} />
           </div>
@@ -120,7 +141,7 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
           </div>
         </div>
 
-        {show("show_record") && <div className="mt-5 grid grid-cols-4 gap-2">
+        {show("show_record") && <div className="relative mt-5 grid grid-cols-4 gap-2">
           <Stat label="Record" value={`${p.wins}-${p.losses}`} />
           <Stat label="Win %" value={`${winPct}%`} />
           <Stat
@@ -135,12 +156,12 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
           <Stat label="Best" value={p.best_streak} />
         </div>}
 
-        <div className="mt-5 border-t pt-4">
+        <div className="relative mt-5 border-t pt-4">
           <TierProgress rating={p.rating} compact />
         </div>
 
         {show("show_history") && formResults.length > 0 && (
-          <div className="mt-4 border-t pt-4">
+          <div className="relative mt-4 border-t pt-4">
             <div className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Recent form · last {formResults.length}</div>
             <FormStrip results={formResults} netDelta={netDelta} />
           </div>
@@ -154,20 +175,10 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
         </Link>
       )}
 
-      {/* Achievements */}
+      {/* Trophy case */}
       {show("show_achievements") && <section>
-        <SectionTitle>Achievements</SectionTitle>
-        <div className="grid grid-cols-5 gap-2">
-          {Object.entries(ACHIEVEMENTS).map(([code, a]) => {
-            const on = unlocked.has(code);
-            return (
-              <div key={code} className={cn("flex flex-col items-center gap-1 rounded-2xl border p-2 text-center", on ? "border-primary/50 bg-primary/10" : "opacity-35 grayscale")} title={a.desc}>
-                <span className="text-2xl">{a.icon}</span>
-                <span className="text-[10px] font-bold leading-tight">{a.name}</span>
-              </div>
-            );
-          })}
-        </div>
+        <SectionTitle>Trophy case</SectionTitle>
+        <TrophyCase unlocked={unlockedMap} stats={{ wins: p.wins, best_streak: p.best_streak }} />
       </section>}
 
       {/* Partner chemistry */}
