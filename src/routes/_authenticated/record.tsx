@@ -110,16 +110,35 @@ function RecordMatch() {
       </div>
       <div className="space-y-2">
         {sets.map(([a, b], i) => (
-          <div key={i} className="flex items-center gap-2 rounded-2xl border bg-card p-2">
-            <span className="w-10 text-center text-[10px] font-black uppercase text-muted-foreground">{isDecider(i) ? "STB" : `S${i + 1}`}</span>
-            <Stepper value={a!} win={a! > b!} onDec={() => bump(i, 0, -1)} onInc={() => bump(i, 0, 1)} tone="primary" />
-            <span className="text-muted-foreground">–</span>
-            <Stepper value={b!} win={b! > a!} onDec={() => bump(i, 1, -1)} onInc={() => bump(i, 1, 1)} tone="court" />
-            {sets.length > 1 && (
-              <button onClick={() => setSets(sets.filter((_, j) => j !== i))} className="ml-auto p-2 text-muted-foreground" aria-label="Remove set">
-                <X className="size-4" />
+          <div key={i} className="rounded-2xl border bg-card p-2">
+            <div className="flex items-center gap-2">
+              <span className="w-10 text-center text-[10px] font-black uppercase text-muted-foreground">{isDecider(i) ? "STB" : `S${i + 1}`}</span>
+              <Stepper value={a!} win={a! > b!} onDec={() => bump(i, 0, -1)} onInc={() => bump(i, 0, 1)} tone="primary" />
+              <button onClick={() => setOne(i, [b!, a!])} className="p-1 text-muted-foreground active:scale-90" aria-label="Swap score">
+                <Repeat className="size-4" />
               </button>
-            )}
+              <Stepper value={b!} win={b! > a!} onDec={() => bump(i, 1, -1)} onInc={() => bump(i, 1, 1)} tone="court" />
+              {sets.length > 1 && (
+                <button onClick={() => setSets(sets.filter((_, j) => j !== i))} className="ml-auto p-2 text-muted-foreground" aria-label="Remove set">
+                  <X className="size-4" />
+                </button>
+              )}
+            </div>
+            <div className="mt-2 flex flex-wrap gap-1.5 pl-1">
+              {(isDecider(i) ? STB_PRESETS : SET_PRESETS).map(([x, y]) => {
+                const active = a === x && b === y;
+                return (
+                  <button
+                    key={`${x}-${y}`}
+                    onClick={() => setOne(i, [x, y])}
+                    className={cn("rounded-full border px-2.5 py-1 text-[11px] font-black tabular-nums", active ? "border-primary bg-primary/15 text-primary" : "text-muted-foreground")}
+                  >
+                    {x}-{y}
+                  </button>
+                );
+              })}
+            </div>
+            {setErrors[i] && <p className="mt-2 pl-1 text-[11px] font-bold text-destructive">{setErrors[i]}</p>}
           </div>
         ))}
         {sets.length < 3 && (
@@ -127,8 +146,9 @@ function RecordMatch() {
             + Add {superTb ? "super tie-break" : "set"}
           </button>
         )}
-        <p className="px-1 text-xs text-muted-foreground">Tie-breaks: just log 7-6. Deciding super tie-break goes up to 20 points.</p>
+        <p className="px-1 text-xs text-muted-foreground">Tap a score, or use +/–. The arrows swap who won. Deciding super tie-break goes to 10, win by 2.</p>
       </div>
+
 
       <div className="mt-6 grid grid-cols-3 gap-2">
         {["friendly", "competitive", "tournament"].map((t) => (
