@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { AVATARS, AVATAR_COLORS } from "@/lib/game";
+import { AVATAR_GROUPS, AVATAR_COLORS } from "@/lib/game";
 import { PlayerAvatar, isImageAvatar } from "./PlayerAvatar";
-import { cn } from "@/lib/utils";
+import { cn, haptic } from "@/lib/utils";
 
 export type ProfileValues = { display_name: string; username: string; avatar: string; avatar_color: string; court_side: string };
 
@@ -13,6 +13,8 @@ export function ProfileForm({ initial, submitLabel, onSubmit }: { initial?: Part
     avatar_color: initial?.avatar_color ?? "lime",
     court_side: initial?.court_side ?? "both",
   });
+  const tabs = [...(isImageAvatar(initial?.avatar) ? ["Yours"] : []), ...AVATAR_GROUPS.map((g) => g.label)];
+  const [tab, setTab] = useState(tabs[0]!);
   const [busy, setBusy] = useState(false);
   const input = "w-full rounded-2xl border bg-card px-4 py-4 text-base outline-none focus:border-primary";
 
