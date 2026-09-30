@@ -23,7 +23,11 @@ export function PlayerAvatar({
 }) {
   const sizes = { sm: "size-8 text-base", md: "size-11 text-xl", lg: "size-16 text-3xl", xl: "size-24 text-5xl" };
 
-  const inner = isImageAvatar(avatar) ? (
+  const inner = isImageAvatar(avatar) && avatar!.startsWith("http") ? (
+    <div className={cn("grid shrink-0 place-items-center rounded-2xl", AVATAR_COLORS[color ?? "lime"] ?? AVATAR_COLORS["lime"], sizes[size], className)}>
+      <img src={avatar!} alt="" className="size-[82%] object-contain drop-shadow-md" />
+    </div>
+  ) : isImageAvatar(avatar) ? (
     <img
       src={avatar!}
       alt=""
