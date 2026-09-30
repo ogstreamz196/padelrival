@@ -50,10 +50,18 @@ export const ACHIEVEMENTS: Record<string, { name: string; desc: string; icon: st
 export const AVATARS = ["🎾", "🦁", "🐺", "🦅", "🐉", "🦈", "🔥", "⚡", "👑", "🥷", "🤖", "🐯"];
 
 /** Curated avatar collections for the avatar studio. */
+/** 3D avatars from Microsoft Fluent Emoji (MIT). */
+const f3d = (name: string) =>
+  `https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/${encodeURIComponent(name)}/3D/${name.toLowerCase().replace(/[ -]/g, "_")}_3d.png`;
+const many3d = (names: string) => names.split(",").map((n) => f3d(n.trim()));
+
 export const AVATAR_GROUPS: { label: string; icons: string[] }[] = [
-  { label: "Padel", icons: ["🎾", "🏓", "🥇", "🧱", "🪃", "🎯", "🧤", "🏟️"] },
-  { label: "Beasts", icons: ["🦁", "🐺", "🦅", "🐉", "🦈", "🐯", "🐍", "🦂"] },
-  { label: "Icons", icons: ["🔥", "⚡", "👑", "🥷", "🤖", "💎", "☠️", "🚀"] },
+  { label: "3D Power", icons: many3d("Tennis, Trophy, Fire, High voltage, Crown, Gem stone, Rocket, 1st place medal, Sports medal, Bullseye, Glowing star, Comet, Collision, Boomerang, Flying saucer, Hundred points, Bomb, Crossed swords, Shield, Magic wand, Crystal ball, Cloud with lightning, Volcano, Rainbow, Video game, Joystick, Headphone, Sunglasses, Hot pepper, Pizza, Avocado, Doughnut, Watermelon, Banana, Popcorn, Dizzy") },
+  { label: "3D Faces", icons: many3d("Smiling face with sunglasses, Smiling face with horns, Exploding head, Hot face, Cold face, Nerd face, Cowboy hat face, Clown face, Robot, Alien, Alien monster, Ghost, Skull, Ogre, Goblin, Joker, Sun with face, Full moon face, Monkey face, Cat face, Dog face, Pig face, Rabbit face") },
+  { label: "3D Beasts", icons: many3d("Lion, Tiger face, Wolf, Fox, Dragon, Shark, Eagle, Gorilla, Unicorn, Panda, Owl, Octopus, Bear, Koala, Penguin, Frog, Hamster, Butterfly") },
+  { label: "Padel", icons: ["🎾", "🏓", "🥇", "🥈", "🥉", "🏆", "🏅", "🧱", "🪃", "🎯", "🧤", "🏟️", "👟", "🧢", "💪", "🏃", "🤸", "⛹️", "🙌", "🤜", "✊", "🥵", "💦", "🌴"] },
+  { label: "Beasts", icons: ["🦁", "🐺", "🦅", "🐉", "🦈", "🐯", "🐍", "🦂", "🦍", "🐆", "🦏", "🐊", "🦖", "🦬", "🐗", "🦊", "🐻", "🐼", "🦉", "🐙", "🦄", "🐝", "🦋", "🐧"] },
+  { label: "Icons", icons: ["🔥", "⚡", "👑", "🥷", "🤖", "💎", "☠️", "🚀", "👽", "👻", "😈", "🤡", "😎", "🤠", "🥶", "🧙", "🦸", "🦹", "🧛", "🧟", "💀", "🌪️", "☄️", "🌈"] },
 ];
 
 export const AVATAR_COLORS: Record<string, string> = {
