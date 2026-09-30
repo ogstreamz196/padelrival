@@ -204,7 +204,9 @@ function AdminPage() {
                       {t1.map((r) => r.name).join(" & ")} <span className="text-muted-foreground">vs</span>{" "}
                       {t2.map((r) => r.name).join(" & ")}
                     </p>
-                    <p className="mt-1 font-display font-black">{formatSets(m.sets as number[][])}</p>
+                    <p className="mt-1 font-display font-black">
+                      {formatSets(m.sets as unknown as [number, number][])}
+                    </p>
                     <p className="mt-1 text-[11px] text-muted-foreground">
                       {new Date(m.created_at).toLocaleString()} · {m.match_type}
                       {m.venue ? ` · ${m.venue}` : ""} · by {m.creator ?? "—"}
@@ -230,7 +232,7 @@ function AdminPage() {
   );
 }
 
-function Stat({ icon: Icon, label, value }: { icon: typeof Users; label: string; value?: number }) {
+function Stat({ icon: Icon, label, value }: { icon: typeof Users; label: string; value: number | undefined }) {
   return (
     <div className="rounded-2xl border bg-card p-4">
       <Icon className="size-4 text-muted-foreground" />
