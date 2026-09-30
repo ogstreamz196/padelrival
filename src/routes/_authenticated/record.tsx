@@ -155,7 +155,7 @@ function RecordMatch() {
       _sets: sets,
       _venue: venue,
       _match_type: type,
-      _notes: notes.trim() || undefined,
+      _notes: notes.trim(),
     });
     setBusy(false);
     if (error) {
