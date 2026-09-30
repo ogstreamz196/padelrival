@@ -115,6 +115,10 @@ function Me() {
 
       {profile && <PlayerProfile userId={profile.id} isMe />}
 
+      <ProTeaser onOpen={() => setPro(true)} />
+
+      {pro && <ProModal onClose={() => setPro(false)} />}
+
 
       {editing && profile && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-background/95 backdrop-blur-md">
