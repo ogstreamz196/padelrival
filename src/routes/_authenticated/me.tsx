@@ -39,6 +39,7 @@ function Me() {
   const deleteAccount = useServerFn(deleteMyAccount);
   const [editing, setEditing] = useState(false);
   const [boss, setBoss] = useState(false);
+  const [pro, setPro] = useState(false);
 
   const handleSignOut = async () => {
     await qc.cancelQueries();
