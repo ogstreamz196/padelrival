@@ -158,6 +158,23 @@ function RecordMatch() {
       <p className="mb-4 mt-1 text-muted-foreground">2v2 · takes 20 seconds</p>
       <PageGuide id="record" />
 
+      {empty && lastLineup.data && (
+        <button
+          onClick={rematch}
+          className="mb-4 flex w-full items-center gap-3 rounded-2xl border border-primary/50 bg-primary/10 p-3 text-left active:scale-[0.98]"
+        >
+          <Repeat className="size-5 shrink-0 text-primary" />
+          <div className="min-w-0">
+            <div className="text-sm font-black">Rematch last 4</div>
+            <div className="truncate text-xs text-muted-foreground">
+              w/ {lastLineup.data.partner.display_name} vs {lastLineup.data.opps.map((o) => o.display_name).join(" & ")}
+            </div>
+          </div>
+        </button>
+      )}
+
+
+
       <div className="grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
         <div className="space-y-2 rounded-3xl border-2 border-primary/50 bg-primary/5 p-2">
           <div className="text-center text-[11px] font-black uppercase tracking-widest text-primary">Your team</div>
