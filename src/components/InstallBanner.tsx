@@ -12,6 +12,8 @@ export function InstallBanner() {
 
   useEffect(() => {
     if (localStorage.getItem(KEY)) return;
+    const cap = (window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
+    if (cap?.isNativePlatform?.()) return;
     const standalone =
       window.matchMedia("(display-mode: standalone)").matches ||
       (window.navigator as unknown as { standalone?: boolean }).standalone === true;

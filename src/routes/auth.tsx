@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { useIsNative } from "@/hooks/use-native";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -22,6 +23,7 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const native = useIsNative();
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_e, s) => {
