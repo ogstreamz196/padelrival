@@ -1,9 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { Swords } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
+import { PageGuide } from "@/components/PageGuide";
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
-import { Empty } from "@/components/PlayerProfile";
 
 export const Route = createFileRoute("/_authenticated/rivals")({
   head: () => ({ meta: [{ title: "Rivalries — Padel Rival" }, { name: "description", content: "Your head-to-head rivalries." }] }),
