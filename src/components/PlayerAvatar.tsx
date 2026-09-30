@@ -1,6 +1,11 @@
 import { cn } from "@/lib/utils";
 import { AVATAR_COLORS } from "@/lib/game";
 
+/** Emoji avatars are plain characters; image avatars are stored as a URL/path. */
+export function isImageAvatar(avatar?: string | null) {
+  return !!avatar && (avatar.startsWith("/") || avatar.startsWith("http"));
+}
+
 export function PlayerAvatar({
   avatar,
   color,
@@ -13,6 +18,17 @@ export function PlayerAvatar({
   className?: string;
 }) {
   const sizes = { sm: "size-8 text-base", md: "size-11 text-xl", lg: "size-16 text-3xl", xl: "size-24 text-5xl" };
+
+  if (isImageAvatar(avatar)) {
+    return (
+      <img
+        src={avatar!}
+        alt=""
+        className={cn("shrink-0 rounded-2xl border border-border object-cover", sizes[size], className)}
+      />
+    );
+  }
+
   return (
     <div
       className={cn(
