@@ -48,7 +48,7 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
     queryFn: async () => {
       const { data, error } = await supabase
         .from("match_players")
-        .select("rating_delta,xp_gained,team,matches(id,created_at,venue,match_type,sets,winner_team,match_players(team,guest_name,user_id,profiles(display_name)))")
+        .select("rating_delta,xp_gained,team,court_side,matches(id,created_at,venue,match_type,notes,sets,winner_team,match_players(team,guest_name,user_id,profiles(display_name)))")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(20);
