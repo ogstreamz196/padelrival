@@ -13,7 +13,8 @@ export function ProfileForm({ initial, submitLabel, onSubmit }: { initial?: Part
     avatar_color: initial?.avatar_color ?? "lime",
     court_side: initial?.court_side ?? "both",
   });
-  const tabs = [...(isImageAvatar(initial?.avatar) ? ["Yours"] : []), ...AVATAR_GROUPS.map((g) => g.label)];
+  const ownPic = isImageAvatar(initial?.avatar) && !initial!.avatar!.startsWith("http");
+  const tabs = [...(ownPic ? ["Yours"] : []), ...AVATAR_GROUPS.map((g) => g.label)];
   const [tab, setTab] = useState(tabs[0]!);
   const [busy, setBusy] = useState(false);
   const input = "w-full rounded-2xl border bg-card px-4 py-4 text-base outline-none focus:border-primary";
@@ -68,9 +69,9 @@ export function ProfileForm({ initial, submitLabel, onSubmit }: { initial?: Part
                 haptic();
                 setV({ ...v, avatar: a });
               }}
-              className={cn("aspect-square rounded-xl border text-2xl transition active:scale-90", v.avatar === a && "border-primary bg-primary/15")}
+              className={cn("grid aspect-square place-items-center rounded-xl border text-2xl transition active:scale-90", v.avatar === a && "border-primary bg-primary/15 ring-2 ring-primary")}
             >
-              {a}
+              {isImageAvatar(a) ? <img src={a} alt="" loading="lazy" className="size-4/5 object-contain" /> : a}
             </button>
           ))}
         </div>
