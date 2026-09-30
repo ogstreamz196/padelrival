@@ -30,7 +30,11 @@ function Onboarding() {
             toast.error(error.code === "23505" ? "That username is taken" : error.message);
             return;
           }
-          await qc.invalidateQueries({ queryKey: ["me"] });
+          // Quietly adopt any matches friends logged under this name as a guest.
+          const { data: claim } = await supabase.rpc("claim_guest_matches", { _alias: v.display_name.trim() });
+          const claimed = (claim as { claimed?: number } | null)?.claimed ?? 0;
+          if (claimed > 0) toast.success(`${claimed} past match${claimed > 1 ? "es" : ""} added to your record`);
+          await qc.invalidateQueries();
           navigate({ to: "/home" });
         }}
       />
