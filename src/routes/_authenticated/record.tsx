@@ -66,6 +66,11 @@ function RecordMatch() {
 
   async function submit() {
     if (!partner || !opp1 || !opp2 || !profile || t1 === t2) return;
+    if (firstError) {
+      toast.error(firstError);
+      return;
+    }
+
     setBusy(true);
     const toP = (s: NonNullable<Slot>, team: number) => (s.user_id ? { team, user_id: s.user_id } : { team, guest_name: s.guest_name });
     const players = [{ team: 1, user_id: profile.id }, toP(partner, 1), toP(opp1, 2), toP(opp2, 2)];
