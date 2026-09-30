@@ -230,7 +230,9 @@ function SlotBtn({ slot, label, fixed, onClick, onClear }: { slot: Slot; label?:
   );
 }
 
-function PlayerPicker({ exclude, onPick, onClose }: { exclude: string[]; onPick: (s: NonNullable<Slot>) => void; onClose: () => void }) {
+type PickerPlayer = { id: string; username: string; display_name: string; avatar: string; avatar_color: string; rating: number };
+
+function PlayerPicker({ exclude, meId, onPick, onClose }: { exclude: string[]; meId?: string; onPick: (s: NonNullable<Slot>) => void; onClose: () => void }) {
   const [term, setTerm] = useState("");
   const q = useQuery({
     queryKey: ["search", term],
@@ -240,10 +242,36 @@ function PlayerPicker({ exclude, onPick, onClose }: { exclude: string[]; onPick:
       if (t) req = req.or(`username.ilike.%${t}%,display_name.ilike.%${t}%`);
       else req = req.order("created_at", { ascending: false });
       const { data } = await req;
-      return data ?? [];
+      return (data ?? []) as PickerPlayer[];
     },
   });
+
+  const recent = useQuery({
+    queryKey: ["recent-players", meId],
+    enabled: !!meId,
+    queryFn: async (): Promise<PickerPlayer[]> => {
+      const { data: mine } = await supabase.from("match_players").select("match_id").eq("user_id", meId!).order("id", { ascending: false }).limit(30);
+      const ids = (mine ?? []).map((m) => m.match_id);
+      if (!ids.length) return [];
+      const { data: others } = await supabase
+        .from("match_players")
+        .select("user_id, profiles(id,username,display_name,avatar,avatar_color,rating)")
+        .in("match_id", ids)
+        .not("user_id", "is", null);
+      const seen = new Set<string>();
+      const out: PickerPlayer[] = [];
+      for (const row of others ?? []) {
+        const p = row.profiles as PickerPlayer | null;
+        if (!p || p.id === meId || seen.has(p.id)) continue;
+        seen.add(p.id);
+        out.push(p);
+      }
+      return out.slice(0, 8);
+    },
+  });
+
   const results = (q.data ?? []).filter((p) => !exclude.includes(p.id));
+  const recents = (recent.data ?? []).filter((p) => !exclude.includes(p.id));
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-background/95 backdrop-blur-md">
