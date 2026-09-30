@@ -138,9 +138,25 @@ function RecordMatch() {
     }
 
     setBusy(true);
-    const toP = (s: NonNullable<Slot>, team: number) => (s.user_id ? { team, user_id: s.user_id } : { team, guest_name: s.guest_name });
-    const players = [{ team: 1, user_id: profile.id }, toP(partner, 1), toP(opp1, 2), toP(opp2, 2)];
-    const { data, error } = await supabase.rpc("record_match", { _players: players, _sets: sets, _venue: venue, _match_type: type });
+    const otherSide = mySide === "left" ? "right" : mySide === "right" ? "left" : null;
+    const toP = (s: NonNullable<Slot>, team: number, side: string | null) => ({
+      team,
+      ...(s.user_id ? { user_id: s.user_id } : { guest_name: s.guest_name }),
+      ...(side ? { court_side: side } : {}),
+    });
+    const players = [
+      { team: 1, user_id: profile.id, ...(mySide ? { court_side: mySide } : {}) },
+      toP(partner, 1, otherSide),
+      toP(opp1, 2, null),
+      toP(opp2, 2, null),
+    ];
+    const { data, error } = await supabase.rpc("record_match", {
+      _players: players,
+      _sets: sets,
+      _venue: venue,
+      _match_type: type,
+      _notes: notes.trim() || undefined,
+    });
     setBusy(false);
     if (error) {
       toast.error(error.message);
