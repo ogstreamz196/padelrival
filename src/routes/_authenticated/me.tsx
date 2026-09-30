@@ -178,6 +178,12 @@ function Me() {
               Show page tips again
             </button>
 
+            <div className="mt-6 flex justify-center gap-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <Link to="/privacy">Privacy policy</Link>
+              <Link to="/terms">Terms of service</Link>
+            </div>
+
+
             <button
               onClick={handleSignOut}
               className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border py-4 font-bold text-destructive"
