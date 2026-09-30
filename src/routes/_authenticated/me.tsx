@@ -53,6 +53,7 @@ function Me() {
           <Settings className="size-4" />
           Edit
         </button>
+        </div>
       </div>
 
       {profile && <PlayerProfile userId={profile.id} isMe />}
