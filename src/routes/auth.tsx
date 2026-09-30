@@ -89,6 +89,7 @@ function AuthPage() {
           <input className={input} required placeholder="@username or email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" autoCapitalize="none" />
         )}
         <input className={input} type="password" required minLength={6} placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={mode === "in" ? "current-password" : "new-password"} />
+        {mode === "up" && <p className="px-1 text-xs text-muted-foreground">At least 6 characters. Common passwords like "password123" are blocked.</p>}
         <button disabled={busy} className="w-full rounded-2xl bg-primary py-4 font-display font-black uppercase text-primary-foreground glow disabled:opacity-60">
           {busy ? "…" : mode === "in" ? "Sign in" : "Create account"}
         </button>
