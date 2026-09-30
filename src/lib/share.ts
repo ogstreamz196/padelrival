@@ -211,11 +211,25 @@ export async function renderPlayerCard(d: PlayerCardData): Promise<Blob | null> 
   g.arc(W / 2, 500, 120, 0, Math.PI * 2);
   g.fillStyle = "rgba(255,255,255,0.07)";
   g.fill();
+  const isImg = d.avatar.startsWith("/") || d.avatar.startsWith("http");
+  if (isImg) {
+    const img = await loadImage(d.avatar);
+    if (img) {
+      g.save();
+      g.beginPath();
+      g.arc(W / 2, 500, 116, 0, Math.PI * 2);
+      g.clip();
+      g.drawImage(img, W / 2 - 116, 500 - 116, 232, 232);
+      g.restore();
+    }
+  } else {
+    center(d.avatar, 548, 120, "#ffffff");
+  }
+  g.beginPath();
+  g.arc(W / 2, 500, 120, 0, Math.PI * 2);
   g.strokeStyle = accent;
   g.lineWidth = 8;
   g.stroke();
-  const emoji = /^[/h]/.test(d.avatar) ? "🎾" : d.avatar;
-  center(emoji, 548, 120, "#ffffff");
 
   center(d.name, 700, 66, "#ffffff");
   center(`@${d.username}`, 752, 34, "rgba(255,255,255,0.5)");
