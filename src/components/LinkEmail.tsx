@@ -20,7 +20,10 @@ export function LinkEmail() {
     setBusy(true);
     const { error } = await supabase.auth.updateUser({ email: email.trim() }, { emailRedirectTo: window.location.origin + "/me" });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setEmail("");
     toast.success("Check that inbox and tap the link to confirm");
   }
