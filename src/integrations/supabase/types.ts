@@ -42,6 +42,7 @@ export type Database = {
       }
       match_players: {
         Row: {
+          court_side: string | null
           created_at: string
           guest_name: string | null
           id: string
@@ -55,6 +56,7 @@ export type Database = {
           xp_gained: number
         }
         Insert: {
+          court_side?: string | null
           created_at?: string
           guest_name?: string | null
           id?: string
@@ -68,6 +70,7 @@ export type Database = {
           xp_gained?: number
         }
         Update: {
+          court_side?: string | null
           created_at?: string
           guest_name?: string | null
           id?: string
@@ -142,6 +145,7 @@ export type Database = {
           created_by: string
           id: string
           match_type: string
+          notes: string | null
           sets: Json
           venue: string | null
           winner_team: number
@@ -151,6 +155,7 @@ export type Database = {
           created_by: string
           id?: string
           match_type?: string
+          notes?: string | null
           sets: Json
           venue?: string | null
           winner_team: number
@@ -160,6 +165,7 @@ export type Database = {
           created_by?: string
           id?: string
           match_type?: string
+          notes?: string | null
           sets?: Json
           venue?: string | null
           winner_team?: number
@@ -302,6 +308,15 @@ export type Database = {
       claim_boss: { Args: never; Returns: boolean }
       claim_guest_matches: { Args: { _alias: string }; Returns: Json }
       count_guest_matches: { Args: { _alias: string }; Returns: number }
+      get_court_sides: {
+        Args: { _user: string }
+        Returns: {
+          court_side: string
+          losses: number
+          matches: number
+          wins: number
+        }[]
+      }
       get_partners: {
         Args: { _user: string }
         Returns: {
@@ -345,6 +360,7 @@ export type Database = {
       record_match: {
         Args: {
           _match_type: string
+          _notes?: string
           _players: Json
           _sets: Json
           _venue: string
