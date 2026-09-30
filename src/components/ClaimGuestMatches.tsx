@@ -25,7 +25,11 @@ export function ClaimGuestMatches({ defaultName }: { defaultName: string }) {
     setBusy(true);
     const { data, error } = await supabase.rpc("claim_guest_matches", { _alias: name.trim() });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
     const n = (data as { claimed: number } | null)?.claimed ?? 0;
     setFound(0);
     qc.invalidateQueries();
