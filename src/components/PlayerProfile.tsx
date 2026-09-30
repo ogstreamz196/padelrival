@@ -76,6 +76,10 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
   const total = p.wins + p.losses;
   const winPct = total ? Math.round((p.wins / total) * 100) : 0;
   const unlocked = new Set(achievements.data?.map((a) => a.code));
+  const recent = (history.data ?? []).slice(0, 10);
+  const formResults = recent.map((h) => (h.matches ? h.matches.winner_team === h.team : false)).reverse();
+  const netDelta = recent.reduce((s, h) => s + (h.rating_delta ?? 0), 0);
+
 
   return (
     <div className="space-y-6">
