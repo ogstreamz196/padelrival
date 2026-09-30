@@ -1,15 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Flame, Trophy } from "lucide-react";
+import { useState } from "react";
+import { Flame, Share2, Trophy } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ACHIEVEMENTS, formatSets, levelInfo, rankTier, type SetScore } from "@/lib/game";
 import { PlayerAvatar } from "./PlayerAvatar";
 import { FormStrip, TierProgress } from "./RankProgress";
 import { RankCrest, tierTheme } from "./RankCrest";
 import { TrophyCase } from "./TrophyCase";
+import { CourtSideSplit, type SideStat } from "./CourtSideSplit";
+import { sharePlayerCard } from "@/lib/share";
 
 import { RivalryCard, type Rivalry } from "./RivalryCard";
-import { cn } from "@/lib/utils";
+import { cn, haptic } from "@/lib/utils";
 
 type MP = { team: number; guest_name: string | null; user_id: string | null; profiles: { display_name: string } | null };
 
@@ -17,11 +21,13 @@ type HistoryRow = {
   rating_delta: number;
   xp_gained: number;
   team: number;
+  court_side: string | null;
   matches: {
     id: string;
     created_at: string;
     venue: string | null;
     match_type: string;
+    notes: string | null;
     sets: SetScore[];
     winner_team: number;
     match_players: MP[];
