@@ -28,6 +28,7 @@ function RecordMatch() {
   const [opp2, setOpp2] = useState<Slot>(null);
   const [picking, setPicking] = useState<null | "partner" | "opp1" | "opp2">(null);
   const [sets, setSets] = useState<[number, number][]>([[6, 4], [6, 4]]);
+  const [superTb, setSuperTb] = useState(false);
   const [venue, setVenue] = useState("");
   const [type, setType] = useState("friendly");
   const [busy, setBusy] = useState(false);
@@ -42,8 +43,11 @@ function RecordMatch() {
   const taken = [profile?.id, partner?.user_id, opp1?.user_id, opp2?.user_id].filter(Boolean) as string[];
   const setters = { partner: setPartner, opp1: setOpp1, opp2: setOpp2 };
 
+  const isDecider = (i: number) => superTb && i === 2;
+
   function bump(i: number, side: 0 | 1, d: number) {
-    setSets((s) => s.map((x, j) => (j === i ? (x.map((v, k) => (k === side ? Math.max(0, Math.min(7, v + d)) : v)) as [number, number]) : x)));
+    const max = isDecider(i) ? 20 : 7;
+    setSets((s) => s.map((x, j) => (j === i ? (x.map((v, k) => (k === side ? Math.max(0, Math.min(max, v + d)) : v)) as [number, number]) : x)));
   }
 
   const t1 = sets.filter(([a, b]) => a > b).length;
