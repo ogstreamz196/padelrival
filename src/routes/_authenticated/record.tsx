@@ -92,14 +92,26 @@ function RecordMatch() {
         </div>
       </div>
 
-      <h2 className="mb-3 mt-8 text-sm font-black uppercase tracking-widest text-muted-foreground">Set scores</h2>
+      <div className="mb-3 mt-8 flex items-center justify-between">
+        <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Set scores</h2>
+        <button
+          onClick={() => {
+            const next = !superTb;
+            setSuperTb(next);
+            setSets((s) => (s.length === 3 ? [s[0]!, s[1]!, next ? [10, 8] : [6, 4]] : s));
+          }}
+          className={cn("rounded-full border px-3 py-1 text-[11px] font-black uppercase tracking-wide", superTb ? "border-primary bg-primary/15 text-primary" : "text-muted-foreground")}
+        >
+          Super tie-break
+        </button>
+      </div>
       <div className="space-y-2">
         {sets.map(([a, b], i) => (
           <div key={i} className="flex items-center gap-2 rounded-2xl border bg-card p-2">
-            <span className="w-10 text-center text-xs font-bold text-muted-foreground">S{i + 1}</span>
-            <Stepper value={a} win={a > b} onDec={() => bump(i, 0, -1)} onInc={() => bump(i, 0, 1)} tone="primary" />
+            <span className="w-10 text-center text-[10px] font-black uppercase text-muted-foreground">{isDecider(i) ? "STB" : `S${i + 1}`}</span>
+            <Stepper value={a!} win={a! > b!} onDec={() => bump(i, 0, -1)} onInc={() => bump(i, 0, 1)} tone="primary" />
             <span className="text-muted-foreground">–</span>
-            <Stepper value={b} win={b > a} onDec={() => bump(i, 1, -1)} onInc={() => bump(i, 1, 1)} tone="court" />
+            <Stepper value={b!} win={b! > a!} onDec={() => bump(i, 1, -1)} onInc={() => bump(i, 1, 1)} tone="court" />
             {sets.length > 1 && (
               <button onClick={() => setSets(sets.filter((_, j) => j !== i))} className="ml-auto p-2 text-muted-foreground" aria-label="Remove set">
                 <X className="size-4" />
@@ -108,10 +120,11 @@ function RecordMatch() {
           </div>
         ))}
         {sets.length < 3 && (
-          <button onClick={() => setSets([...sets, [6, 4]])} className="w-full rounded-2xl border border-dashed py-3 text-sm font-bold text-muted-foreground">
-            + Add set
+          <button onClick={() => setSets([...sets, superTb ? [10, 8] : [6, 4]])} className="w-full rounded-2xl border border-dashed py-3 text-sm font-bold text-muted-foreground">
+            + Add {superTb ? "super tie-break" : "set"}
           </button>
         )}
+        <p className="px-1 text-xs text-muted-foreground">Tie-breaks: just log 7-6. Deciding super tie-break goes up to 20 points.</p>
       </div>
 
       <div className="mt-6 grid grid-cols-3 gap-2">
