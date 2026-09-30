@@ -74,6 +74,7 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
 
   const p = profile.data;
   if (!p) return <div className="mt-20 text-center text-muted-foreground">{profile.isLoading ? "Loading…" : "Player not found"}</div>;
+  const show = (k: "show_record" | "show_history" | "show_court_side" | "show_partners" | "show_rivalries" | "show_achievements") => isMe || p[k] !== false;
   const lvl = levelInfo(p.xp);
   const total = p.wins + p.losses;
   const winPct = total ? Math.round((p.wins / total) * 100) : 0;
@@ -93,7 +94,8 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
           <div className="min-w-0">
             <h1 className="truncate text-2xl font-black">{p.display_name}</h1>
             <p className="text-sm text-muted-foreground">
-              @{p.username} · {p.court_side === "both" ? "Both sides" : `${p.court_side.charAt(0).toUpperCase()}${p.court_side.slice(1)} side`}
+              @{p.username}
+              {show("show_court_side") && <> · {p.court_side === "both" ? "Both sides" : `${p.court_side.charAt(0).toUpperCase()}${p.court_side.slice(1)} side`}</>}
             </p>
           </div>
         </div>
@@ -118,7 +120,7 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
           </div>
         </div>
 
-        <div className="mt-5 grid grid-cols-4 gap-2">
+        {show("show_record") && <div className="mt-5 grid grid-cols-4 gap-2">
           <Stat label="Record" value={`${p.wins}-${p.losses}`} />
           <Stat label="Win %" value={`${winPct}%`} />
           <Stat
@@ -131,13 +133,13 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
             }
           />
           <Stat label="Best" value={p.best_streak} />
-        </div>
+        </div>}
 
         <div className="mt-5 border-t pt-4">
           <TierProgress rating={p.rating} compact />
         </div>
 
-        {formResults.length > 0 && (
+        {show("show_history") && formResults.length > 0 && (
           <div className="mt-4 border-t pt-4">
             <div className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Recent form · last {formResults.length}</div>
             <FormStrip results={formResults} netDelta={netDelta} />
@@ -153,7 +155,7 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
       )}
 
       {/* Achievements */}
-      <section>
+      {show("show_achievements") && <section>
         <SectionTitle>Achievements</SectionTitle>
         <div className="grid grid-cols-5 gap-2">
           {Object.entries(ACHIEVEMENTS).map(([code, a]) => {
@@ -166,10 +168,10 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
             );
           })}
         </div>
-      </section>
+      </section>}
 
       {/* Partner chemistry */}
-      <section>
+      {show("show_partners") && <section>
         <SectionTitle>Best partners</SectionTitle>
         {partners.data?.length ? (
           <div className="space-y-2">
@@ -194,11 +196,11 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
         ) : (
           <Empty>Play with a teammate to build chemistry stats.</Empty>
         )}
-      </section>
+      </section>}
 
 
       {/* Rivalries */}
-      <section>
+      {show("show_rivalries") && <section>
         <SectionTitle>Rivalries</SectionTitle>
         {rivals.data?.length ? (
           <div className="space-y-3">
@@ -209,10 +211,10 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
         ) : (
           <Empty>Face the same opponent twice to start a rivalry.</Empty>
         )}
-      </section>
+      </section>}
 
       {/* Match history */}
-      <section>
+      {show("show_history") && <section>
         <SectionTitle>Match history</SectionTitle>
         {history.data?.length ? (
           <div className="space-y-2">
@@ -250,9 +252,15 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
             No matches yet.
           </Empty>
         )}
-      </section>
+      </section>}
+      {!isMe && PRIVATE_NOTE(show)}
     </div>
   );
+}
+
+function PRIVATE_NOTE(show: (k: any) => boolean) {
+  const hidden = ["show_record", "show_history", "show_partners", "show_rivalries", "show_achievements"].some((k) => !show(k));
+  return hidden ? <Empty>Some of this player's details are private.</Empty> : null;
 }
 
 function Stat({ label, value }: { label: string; value: React.ReactNode }) {
