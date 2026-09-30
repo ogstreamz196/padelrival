@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const Username = z.string().trim().toLowerCase().regex(/^[a-z0-9_]{3,20}$/, "Username must be 3–20 letters, numbers or _");
 const Password = z.string().min(6, "Password needs at least 6 characters").max(72);
@@ -49,4 +50,23 @@ export const signInWithUsername = createServerFn({ method: "POST" })
       if (u.user?.email) email = u.user.email;
     }
     return signIn(email, data.password);
+  });
+
+/**
+ * Attaches a real email to the signed-in account (username-only players start
+ * with an undeliverable synthetic address, so the normal change-email
+ * confirmation mail can never be answered). Ownership is proved afterwards by
+ * the reset link the client sends to the new address.
+ */
+export const linkEmailToAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ email: z.string().trim().toLowerCase().email("Enter a valid email") }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: list } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
+    const clash = list?.users?.find((u) => u.email?.toLowerCase() === data.email && u.id !== context.userId);
+    if (clash) throw new Error("That email is already used by another account");
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(context.userId, { email: data.email, email_confirm: true });
+    if (error) throw new Error(error.message);
+    return { email: data.email };
   });
