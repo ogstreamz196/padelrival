@@ -4,6 +4,8 @@ import { Flame } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { WeeklyLeague } from "@/components/WeeklyLeague";
+import { InstallBanner } from "@/components/InstallBanner";
+
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { SectionTitle } from "@/components/PlayerProfile";
