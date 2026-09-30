@@ -12,6 +12,7 @@ import { PlayerProfile } from "@/components/PlayerProfile";
 import { ClaimGuestMatches } from "@/components/ClaimGuestMatches";
 import { BossPulse, BossTools } from "@/components/BossControls";
 import { PageGuide, resetGuides } from "@/components/PageGuide";
+import { ProModal, ProTeaser } from "@/components/ProUpgrade";
 import { useServerFn } from "@tanstack/react-start";
 import { deleteMyAccount } from "@/lib/account.functions";
 
@@ -38,6 +39,7 @@ function Me() {
   const deleteAccount = useServerFn(deleteMyAccount);
   const [editing, setEditing] = useState(false);
   const [boss, setBoss] = useState(false);
+  const [pro, setPro] = useState(false);
 
   const handleSignOut = async () => {
     await qc.cancelQueries();
@@ -113,6 +115,10 @@ function Me() {
 
       {profile && <PlayerProfile userId={profile.id} isMe />}
 
+      <ProTeaser onOpen={() => setPro(true)} />
+
+      {pro && <ProModal onClose={() => setPro(false)} />}
+
 
       {editing && profile && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-background/95 backdrop-blur-md">
@@ -140,6 +146,20 @@ function Me() {
 
             <div className="mt-6">
               <ClaimGuestMatches defaultName={profile.display_name} />
+            </div>
+
+            <div className="mt-6 rounded-2xl border border-primary/40 bg-primary/5 p-4">
+              <p className="font-display text-xs font-black uppercase tracking-wide text-primary">Membership</p>
+              <p className="mt-1 text-sm font-bold">Free — PRO coming soon</p>
+              <button
+                onClick={() => {
+                  setEditing(false);
+                  setPro(true);
+                }}
+                className="mt-3 w-full rounded-xl border border-primary/40 py-3 text-xs font-black uppercase tracking-wide text-primary"
+              >
+                See PRO perks
+              </button>
             </div>
 
             <button
