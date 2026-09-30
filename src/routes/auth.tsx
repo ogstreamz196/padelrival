@@ -98,6 +98,12 @@ function AuthPage() {
         {mode === "in" ? "New here? " : "Already a player? "}
         <span className="font-bold text-primary">{mode === "in" ? "Create an account" : "Sign in"}</span>
       </button>
+
+      <div className="mt-8 flex justify-center gap-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <Link to="/privacy">Privacy</Link>
+        <Link to="/terms">Terms</Link>
+      </div>
+
     </div>
   );
 }
