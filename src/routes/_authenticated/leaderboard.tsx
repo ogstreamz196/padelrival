@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
+import { PageGuide } from "@/components/PageGuide";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { levelInfo } from "@/lib/game";
 import { cn } from "@/lib/utils";
@@ -52,7 +53,8 @@ function Leaderboard() {
 
   return (
     <AppShell>
-      <h1 className="mb-5 text-3xl font-black">Leaderboard</h1>
+      <h1 className="mb-4 text-3xl font-black">Leaderboard</h1>
+      <PageGuide id="leaderboard" />
       <div className="mb-2 flex gap-1 rounded-2xl border bg-card p-1">
         <button className={seg(scope === "global")} onClick={() => setScope("global")}>Global</button>
         <button className={seg(scope === "weekly")} onClick={() => setScope("weekly")}>This week</button>
@@ -62,7 +64,11 @@ function Leaderboard() {
         <button className={seg(metric === "xp")} onClick={() => setMetric("xp")}>XP / Activity</button>
       </div>
 
-      {q.data && q.data.length === 0 && <div className="rounded-2xl border border-dashed p-6 text-center text-sm text-muted-foreground">No matches played this week yet.</div>}
+      {q.data && q.data.length === 0 && (
+        <div className="rounded-2xl border border-dashed p-6 text-center text-sm text-muted-foreground">
+          {scope === "weekly" ? "No matches played this week yet — log one and you are instantly on the board." : "No players ranked yet."}
+        </div>
+      )}
       <div className="space-y-2">
         {q.data?.map((r, i) => (
           <Link

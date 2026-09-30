@@ -6,10 +6,11 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
+import { PageGuide } from "@/components/PageGuide";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { useMyProfile } from "@/hooks/use-auth";
 import { SET_PRESETS, STB_PRESETS, validateSet, type SetScore } from "@/lib/game";
-import { cn } from "@/lib/utils";
+import { cn, haptic } from "@/lib/utils";
 
 
 export const Route = createFileRoute("/_authenticated/record")({
@@ -49,10 +50,12 @@ function RecordMatch() {
 
   function bump(i: number, side: 0 | 1, d: number) {
     const max = isDecider(i) ? 20 : 7;
+    haptic();
     setSets((s) => s.map((x, j) => (j === i ? (x.map((v, k) => (k === side ? Math.max(0, Math.min(max, v + d)) : v)) as [number, number]) : x)));
   }
 
   function setOne(i: number, score: SetScore) {
+    haptic();
     setSets((s) => s.map((x, j) => (j === i ? score : x)));
   }
 
@@ -91,7 +94,8 @@ function RecordMatch() {
   return (
     <AppShell>
       <h1 className="text-3xl font-black">Record match</h1>
-      <p className="mb-6 mt-1 text-muted-foreground">2v2 · takes 20 seconds</p>
+      <p className="mb-4 mt-1 text-muted-foreground">2v2 · takes 20 seconds</p>
+      <PageGuide id="record" />
 
       <div className="grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
         <div className="space-y-2 rounded-3xl border-2 border-primary/50 bg-primary/5 p-2">
@@ -182,6 +186,7 @@ function RecordMatch() {
       {picking && (
         <PlayerPicker
           exclude={taken}
+          meId={profile?.id}
           onClose={() => setPicking(null)}
           onPick={(s) => {
             setters[picking](s);
@@ -225,7 +230,9 @@ function SlotBtn({ slot, label, fixed, onClick, onClear }: { slot: Slot; label?:
   );
 }
 
-function PlayerPicker({ exclude, onPick, onClose }: { exclude: string[]; onPick: (s: NonNullable<Slot>) => void; onClose: () => void }) {
+type PickerPlayer = { id: string; username: string; display_name: string; avatar: string; avatar_color: string; rating: number };
+
+function PlayerPicker({ exclude, meId, onPick, onClose }: { exclude: string[]; meId?: string | undefined; onPick: (s: NonNullable<Slot>) => void; onClose: () => void }) {
   const [term, setTerm] = useState("");
   const q = useQuery({
     queryKey: ["search", term],
@@ -235,10 +242,36 @@ function PlayerPicker({ exclude, onPick, onClose }: { exclude: string[]; onPick:
       if (t) req = req.or(`username.ilike.%${t}%,display_name.ilike.%${t}%`);
       else req = req.order("created_at", { ascending: false });
       const { data } = await req;
-      return data ?? [];
+      return (data ?? []) as PickerPlayer[];
     },
   });
+
+  const recent = useQuery({
+    queryKey: ["recent-players", meId],
+    enabled: !!meId,
+    queryFn: async (): Promise<PickerPlayer[]> => {
+      const { data: mine } = await supabase.from("match_players").select("match_id").eq("user_id", meId!).order("id", { ascending: false }).limit(30);
+      const ids = (mine ?? []).map((m) => m.match_id);
+      if (!ids.length) return [];
+      const { data: others } = await supabase
+        .from("match_players")
+        .select("user_id, profiles(id,username,display_name,avatar,avatar_color,rating)")
+        .in("match_id", ids)
+        .not("user_id", "is", null);
+      const seen = new Set<string>();
+      const out: PickerPlayer[] = [];
+      for (const row of others ?? []) {
+        const p = row.profiles as PickerPlayer | null;
+        if (!p || p.id === meId || seen.has(p.id)) continue;
+        seen.add(p.id);
+        out.push(p);
+      }
+      return out.slice(0, 8);
+    },
+  });
+
   const results = (q.data ?? []).filter((p) => !exclude.includes(p.id));
+  const recents = (recent.data ?? []).filter((p) => !exclude.includes(p.id));
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-background/95 backdrop-blur-md">
@@ -258,6 +291,23 @@ function PlayerPicker({ exclude, onPick, onClose }: { exclude: string[]; onPick:
               <div className="text-xs text-muted-foreground">Not on Padel Rival yet — no rating change</div>
             </div>
           </button>
+        )}
+        {!term.trim() && recents.length > 0 && (
+          <div className="mt-4">
+            <div className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Recently played with</div>
+            <div className="flex flex-wrap gap-2">
+              {recents.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => onPick({ user_id: p.id, display_name: p.display_name, avatar: p.avatar, avatar_color: p.avatar_color, rating: p.rating })}
+                  className="flex items-center gap-2 rounded-full border bg-card py-1.5 pl-1.5 pr-3 text-left active:scale-95"
+                >
+                  <PlayerAvatar avatar={p.avatar} color={p.avatar_color} size="sm" />
+                  <span className="max-w-28 truncate text-xs font-bold">{p.display_name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         )}
         <div className="mt-3 flex-1 space-y-2 overflow-y-auto pb-10">
           {results.map((p) => (

@@ -77,7 +77,18 @@ export function ActivityFeed({ meId }: { meId: string }) {
   });
 
   if (feed.isLoading) return <div className="rounded-2xl border border-dashed p-6 text-center text-sm text-muted-foreground">Loading activity…</div>;
-  if (!feed.data?.length) return <div className="rounded-2xl border border-dashed p-6 text-center text-sm text-muted-foreground">No matches logged yet. Be the first.</div>;
+  if (!feed.data?.length)
+    return (
+      <div className="rounded-3xl border border-dashed p-5 text-center">
+        <p className="font-bold">No matches logged yet</p>
+        <p className="mt-1 text-sm text-muted-foreground">Tap the big + to log your first match — it takes 20 seconds.</p>
+        <div className="mt-3 flex justify-center gap-2 text-[11px] font-black uppercase tracking-wide text-muted-foreground">
+          <span className="rounded-full border px-2.5 py-1">+50 XP a match</span>
+          <span className="rounded-full border px-2.5 py-1">+50 XP a win</span>
+          <span className="rounded-full border px-2.5 py-1">Elo updates</span>
+        </div>
+      </div>
+    );
 
   return (
     <div className="space-y-3">
