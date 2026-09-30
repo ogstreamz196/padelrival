@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
 import { PageGuide } from "@/components/PageGuide";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { RankCrest } from "@/components/RankCrest";
 import { levelInfo } from "@/lib/game";
 import { cn } from "@/lib/utils";
 
