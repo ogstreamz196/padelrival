@@ -252,6 +252,23 @@ function RecordMatch() {
         ))}
       </div>
       <input value={venue} onChange={(e) => setVenue(e.target.value)} maxLength={120} placeholder="Venue (optional)" className="mt-3 w-full rounded-2xl border bg-card px-4 py-4 outline-none focus:border-primary" />
+      {(venues.data?.length ?? 0) > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {venues.data!.map((v) => (
+            <button
+              key={v}
+              onClick={() => {
+                haptic();
+                setVenue(venue === v ? "" : v);
+              }}
+              className={cn("max-w-full truncate rounded-full border px-3 py-1.5 text-xs font-bold", venue === v ? "border-primary bg-primary/15 text-primary" : "text-muted-foreground")}
+            >
+              {v}
+            </button>
+          ))}
+        </div>
+      )}
+
 
       <button
         disabled={!ready || busy}
