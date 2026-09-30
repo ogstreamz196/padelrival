@@ -10,6 +10,8 @@ import { AppShell } from "@/components/AppShell";
 import { ProfileForm } from "@/components/ProfileForm";
 import { PlayerProfile } from "@/components/PlayerProfile";
 import { ClaimGuestMatches } from "@/components/ClaimGuestMatches";
+import { BossPulse, BossTools } from "@/components/BossControls";
+
 
 export const Route = createFileRoute("/_authenticated/me")({
   head: () => ({
@@ -31,6 +33,8 @@ function Me() {
   const qc = useQueryClient();
   const navigate = useNavigate();
   const [editing, setEditing] = useState(false);
+  const [boss, setBoss] = useState(false);
+
 
   return (
     <AppShell>
