@@ -214,11 +214,74 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      admin_matches: {
+        Args: { _limit?: number }
+        Returns: {
+          created_at: string
+          created_by: string
+          creator: string
+          id: string
+          match_type: string
+          players: Json
+          sets: Json
+          venue: string
+          winner_team: number
+        }[]
+      }
+      admin_players: {
+        Args: never
+        Returns: {
+          avatar: string
+          avatar_color: string
+          best_streak: number
+          created_at: string
+          current_streak: number
+          display_name: string
+          email: string
+          id: string
+          is_admin: boolean
+          last_sign_in_at: string
+          losses: number
+          matches: number
+          rating: number
+          username: string
+          wins: number
+          xp: number
+        }[]
+      }
+      admin_set_rating: {
+        Args: { _rating: number; _user: string; _xp?: number }
+        Returns: Json
+      }
+      admin_stats: { Args: never; Returns: Json }
+      admin_void_match: { Args: { _match_id: string }; Returns: Json }
+      claim_boss: { Args: never; Returns: boolean }
       claim_guest_matches: { Args: { _alias: string }; Returns: Json }
       count_guest_matches: { Args: { _alias: string }; Returns: number }
       get_partners: {
@@ -254,6 +317,13 @@ export type Database = {
           wins: number
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       record_match: {
         Args: {
           _match_type: string
@@ -280,7 +350,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "moderator" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -407,6 +477,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "moderator", "user"],
+    },
   },
 } as const
