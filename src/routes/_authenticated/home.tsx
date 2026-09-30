@@ -75,7 +75,14 @@ function Home() {
 
       <PageGuide id="home" />
 
+      {profile && (
+        <section className="mb-4">
+          <TierProgress rating={profile.rating} />
+        </section>
+      )}
+
       {profile && <WeeklyLeague meId={user.id} rating={profile.rating} />}
+
 
       <InstallBanner />
 
