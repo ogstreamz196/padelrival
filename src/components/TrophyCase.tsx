@@ -78,7 +78,7 @@ function TrophyDetail({
   onClose,
 }: {
   code: string;
-  unlockedAt?: string;
+  unlockedAt?: string | undefined;
   stats: Stats;
   onClose: () => void;
 }) {
