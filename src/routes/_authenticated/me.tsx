@@ -144,6 +144,23 @@ function Me() {
             >
               Sign out
             </button>
+
+            <button
+              onClick={async () => {
+                if (!confirm("Delete your account permanently? Your stats, badges and profile will be erased. This can't be undone.")) return;
+                try {
+                  await deleteAccount();
+                  await supabase.auth.signOut();
+                  toast.success("Account deleted");
+                  navigate({ to: "/" });
+                } catch (e) {
+                  toast.error(e instanceof Error ? e.message : "Couldn't delete account");
+                }
+              }}
+              className="mt-3 w-full py-3 text-xs font-bold uppercase tracking-widest text-destructive/80"
+            >
+              Delete my account
+            </button>
           </div>
         </div>
       )}
