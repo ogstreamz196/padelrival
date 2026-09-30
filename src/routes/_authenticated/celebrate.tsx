@@ -184,7 +184,10 @@ function Celebrate() {
                 setUndoing(true);
                 const { error } = await supabase.rpc("void_match", { _match_id: r.match_id! });
                 setUndoing(false);
-                if (error) return toast.error(error.message);
+                if (error) {
+                  toast.error(error.message);
+                  return;
+                }
                 sessionStorage.removeItem("lastMatch");
                 toast.success("Match removed — everyone's rating restored");
                 qc.invalidateQueries();
