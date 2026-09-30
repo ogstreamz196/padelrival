@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Crown, Settings, X } from "lucide-react";
+import { ChevronDown, ChevronUp, Crown, LogOut, RefreshCw, Settings, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyProfile } from "@/hooks/use-auth";
@@ -39,6 +39,13 @@ function Me() {
   const [editing, setEditing] = useState(false);
   const [boss, setBoss] = useState(false);
 
+  const handleSignOut = async () => {
+    await qc.cancelQueries();
+    qc.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  };
+
 
   return (
     <AppShell>
@@ -60,6 +67,14 @@ function Me() {
         >
           <Settings className="size-4" />
           Edit
+        </button>
+        <button
+          onClick={handleSignOut}
+          aria-label="Sign out"
+          title="Sign out"
+          className="grid size-9 place-items-center rounded-full border text-muted-foreground transition-colors active:text-destructive"
+        >
+          <LogOut className="size-4" />
         </button>
         </div>
       </div>
@@ -139,13 +154,19 @@ function Me() {
             </button>
 
             <button
-              onClick={async () => {
-                await supabase.auth.signOut();
-                navigate({ to: "/" });
-              }}
-              className="mt-6 w-full rounded-2xl border py-4 font-bold text-destructive"
+              onClick={handleSignOut}
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border py-4 font-bold text-destructive"
             >
+              <LogOut className="size-4" />
               Sign out
+            </button>
+
+            <button
+              onClick={handleSignOut}
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border py-4 font-bold text-muted-foreground"
+            >
+              <RefreshCw className="size-4" />
+              Switch account
             </button>
 
             <button
