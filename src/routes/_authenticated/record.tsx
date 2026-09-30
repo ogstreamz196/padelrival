@@ -34,6 +34,8 @@ function RecordMatch() {
   const [superTb, setSuperTb] = useState(false);
   const [venue, setVenue] = useState("");
   const [type, setType] = useState("friendly");
+  const [mySide, setMySide] = useState<"left" | "right" | null>(null);
+  const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -136,9 +138,25 @@ function RecordMatch() {
     }
 
     setBusy(true);
-    const toP = (s: NonNullable<Slot>, team: number) => (s.user_id ? { team, user_id: s.user_id } : { team, guest_name: s.guest_name });
-    const players = [{ team: 1, user_id: profile.id }, toP(partner, 1), toP(opp1, 2), toP(opp2, 2)];
-    const { data, error } = await supabase.rpc("record_match", { _players: players, _sets: sets, _venue: venue, _match_type: type });
+    const otherSide = mySide === "left" ? "right" : mySide === "right" ? "left" : null;
+    const toP = (s: NonNullable<Slot>, team: number, side: string | null) => ({
+      team,
+      ...(s.user_id ? { user_id: s.user_id } : { guest_name: s.guest_name }),
+      ...(side ? { court_side: side } : {}),
+    });
+    const players = [
+      { team: 1, user_id: profile.id, ...(mySide ? { court_side: mySide } : {}) },
+      toP(partner, 1, otherSide),
+      toP(opp1, 2, null),
+      toP(opp2, 2, null),
+    ];
+    const { data, error } = await supabase.rpc("record_match", {
+      _players: players,
+      _sets: sets,
+      _venue: venue,
+      _match_type: type,
+      _notes: notes.trim(),
+    });
     setBusy(false);
     if (error) {
       toast.error(error.message);
@@ -188,6 +206,35 @@ function RecordMatch() {
           <SlotBtn slot={opp2} label="Opponent" onClick={() => setPicking("opp2")} onClear={() => setOpp2(null)} />
         </div>
       </div>
+
+      <div className="mt-4 rounded-2xl border bg-card p-3">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Which side did you play?</span>
+          {mySide && (
+            <button onClick={() => { haptic(); setMySide(null); }} className="text-[11px] font-bold text-muted-foreground">
+              Clear
+            </button>
+          )}
+        </div>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          {(["left", "right"] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => { haptic(); setMySide(mySide === s ? null : s); }}
+              className={cn("rounded-2xl border py-3 text-sm font-black capitalize", mySide === s ? "border-primary bg-primary text-primary-foreground" : "text-muted-foreground")}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          {mySide && partner
+            ? `${partner.display_name} is logged on the ${mySide === "left" ? "right" : "left"}.`
+            : "Optional — tag your position to unlock left/right win rates."}
+        </p>
+      </div>
+
+
 
       <div className="mb-3 mt-8 flex items-center justify-between">
         <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Set scores</h2>
@@ -268,6 +315,30 @@ function RecordMatch() {
           ))}
         </div>
       )}
+
+      <input
+        value={notes}
+        onChange={(e) => setNotes(e.target.value.slice(0, 140))}
+        maxLength={140}
+        placeholder="Add a note (optional)"
+        className="mt-3 w-full rounded-2xl border bg-card px-4 py-4 outline-none focus:border-primary"
+      />
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {["Golden point decider", "Comeback win", "Grudge match", "Brutal conditions"].map((n) => (
+          <button
+            key={n}
+            onClick={() => {
+              haptic();
+              setNotes(notes === n ? "" : n);
+            }}
+            className={cn("rounded-full border px-3 py-1.5 text-xs font-bold", notes === n ? "border-primary bg-primary/15 text-primary" : "text-muted-foreground")}
+          >
+            {n}
+          </button>
+        ))}
+      </div>
+
+
 
 
       <button

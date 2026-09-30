@@ -1,15 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
-import { Flame, Trophy } from "lucide-react";
+import { useState } from "react";
+import { Flame, Share2, Trophy } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ACHIEVEMENTS, formatSets, levelInfo, rankTier, type SetScore } from "@/lib/game";
 import { PlayerAvatar } from "./PlayerAvatar";
 import { FormStrip, TierProgress } from "./RankProgress";
 import { RankCrest, tierTheme } from "./RankCrest";
 import { TrophyCase } from "./TrophyCase";
+import { CourtSideSplit, type SideStat } from "./CourtSideSplit";
+import { sharePlayerCard } from "@/lib/share";
 
 import { RivalryCard, type Rivalry } from "./RivalryCard";
-import { cn } from "@/lib/utils";
+import { cn, haptic } from "@/lib/utils";
 
 type MP = { team: number; guest_name: string | null; user_id: string | null; profiles: { display_name: string } | null };
 
@@ -17,11 +21,13 @@ type HistoryRow = {
   rating_delta: number;
   xp_gained: number;
   team: number;
+  court_side: string | null;
   matches: {
     id: string;
     created_at: string;
     venue: string | null;
     match_type: string;
+    notes: string | null;
     sets: SetScore[];
     winner_team: number;
     match_players: MP[];
@@ -42,7 +48,7 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
     queryFn: async () => {
       const { data, error } = await supabase
         .from("match_players")
-        .select("rating_delta,xp_gained,team,matches(id,created_at,venue,match_type,sets,winner_team,match_players(team,guest_name,user_id,profiles(display_name)))")
+        .select("rating_delta,xp_gained,team,court_side,matches(id,created_at,venue,match_type,notes,sets,winner_team,match_players(team,guest_name,user_id,profiles(display_name)))")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
         .limit(20);
@@ -73,6 +79,15 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
       return data;
     },
   });
+  const courtSides = useQuery({
+    queryKey: ["court-sides", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_court_sides", { _user: userId });
+      if (error) throw error;
+      return data;
+    },
+  });
+  const [sharing, setSharing] = useState(false);
 
   const p = profile.data;
   if (!p) return <div className="mt-20 text-center text-muted-foreground">{profile.isLoading ? "Loading…" : "Player not found"}</div>;
@@ -85,10 +100,41 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
   const formResults = recent.map((h) => (h.matches ? h.matches.winner_team === h.team : false)).reverse();
   const netDelta = recent.reduce((s, h) => s + (h.rating_delta ?? 0), 0);
 
+  const sideRow = (k: "left" | "right"): SideStat => {
+    const r = (courtSides.data ?? []).find((x) => x.court_side === k);
+    return { wins: Number(r?.wins ?? 0), losses: Number(r?.losses ?? 0) };
+  };
+  const leftSide = sideRow("left");
+  const rightSide = sideRow("right");
+  const hasSides = leftSide.wins + leftSide.losses + rightSide.wins + rightSide.losses > 0;
 
   const theme = tierTheme(p.rating);
   const featured = ["rivalry_victor", "giant_killer", "streak_5", "streak_3", "first_win"].find((c) => unlocked.has(c));
   const unlockedMap = new Map((achievements.data ?? []).map((a) => [a.code, a.unlocked_at as string]));
+
+  async function shareCard() {
+    if (!p) return;
+    haptic();
+    setSharing(true);
+    const res = await sharePlayerCard({
+      name: p.display_name,
+      username: p.username,
+      avatar: p.avatar,
+      rating: p.rating,
+      tier: rankTier(p.rating),
+      level: lvl.level,
+      wins: p.wins,
+      losses: p.losses,
+      streak: p.current_streak,
+      best: p.best_streak,
+      badge: featured ? `${ACHIEVEMENTS[featured]!.icon} ${ACHIEVEMENTS[featured]!.name}` : undefined,
+      left: hasSides ? leftSide : undefined,
+      right: hasSides ? rightSide : undefined,
+    });
+    setSharing(false);
+    if (res === "downloaded") toast.success("Card saved to your downloads");
+    if (res === "failed") toast.error("Could not create the card");
+  }
 
   return (
     <div className="space-y-6">
@@ -170,6 +216,21 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
         )}
       </section>
 
+      <button
+        onClick={shareCard}
+        disabled={sharing}
+        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-primary/60 bg-primary/10 py-3.5 font-display text-sm font-black uppercase tracking-wide text-primary active:scale-[0.98] disabled:opacity-50"
+      >
+        <Share2 className="size-4" />
+        {sharing ? "Making your card…" : "Share player card"}
+      </button>
+
+      {show("show_court_side") && hasSides && (
+        <section>
+          <SectionTitle>Court side split</SectionTitle>
+          <CourtSideSplit left={leftSide} right={rightSide} />
+        </section>
+      )}
 
       {isMe && (
         <Link to="/record" className="flex items-center justify-center gap-2 rounded-2xl bg-primary py-4 font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]">
@@ -239,22 +300,32 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
               const mine = m.match_players.filter((x) => x.team === h.team && x.user_id !== userId).map(name);
               const opp = m.match_players.filter((x) => x.team !== h.team).map(name);
               return (
-                <div key={m.id} className="flex items-center gap-3 rounded-2xl border bg-card p-3">
-                  <div className={cn("grid size-10 shrink-0 place-items-center rounded-xl font-display font-black", won ? "bg-win/20 text-win" : "bg-destructive/20 text-destructive")}>
-                    {won ? "W" : "L"}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="truncate text-sm font-semibold">
-                      w/ {mine.join(", ") || "—"} <span className="text-muted-foreground">vs</span> {opp.join(" & ")}
+                <div key={m.id} className="rounded-2xl border bg-card p-3">
+                  <div className="flex items-center gap-3">
+                    <div className={cn("grid size-10 shrink-0 place-items-center rounded-xl font-display font-black", won ? "bg-win/20 text-win" : "bg-destructive/20 text-destructive")}>
+                      {won ? "W" : "L"}
                     </div>
-                    <div className="truncate text-xs text-muted-foreground">
-                      {formatSets(m.sets, h.team === 2)} · {m.venue || m.match_type} · {new Date(m.created_at).toLocaleDateString()}
+                    <div className="min-w-0 flex-1">
+                      <div className="truncate text-sm font-semibold">
+                        w/ {mine.join(", ") || "—"} <span className="text-muted-foreground">vs</span> {opp.join(" & ")}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="truncate text-xs text-muted-foreground">
+                          {formatSets(m.sets, h.team === 2)} · {m.venue || m.match_type} · {new Date(m.created_at).toLocaleDateString()}
+                        </span>
+                        {h.court_side && show("show_court_side") && (
+                          <span className="shrink-0 rounded-full border px-1.5 text-[10px] font-black uppercase text-muted-foreground">
+                            {h.court_side === "left" ? "L" : "R"}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className={cn("font-display text-sm font-black tabular-nums", h.rating_delta >= 0 ? "text-win" : "text-destructive")}>
+                      {h.rating_delta >= 0 ? "+" : ""}
+                      {h.rating_delta}
                     </div>
                   </div>
-                  <div className={cn("font-display text-sm font-black tabular-nums", h.rating_delta >= 0 ? "text-win" : "text-destructive")}>
-                    {h.rating_delta >= 0 ? "+" : ""}
-                    {h.rating_delta}
-                  </div>
+                  {m.notes && <p className="mt-2 border-t pt-2 text-xs italic text-muted-foreground">“{m.notes}”</p>}
                 </div>
               );
             })}
