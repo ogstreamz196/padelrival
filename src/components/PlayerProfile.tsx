@@ -79,6 +79,15 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
       return data;
     },
   });
+  const courtSides = useQuery({
+    queryKey: ["court-sides", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_court_sides", { _user: userId });
+      if (error) throw error;
+      return data;
+    },
+  });
+  const [sharing, setSharing] = useState(false);
 
   const p = profile.data;
   if (!p) return <div className="mt-20 text-center text-muted-foreground">{profile.isLoading ? "Loading…" : "Player not found"}</div>;
@@ -91,10 +100,41 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
   const formResults = recent.map((h) => (h.matches ? h.matches.winner_team === h.team : false)).reverse();
   const netDelta = recent.reduce((s, h) => s + (h.rating_delta ?? 0), 0);
 
+  const sideRow = (k: "left" | "right"): SideStat => {
+    const r = (courtSides.data ?? []).find((x) => x.court_side === k);
+    return { wins: Number(r?.wins ?? 0), losses: Number(r?.losses ?? 0) };
+  };
+  const leftSide = sideRow("left");
+  const rightSide = sideRow("right");
+  const hasSides = leftSide.wins + leftSide.losses + rightSide.wins + rightSide.losses > 0;
 
   const theme = tierTheme(p.rating);
   const featured = ["rivalry_victor", "giant_killer", "streak_5", "streak_3", "first_win"].find((c) => unlocked.has(c));
   const unlockedMap = new Map((achievements.data ?? []).map((a) => [a.code, a.unlocked_at as string]));
+
+  async function shareCard() {
+    if (!p) return;
+    haptic();
+    setSharing(true);
+    const res = await sharePlayerCard({
+      name: p.display_name,
+      username: p.username,
+      avatar: p.avatar,
+      rating: p.rating,
+      tier: rankTier(p.rating),
+      level: lvl.level,
+      wins: p.wins,
+      losses: p.losses,
+      streak: p.current_streak,
+      best: p.best_streak,
+      badge: featured ? `${ACHIEVEMENTS[featured]!.icon} ${ACHIEVEMENTS[featured]!.name}` : undefined,
+      left: hasSides ? leftSide : undefined,
+      right: hasSides ? rightSide : undefined,
+    });
+    setSharing(false);
+    if (res === "downloaded") toast.success("Card saved to your downloads");
+    if (res === "failed") toast.error("Could not create the card");
+  }
 
   return (
     <div className="space-y-6">
