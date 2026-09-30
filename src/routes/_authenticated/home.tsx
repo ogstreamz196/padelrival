@@ -5,6 +5,7 @@ import { AppShell } from "@/components/AppShell";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { WeeklyLeague } from "@/components/WeeklyLeague";
 import { InstallBanner } from "@/components/InstallBanner";
+import { PageGuide } from "@/components/PageGuide";
 
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
@@ -71,6 +72,8 @@ function Home() {
           <Link to="/me" className="text-xs font-bold text-muted-foreground">Profile</Link>
         </section>
       )}
+
+      <PageGuide id="home" />
 
       {profile && <WeeklyLeague meId={user.id} rating={profile.rating} />}
 
