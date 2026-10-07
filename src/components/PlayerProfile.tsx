@@ -35,6 +35,7 @@ type HistoryRow = {
 };
 
 export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean }) {
+  const [allHistory, setAllHistory] = useState(false);
   const profile = useQuery({
     queryKey: ["profile", userId],
     queryFn: async () => {
@@ -292,7 +293,12 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
         <SectionTitle>Match history</SectionTitle>
         {history.data?.length ? (
           <div className="space-y-2">
-            {history.data.map((h) => {
+            {history.data.length > 3 && (
+              <button onClick={() => setAllHistory((v) => !v)} className="w-full rounded-xl border border-dashed py-2 text-xs font-bold text-muted-foreground order-last">
+                {allHistory ? "Show less" : `Show all ${history.data.length} matches`}
+              </button>
+            )}
+            {(allHistory ? history.data : history.data.slice(0, 3)).map((h) => {
               const m = h.matches;
               if (!m) return null;
               const won = m.winner_team === h.team;
