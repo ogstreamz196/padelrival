@@ -6,6 +6,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatSets, undoLeft, type SetScore } from "@/lib/game";
 import { PlayerAvatar } from "./PlayerAvatar";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { useFriendIds } from "@/hooks/use-friends";
 
 type FeedPlayer = {
   team: number;
@@ -28,6 +30,9 @@ type FeedMatch = {
 
 export function ActivityFeed({ meId }: { meId: string }) {
   const qc = useQueryClient();
+  const [expanded, setExpanded] = useState(false);
+  const [scope, setScope] = useState<"all" | "friends">("all");
+  const friends = useFriendIds(meId);
 
   const feed = useQuery({
     queryKey: ["feed"],
@@ -90,9 +95,23 @@ export function ActivityFeed({ meId }: { meId: string }) {
       </div>
     );
 
+  const friendSet = new Set([...(friends.data ?? []), meId]);
+  const filtered = scope === "friends" ? feed.data.filter((m) => m.match_players.some((p) => p.user_id && friendSet.has(p.user_id))) : feed.data;
+  const visible = expanded ? filtered : filtered.slice(0, 2);
+  const tab = (on: boolean) => cn("flex-1 rounded-lg py-1.5 text-xs font-bold uppercase", on ? "bg-primary text-primary-foreground" : "text-muted-foreground");
+
   return (
     <div className="space-y-3">
-      {feed.data.map((m) => {
+      <div className="flex gap-1 rounded-xl border bg-card p-1">
+        <button className={tab(scope === "all")} onClick={() => setScope("all")}>Everyone</button>
+        <button className={tab(scope === "friends")} onClick={() => setScope("friends")}>Friends</button>
+      </div>
+      {scope === "friends" && !filtered.length && (
+        <div className="rounded-2xl border border-dashed p-5 text-center text-sm text-muted-foreground">
+          No friend matches yet. Open any player and tap <b>Add friend</b>, or find them on the Ranks tab.
+        </div>
+      )}
+      {visible.map((m) => {
         const name = (p: FeedPlayer) => p.profiles?.display_name ?? p.guest_name ?? "Guest";
         const winners = m.match_players.filter((p) => p.team === m.winner_team);
         const losers = m.match_players.filter((p) => p.team !== m.winner_team);
@@ -144,6 +163,11 @@ export function ActivityFeed({ meId }: { meId: string }) {
           </div>
         );
       })}
+      {filtered.length > 2 && (
+        <button onClick={() => setExpanded((v) => !v)} className="w-full rounded-xl border border-dashed py-2 text-xs font-bold text-muted-foreground">
+          {expanded ? "Show less" : `Show ${filtered.length - 2} more matches`}
+        </button>
+      )}
     </div>
   );
 }

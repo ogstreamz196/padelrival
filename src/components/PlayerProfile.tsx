@@ -292,7 +292,7 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
       {show("show_history") && <section>
         <SectionTitle>Match history</SectionTitle>
         {history.data?.length ? (
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             {history.data.length > 3 && (
               <button onClick={() => setAllHistory((v) => !v)} className="w-full rounded-xl border border-dashed py-2 text-xs font-bold text-muted-foreground order-last">
                 {allHistory ? "Show less" : `Show all ${history.data.length} matches`}
