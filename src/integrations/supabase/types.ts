@@ -40,6 +40,92 @@ export type Database = {
           },
         ]
       }
+      beacon_players: {
+        Row: {
+          beacon_id: string
+          id: string
+          joined_at: string
+          user_id: string
+        }
+        Insert: {
+          beacon_id: string
+          id?: string
+          joined_at?: string
+          user_id: string
+        }
+        Update: {
+          beacon_id?: string
+          id?: string
+          joined_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beacon_players_beacon_id_fkey"
+            columns: ["beacon_id"]
+            isOneToOne: false
+            referencedRelation: "beacons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "beacon_players_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      beacons: {
+        Row: {
+          court_side: string
+          created_at: string
+          created_by: string
+          id: string
+          match_type: string
+          notes: string | null
+          players_needed: number
+          scheduled_at: string
+          status: string
+          target_tier: string
+          venue: string
+        }
+        Insert: {
+          court_side?: string
+          created_at?: string
+          created_by: string
+          id?: string
+          match_type?: string
+          notes?: string | null
+          players_needed: number
+          scheduled_at: string
+          status?: string
+          target_tier?: string
+          venue: string
+        }
+        Update: {
+          court_side?: string
+          created_at?: string
+          created_by?: string
+          id?: string
+          match_type?: string
+          notes?: string | null
+          players_needed?: number
+          scheduled_at?: string
+          status?: string
+          target_tier?: string
+          venue?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beacons_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       follows: {
         Row: {
           created_at: string
@@ -292,6 +378,78 @@ export type Database = {
         }
         Relationships: []
       }
+      venue_checkins: {
+        Row: {
+          created_at: string
+          id: string
+          playing_at: string
+          user_id: string
+          venue_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          playing_at?: string
+          user_id: string
+          venue_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          playing_at?: string
+          user_id?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_checkins_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "venue_checkins_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venues: {
+        Row: {
+          booking_url: string | null
+          city: string
+          court_type: string
+          courts_count: number
+          created_at: string
+          id: string
+          name: string
+          postcode: string | null
+        }
+        Insert: {
+          booking_url?: string | null
+          city: string
+          court_type?: string
+          courts_count?: number
+          created_at?: string
+          id?: string
+          name: string
+          postcode?: string | null
+        }
+        Update: {
+          booking_url?: string | null
+          city?: string
+          court_type?: string
+          courts_count?: number
+          created_at?: string
+          id?: string
+          name?: string
+          postcode?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -338,9 +496,22 @@ export type Database = {
       }
       admin_stats: { Args: never; Returns: Json }
       admin_void_match: { Args: { _match_id: string }; Returns: Json }
+      cancel_beacon: { Args: { _beacon_id: string }; Returns: string }
       claim_boss: { Args: never; Returns: boolean }
       claim_guest_matches: { Args: { _alias: string }; Returns: Json }
       count_guest_matches: { Args: { _alias: string }; Returns: number }
+      create_beacon: {
+        Args: {
+          _court_side?: string
+          _match_type?: string
+          _notes?: string
+          _players_needed: number
+          _scheduled_at: string
+          _target_tier?: string
+          _venue: string
+        }
+        Returns: string
+      }
       get_court_sides: {
         Args: { _user: string }
         Returns: {
@@ -348,6 +519,20 @@ export type Database = {
           losses: number
           matches: number
           wins: number
+        }[]
+      }
+      get_head_to_head: {
+        Args: { _a: string; _b: string }
+        Returns: {
+          a_sets: number
+          a_wins: number
+          b_sets: number
+          b_wins: number
+          matches_against: number
+          matches_together: number
+          together_sets_lost: number
+          together_sets_won: number
+          together_wins: number
         }[]
       }
       get_partners: {
@@ -390,6 +575,8 @@ export type Database = {
         }
         Returns: boolean
       }
+      join_beacon: { Args: { _beacon_id: string }; Returns: string }
+      leave_beacon: { Args: { _beacon_id: string }; Returns: string }
       record_match: {
         Args: {
           _match_type: string
