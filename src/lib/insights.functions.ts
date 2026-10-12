@@ -69,18 +69,18 @@ function providers(): Provider[] {
     out.push(
       groq.startsWith("xai-")
         ? { name: "grok", url: "https://api.x.ai/v1/chat/completions", key: groq, model: "grok-3-mini" }
-        : { name: "groq", url: "https://api.groq.com/openai/v1/chat/completions", key: groq, model: "llama-3.3-70b-versatile" },
+        : { name: "groq", url: "https://api.groq.com/openai/v1/chat/completions", key: groq, model: "openai/gpt-oss-120b" },
     );
   }
   const gemini = env("GEMINI_API_KEY");
-  if (gemini) out.push({ name: "gemini", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", key: gemini, model: "gemini-2.5-flash" });
+  if (gemini) out.push({ name: "gemini", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", key: gemini, model: "gemini-flash-latest" });
   const or = env("OPENROUTER_API_KEY");
   if (or)
     out.push({
       name: "openrouter",
       url: "https://openrouter.ai/api/v1/chat/completions",
       key: or,
-      model: "meta-llama/llama-3.3-70b-instruct:free",
+      model: "openrouter/free",
       extra: { "HTTP-Referer": "https://padel.ogbot.co.uk", "X-Title": "Padel Rival" },
     });
   const pol = env("POLLINATIONS_API_KEY");
