@@ -1,6 +1,3 @@
--- Beacon board ("Need a 4th"), venue directory with live check-ins, and head-to-head dossier.
-
--- ---------------------------------------------------------------- beacons
 create table public.beacons (
   id uuid primary key default gen_random_uuid(),
   created_by uuid not null references public.profiles(id) on delete cascade,
@@ -26,26 +23,21 @@ create table public.beacon_players (
 );
 create index beacon_players_user_idx on public.beacon_players (user_id);
 
-alter table public.beacons enable row level security;
-alter table public.beacon_players enable row level security;
-
--- Read-only from the client: every write goes through the security-definer functions below.
 grant select on public.beacons to authenticated;
 grant all on public.beacons to service_role;
 grant select on public.beacon_players to authenticated;
 grant all on public.beacon_players to service_role;
 
+alter table public.beacons enable row level security;
+alter table public.beacon_players enable row level security;
+
 create policy "beacons readable" on public.beacons for select to authenticated using (true);
 create policy "beacon players readable" on public.beacon_players for select to authenticated using (true);
 
 create or replace function public.create_beacon(
-  _venue text,
-  _scheduled_at timestamptz,
-  _players_needed int,
-  _target_tier text default 'open',
-  _court_side text default 'any',
-  _match_type text default 'competitive',
-  _notes text default null
+  _venue text, _scheduled_at timestamptz, _players_needed int,
+  _target_tier text default 'open', _court_side text default 'any',
+  _match_type text default 'competitive', _notes text default null
 ) returns uuid
 language plpgsql security definer set search_path = public as $$
 declare
@@ -62,7 +54,6 @@ begin
   if (select count(*) from beacons where created_by = me and status <> 'cancelled' and scheduled_at > now()) >= 5 then
     raise exception 'You already have 5 upcoming beacons';
   end if;
-
   insert into beacons (created_by, venue, scheduled_at, players_needed, target_tier, court_side, match_type, notes)
   values (
     me, left(v, 120), _scheduled_at, _players_needed,
@@ -71,12 +62,10 @@ begin
     case when _match_type in ('competitive','friendly') then _match_type else 'competitive' end,
     nullif(btrim(left(coalesce(_notes, ''), 140)), '')
   ) returning id into bid;
-
   insert into beacon_players (beacon_id, user_id) values (bid, me);
   return bid;
 end $$;
 
--- players_needed counts the open slots, so the host is not one of them.
 create or replace function public.join_beacon(_beacon_id uuid)
 returns text
 language plpgsql security definer set search_path = public as $$
@@ -93,7 +82,6 @@ begin
   if b.scheduled_at < now() - interval '30 minutes' then raise exception 'This game has already started'; end if;
   if exists (select 1 from beacon_players where beacon_id = b.id and user_id = me) then return b.status; end if;
   if b.status = 'filled' then raise exception 'This game is already full'; end if;
-
   insert into beacon_players (beacon_id, user_id) values (b.id, me);
   select count(*) into joined from beacon_players where beacon_id = b.id and user_id <> b.created_by;
   if joined >= b.players_needed then
@@ -143,7 +131,6 @@ grant execute on function public.join_beacon(uuid) to authenticated;
 grant execute on function public.leave_beacon(uuid) to authenticated;
 grant execute on function public.cancel_beacon(uuid) to authenticated;
 
--- ---------------------------------------------------------------- venues
 create table public.venues (
   id uuid primary key default gen_random_uuid(),
   name text not null unique,
@@ -165,13 +152,13 @@ create table public.venue_checkins (
 );
 create index venue_checkins_day_idx on public.venue_checkins (playing_at, venue_id);
 
-alter table public.venues enable row level security;
-alter table public.venue_checkins enable row level security;
-
 grant select on public.venues to anon, authenticated;
 grant all on public.venues to service_role;
 grant select, insert, delete on public.venue_checkins to authenticated;
 grant all on public.venue_checkins to service_role;
+
+alter table public.venues enable row level security;
+alter table public.venue_checkins enable row level security;
 
 create policy "venues readable" on public.venues for select to anon, authenticated using (true);
 create policy "checkins readable" on public.venue_checkins for select to authenticated using (true);
@@ -180,8 +167,6 @@ create policy "check in today" on public.venue_checkins for insert to authentica
 create policy "undo today's check-in" on public.venue_checkins for delete to authenticated
   using (user_id = auth.uid() and playing_at = current_date);
 
--- Starter directory. Booking links are left empty until a club's real booking page is confirmed;
--- the app falls back to a web search for "<club> <city> padel booking".
 insert into public.venues (name, city, postcode, courts_count, court_type) values
   ('Stratford Padel Club', 'London', null, 4, 'covered'),
   ('Rocks Lane Chiswick', 'London', null, 4, 'outdoor'),
@@ -205,8 +190,6 @@ insert into public.venues (name, city, postcode, courts_count, court_type) value
   ('Padel Hub Sheffield', 'Sheffield', null, 4, 'indoor')
 on conflict (name) do nothing;
 
--- ---------------------------------------------------------------- dossier
--- Head-to-head between two players: as opponents (from _a's side) and as partners.
 create or replace function public.get_head_to_head(_a uuid, _b uuid)
 returns table(
   matches_against bigint, a_wins bigint, b_wins bigint, a_sets bigint, b_sets bigint,

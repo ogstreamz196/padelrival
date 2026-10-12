@@ -8,6 +8,13 @@
       "when": 1791401976099,
       "tag": "0000_friends_follows",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791848197540,
+      "tag": "0001_beacons_venues_dossier",
+      "breakpoints": true
     }
   ]
 }
