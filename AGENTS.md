@@ -17,6 +17,6 @@
 - All signed-in screens live under `src/routes/_authenticated/` and wrap content in `AppShell` (bottom nav + profile-required redirect to /onboarding).
 - PWA is manifest-only (installable, no service worker/offline).
 - Native Android/iOS apps are Capacitor shells (`android/`, `ios/`, `capacitor.config.ts`) that load the live site https://padel.ogbot.co.uk via `server.url`; why: TanStack Start is SSR, so no static bundle — web updates reach the apps with no store re-release.
-- AI coach insights run via `getMatchInsights` server fn (openai/gpt-6-astra, Responses, final text only); only user-ticked own matches are sent.
+- AI coach insights run via `getMatchInsights` server fn calling external providers directly with a fallback chain (Groq/Grok → Gemini → OpenRouter → Pollinations, user-owned keys); why: no Lovable AI credit use from players. Only user-ticked own matches are sent.
 - Privacy toggles are `profiles.show_*` columns; PlayerProfile hides sections for other viewers (display-level, rating/name always public for rankings).
 - Friends are one-way follows in `follows` (follower/followee, visible only to the two players involved); friend filters are applied client-side on existing feeds/leaderboards.

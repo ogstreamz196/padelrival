@@ -21,8 +21,6 @@ export const getMatchInsights = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ matchIds: z.array(z.string().uuid()).min(1).max(20) }).parse(d))
   .handler(async ({ data, context }) => {
-    const apiKey = process.env["LOVABLE_API_KEY"];
-    if (!apiKey) throw new Error("AI coach isn't configured yet.");
     const uid = context.userId;
 
     const [{ data: me }, { data: rows, error }] = await Promise.all([
@@ -56,37 +54,68 @@ ${lines.join("\n")}
 Write short, personal padel coaching insights in markdown with these sections:
 **Form check** (1-2 sentences), **What's working** (2 bullets), **Fix next** (2 bullets), **This week's plan** (3 concrete, actionable drills or tactics). Reference real patterns in the data (partners, set margins, opponent strength, tight sets). Under 220 words. Encouraging, sporty tone. No invented stats.`;
 
-    const { createOpenAI } = await import("@ai-sdk/openai");
-    const { streamText } = await import("ai");
-    const provider = createOpenAI({
-      baseURL: "https://ai.gateway.lovable.dev/v1",
-      apiKey,
-      headers: { "Lovable-API-Key": apiKey, "X-Lovable-AIG-SDK": "vercel-ai-sdk" },
-    });
-    let failure: unknown;
-    const result = streamText({
-      model: provider.responses("openai/gpt-6-astra"),
-      system: "You are a sharp, friendly padel coach for amateur 2v2 players.",
-      prompt,
-      onError: ({ error }) => {
-        failure = error;
-      },
-      providerOptions: {
-        openai: {
-          forceReasoning: true,
-          reasoningEffort: "low",
-          reasoningSummary: "auto",
-          store: false,
-          include: ["reasoning.encrypted_content"],
-        },
-      },
-    });
-    const text = await result.text;
-    if (!text) {
-      const status = (failure as { statusCode?: number })?.statusCode;
-      if (status === 429) throw new Error("The coach is busy — try again in a minute.");
-      if (status === 402) throw new Error("AI credits have run out for now.");
-      throw new Error("The coach couldn't write insights right now.");
-    }
+    const system = "You are a sharp, friendly padel coach for amateur 2v2 players.";
+    const text = await runCoach(system, prompt);
     return { text, count: list.length };
   });
+
+type Provider = { name: string; url: string; key: string; model: string; extra?: Record<string, string> };
+
+function providers(): Provider[] {
+  const env = (k: string) => process.env[k]?.trim() || "";
+  const out: Provider[] = [];
+  const groq = env("GROQ_API_KEY");
+  if (groq) {
+    out.push(
+      groq.startsWith("xai-")
+        ? { name: "grok", url: "https://api.x.ai/v1/chat/completions", key: groq, model: "grok-3-mini" }
+        : { name: "groq", url: "https://api.groq.com/openai/v1/chat/completions", key: groq, model: "openai/gpt-oss-120b" },
+    );
+  }
+  const gemini = env("GEMINI_API_KEY");
+  if (gemini) out.push({ name: "gemini", url: "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions", key: gemini, model: "gemini-flash-latest" });
+  const or = env("OPENROUTER_API_KEY");
+  if (or)
+    out.push({
+      name: "openrouter",
+      url: "https://openrouter.ai/api/v1/chat/completions",
+      key: or,
+      model: "openrouter/free",
+      extra: { "HTTP-Referer": "https://padel.ogbot.co.uk", "X-Title": "Padel Rival" },
+    });
+  const pol = env("POLLINATIONS_API_KEY");
+  if (pol) out.push({ name: "pollinations", url: "https://text.pollinations.ai/openai", key: pol, model: "openai" });
+  return out;
+}
+
+async function runCoach(system: string, prompt: string): Promise<string> {
+  const list = providers();
+  if (!list.length) throw new Error("AI coach isn't configured yet.");
+  for (const p of list) {
+    try {
+      const res = await fetch(p.url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${p.key}`, ...(p.extra ?? {}) },
+        body: JSON.stringify({
+          model: p.model,
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: prompt },
+          ],
+          max_tokens: 1500,
+        }),
+      });
+      if (!res.ok) {
+        console.warn(`[coach] ${p.name} ${res.status}: ${(await res.text()).slice(0, 200)}`);
+        continue;
+      }
+      const j = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+      const text = j.choices?.[0]?.message?.content?.trim();
+      if (text) return text;
+      console.warn(`[coach] ${p.name} returned empty`);
+    } catch (e) {
+      console.warn(`[coach] ${p.name} failed`, e);
+    }
+  }
+  throw new Error("The coach couldn't write insights right now — try again in a minute.");
+}
