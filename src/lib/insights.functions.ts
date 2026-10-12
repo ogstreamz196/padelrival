@@ -102,7 +102,7 @@ async function runCoach(system: string, prompt: string): Promise<string> {
             { role: "system", content: system },
             { role: "user", content: prompt },
           ],
-          max_tokens: 700,
+          max_tokens: 1500,
         }),
       });
       if (!res.ok) {
