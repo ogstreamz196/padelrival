@@ -16,13 +16,16 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedBeaconsRouteImport } from './routes/_authenticated/beacons'
 import { Route as AuthenticatedCelebrateRouteImport } from './routes/_authenticated/celebrate'
+import { Route as AuthenticatedCompareRouteImport } from './routes/_authenticated/compare'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedLeaderboardRouteImport } from './routes/_authenticated/leaderboard'
 import { Route as AuthenticatedMeRouteImport } from './routes/_authenticated/me'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as AuthenticatedRecordRouteImport } from './routes/_authenticated/record'
 import { Route as AuthenticatedRivalsRouteImport } from './routes/_authenticated/rivals'
+import { Route as AuthenticatedVenuesRouteImport } from './routes/_authenticated/venues'
 import { Route as AuthenticatedPlayerIdRouteImport } from './routes/_authenticated/player.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -59,9 +62,19 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBeaconsRoute = AuthenticatedBeaconsRouteImport.update({
+  id: '/beacons',
+  path: '/beacons',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCelebrateRoute = AuthenticatedCelebrateRouteImport.update({
   id: '/celebrate',
   path: '/celebrate',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCompareRoute = AuthenticatedCompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
@@ -95,6 +108,11 @@ const AuthenticatedRivalsRoute = AuthenticatedRivalsRouteImport.update({
   path: '/rivals',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedVenuesRoute = AuthenticatedVenuesRouteImport.update({
+  id: '/venues',
+  path: '/venues',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPlayerIdRoute = AuthenticatedPlayerIdRouteImport.update({
   id: '/player/$id',
   path: '/player/$id',
@@ -108,13 +126,16 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/beacons': typeof AuthenticatedBeaconsRoute
   '/celebrate': typeof AuthenticatedCelebrateRoute
+  '/compare': typeof AuthenticatedCompareRoute
   '/home': typeof AuthenticatedHomeRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/me': typeof AuthenticatedMeRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/record': typeof AuthenticatedRecordRoute
   '/rivals': typeof AuthenticatedRivalsRoute
+  '/venues': typeof AuthenticatedVenuesRoute
   '/player/$id': typeof AuthenticatedPlayerIdRoute
 }
 export interface FileRoutesByTo {
@@ -124,13 +145,16 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/beacons': typeof AuthenticatedBeaconsRoute
   '/celebrate': typeof AuthenticatedCelebrateRoute
+  '/compare': typeof AuthenticatedCompareRoute
   '/home': typeof AuthenticatedHomeRoute
   '/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/me': typeof AuthenticatedMeRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/record': typeof AuthenticatedRecordRoute
   '/rivals': typeof AuthenticatedRivalsRoute
+  '/venues': typeof AuthenticatedVenuesRoute
   '/player/$id': typeof AuthenticatedPlayerIdRoute
 }
 export interface FileRoutesById {
@@ -142,13 +166,16 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/beacons': typeof AuthenticatedBeaconsRoute
   '/_authenticated/celebrate': typeof AuthenticatedCelebrateRoute
+  '/_authenticated/compare': typeof AuthenticatedCompareRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/leaderboard': typeof AuthenticatedLeaderboardRoute
   '/_authenticated/me': typeof AuthenticatedMeRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/record': typeof AuthenticatedRecordRoute
   '/_authenticated/rivals': typeof AuthenticatedRivalsRoute
+  '/_authenticated/venues': typeof AuthenticatedVenuesRoute
   '/_authenticated/player/$id': typeof AuthenticatedPlayerIdRoute
 }
 export interface FileRouteTypes {
@@ -160,13 +187,16 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/terms'
     | '/admin'
+    | '/beacons'
     | '/celebrate'
+    | '/compare'
     | '/home'
     | '/leaderboard'
     | '/me'
     | '/onboarding'
     | '/record'
     | '/rivals'
+    | '/venues'
     | '/player/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -176,13 +206,16 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/terms'
     | '/admin'
+    | '/beacons'
     | '/celebrate'
+    | '/compare'
     | '/home'
     | '/leaderboard'
     | '/me'
     | '/onboarding'
     | '/record'
     | '/rivals'
+    | '/venues'
     | '/player/$id'
   id:
     | '__root__'
@@ -193,13 +226,16 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/terms'
     | '/_authenticated/admin'
+    | '/_authenticated/beacons'
     | '/_authenticated/celebrate'
+    | '/_authenticated/compare'
     | '/_authenticated/home'
     | '/_authenticated/leaderboard'
     | '/_authenticated/me'
     | '/_authenticated/onboarding'
     | '/_authenticated/record'
     | '/_authenticated/rivals'
+    | '/_authenticated/venues'
     | '/_authenticated/player/$id'
   fileRoutesById: FileRoutesById
 }
@@ -263,11 +299,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/beacons': {
+      id: '/_authenticated/beacons'
+      path: '/beacons'
+      fullPath: '/beacons'
+      preLoaderRoute: typeof AuthenticatedBeaconsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/celebrate': {
       id: '/_authenticated/celebrate'
       path: '/celebrate'
       fullPath: '/celebrate'
       preLoaderRoute: typeof AuthenticatedCelebrateRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/compare': {
+      id: '/_authenticated/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof AuthenticatedCompareRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/home': {
@@ -312,6 +362,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRivalsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/venues': {
+      id: '/_authenticated/venues'
+      path: '/venues'
+      fullPath: '/venues'
+      preLoaderRoute: typeof AuthenticatedVenuesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/player/$id': {
       id: '/_authenticated/player/$id'
       path: '/player/$id'
@@ -324,25 +381,31 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedBeaconsRoute: typeof AuthenticatedBeaconsRoute
   AuthenticatedCelebrateRoute: typeof AuthenticatedCelebrateRoute
+  AuthenticatedCompareRoute: typeof AuthenticatedCompareRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedLeaderboardRoute: typeof AuthenticatedLeaderboardRoute
   AuthenticatedMeRoute: typeof AuthenticatedMeRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedRecordRoute: typeof AuthenticatedRecordRoute
   AuthenticatedRivalsRoute: typeof AuthenticatedRivalsRoute
+  AuthenticatedVenuesRoute: typeof AuthenticatedVenuesRoute
   AuthenticatedPlayerIdRoute: typeof AuthenticatedPlayerIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedBeaconsRoute: AuthenticatedBeaconsRoute,
   AuthenticatedCelebrateRoute: AuthenticatedCelebrateRoute,
+  AuthenticatedCompareRoute: AuthenticatedCompareRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedLeaderboardRoute: AuthenticatedLeaderboardRoute,
   AuthenticatedMeRoute: AuthenticatedMeRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedRecordRoute: AuthenticatedRecordRoute,
   AuthenticatedRivalsRoute: AuthenticatedRivalsRoute,
+  AuthenticatedVenuesRoute: AuthenticatedVenuesRoute,
   AuthenticatedPlayerIdRoute: AuthenticatedPlayerIdRoute,
 }
 

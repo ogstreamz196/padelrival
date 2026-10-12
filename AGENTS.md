@@ -20,3 +20,6 @@
 - AI coach insights run via `getMatchInsights` server fn calling external providers directly with a fallback chain (Groq/Grok → Gemini → OpenRouter → Pollinations, user-owned keys); why: no Lovable AI credit use from players. Only user-ticked own matches are sent.
 - Privacy toggles are `profiles.show_*` columns; PlayerProfile hides sections for other viewers (display-level, rating/name always public for rankings).
 - Friends are one-way follows in `follows` (follower/followee, visible only to the two players involved); friend filters are applied client-side on existing feeds/leaderboards.
+- "Need a 4th" beacons live in `beacons`/`beacon_players`; clients can only read them, and all writes go through `create_beacon`/`join_beacon`/`leave_beacon`/`cancel_beacon` (status flips to `filled` when `players_needed` non-host players join).
+- Venue directory is `venues` (seeded, read-only) plus `venue_checkins` (one per player/venue/day, insert/delete own for `current_date` only); "friends playing today" filters check-ins client-side.
+- The Dossier (`/compare?p1=&p2=`) reads `get_head_to_head` and respects each player's `show_*` toggles.

@@ -7,6 +7,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
 import { PageGuide } from "@/components/PageGuide";
+import { QuickLinks } from "@/components/QuickLinks";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { useMyProfile } from "@/hooks/use-auth";
 import { SET_PRESETS, STB_PRESETS, validateSet, type SetScore } from "@/lib/game";
@@ -173,7 +174,8 @@ function RecordMatch() {
   return (
     <AppShell>
       <h1 className="text-3xl font-black">Record match</h1>
-      <p className="mb-4 mt-1 text-muted-foreground">2v2 · takes 20 seconds</p>
+      <p className="mt-1 text-muted-foreground">2v2 · takes 20 seconds</p>
+      <QuickLinks className="mb-4 mt-3" />
       <PageGuide id="record" />
 
       {empty && lastLineup.data && (

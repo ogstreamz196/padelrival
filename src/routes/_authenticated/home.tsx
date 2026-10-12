@@ -6,6 +6,8 @@ import { ActivityFeed } from "@/components/ActivityFeed";
 import { WeeklyLeague } from "@/components/WeeklyLeague";
 import { InstallBanner } from "@/components/InstallBanner";
 import { PageGuide } from "@/components/PageGuide";
+import { QuickLinks } from "@/components/QuickLinks";
+import { OpenBeacons } from "@/components/OpenBeacons";
 
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
@@ -96,6 +98,8 @@ function Home() {
         Record a match
       </Link>
 
+      <QuickLinks className="mt-3" />
+
       {revenge.length > 0 && (
         <section className="mt-7">
           <SectionTitle>Revenge radar</SectionTitle>
@@ -106,6 +110,8 @@ function Home() {
           </div>
         </section>
       )}
+
+      <OpenBeacons meId={user.id} />
 
       <section className="mt-7">
         <SectionTitle>Latest matches</SectionTitle>
