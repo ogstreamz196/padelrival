@@ -49,7 +49,7 @@ export function InstallBanner() {
     const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     setIos(isIos);
-    const t = isIos ? window.setTimeout(() => setShow(true), 1500) : undefined;
+    const t = isIos ? window.setTimeout(() => { if (iosAllowanceLeft()) setShow(true); }, 1500) : undefined;
 
     const onPrompt = (e: Event) => {
       e.preventDefault();
