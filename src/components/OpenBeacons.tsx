@@ -3,16 +3,18 @@ import { Radio } from "lucide-react";
 import { BeaconCard } from "@/components/BeaconCard";
 import { SectionTitle } from "@/components/PlayerProfile";
 import { useBeacons, useNow } from "@/hooks/use-beacons";
+import { useAppSettings } from "@/hooks/use-settings";
 
 /** Home-screen carousel of games that still need players. */
-export function OpenBeacons({ meId }: { meId: string }) {
+export function OpenBeacons({ meId }: { meId: string | null }) {
   const beacons = useBeacons(12);
   const now = useNow();
+  const { settings } = useAppSettings();
   const list = (beacons.data ?? [])
     .filter((b) => b.status === "open" || b.beacon_players.some((p) => p.user_id === meId))
     .slice(0, 6);
 
-  if (beacons.isLoading) return null;
+  if (beacons.isLoading || !settings.features.beacons) return null;
 
   return (
     <section className="mt-7">

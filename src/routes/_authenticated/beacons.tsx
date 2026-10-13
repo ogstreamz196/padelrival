@@ -16,6 +16,8 @@ import { useBeacons, useNow } from "@/hooks/use-beacons";
 import { BEACON_SIDES, BEACON_TIERS, sideLabel, tierLabel } from "@/lib/beacons";
 import { supabase } from "@/integrations/supabase/client";
 import { cn, haptic } from "@/lib/utils";
+import { useAuthGate } from "@/components/AuthPrompt";
+import { FeatureGate } from "@/components/FeatureGate";
 
 export const Route = createFileRoute("/_authenticated/beacons")({
   head: () => ({
@@ -52,7 +54,18 @@ function inDay(iso: string, f: DayFilter) {
 }
 
 function Beacons() {
+  return (
+    <FeatureGate feature="beacons">
+      <BeaconsPage />
+    </FeatureGate>
+  );
+}
+
+function BeaconsPage() {
   const { user } = Route.useRouteContext();
+  const meId = user?.id ?? null;
+  const { gate } = useAuthGate();
+  const post = () => gate("Create a free account to post a game and let players join you.") && setOpen(true);
   const beacons = useBeacons();
   const now = useNow();
   const [venue, setVenue] = useState("all");
@@ -66,8 +79,8 @@ function Beacons() {
   const list = (beacons.data ?? []).filter(
     (b) => (venue === "all" || b.venue === venue) && inDay(b.scheduled_at, day),
   );
-  const mine = list.filter((b) => b.beacon_players.some((p) => p.user_id === user.id));
-  const others = list.filter((b) => !b.beacon_players.some((p) => p.user_id === user.id));
+  const mine = list.filter((b) => b.beacon_players.some((p) => p.user_id === meId));
+  const others = list.filter((b) => !b.beacon_players.some((p) => p.user_id === meId));
 
   return (
     <AppShell>
@@ -85,7 +98,7 @@ function Beacons() {
         <button
           onClick={() => {
             haptic();
-            setOpen(true);
+            post();
           }}
           className="flex shrink-0 items-center gap-1 rounded-2xl bg-primary px-4 py-3 text-xs font-black uppercase text-primary-foreground glow active:scale-95"
         >
@@ -138,7 +151,7 @@ function Beacons() {
             Post one and share it to your WhatsApp group. Whoever taps first gets the spot.
           </p>
           <button
-            onClick={() => setOpen(true)}
+            onClick={post}
             className="mt-4 rounded-2xl bg-primary px-6 py-3 text-sm font-black uppercase tracking-wide text-primary-foreground"
           >
             Post a beacon
@@ -152,7 +165,7 @@ function Beacons() {
                 Your games
               </h2>
               {mine.map((b) => (
-                <BeaconCard key={b.id} b={b} meId={user.id} now={now} />
+                <BeaconCard key={b.id} b={b} meId={meId} now={now} />
               ))}
             </section>
           )}
@@ -162,14 +175,14 @@ function Beacons() {
                 Open games
               </h2>
               {others.map((b) => (
-                <BeaconCard key={b.id} b={b} meId={user.id} now={now} />
+                <BeaconCard key={b.id} b={b} meId={meId} now={now} />
               ))}
             </section>
           )}
         </div>
       )}
 
-      <PostBeaconDialog open={open} onOpenChange={setOpen} meId={user.id} />
+      {meId && <PostBeaconDialog open={open} onOpenChange={setOpen} meId={meId} />}
     </AppShell>
   );
 }

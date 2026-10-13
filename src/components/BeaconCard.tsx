@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Clock, MapPin, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
+import { useAuthGate } from "@/components/AuthPrompt";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { TIER_THEME, type TierName } from "@/components/RankCrest";
 import { useBeaconAction, type BeaconAction } from "@/hooks/use-beacons";
@@ -25,10 +26,11 @@ export function BeaconCard({
   compact,
 }: {
   b: Beacon;
-  meId: string;
+  meId: string | null;
   now: number;
   compact?: boolean;
 }) {
+  const { gate } = useAuthGate();
   const act = useBeaconAction();
   const isHost = b.created_by === meId;
   const joined = b.beacon_players.some((p) => p.user_id === meId);
@@ -40,6 +42,7 @@ export function BeaconCard({
 
   function run(action: BeaconAction) {
     haptic();
+    if (!gate("Create a free account to join games and get your spot saved.")) return;
     act.mutate(
       { id: b.id, action },
       {

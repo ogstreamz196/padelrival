@@ -10,6 +10,7 @@ import { levelInfo } from "@/lib/game";
 import { FollowButton } from "@/components/FollowButton";
 import { useFriendIds } from "@/hooks/use-friends";
 import { cn } from "@/lib/utils";
+import { useAuthGate } from "@/components/AuthPrompt";
 
 export const Route = createFileRoute("/_authenticated/leaderboard")({
   head: () => ({ meta: [{ title: "Leaderboard — Padel Rival" }, { name: "description", content: "Global and weekly padel rankings." }] }),
@@ -20,9 +21,11 @@ type Row = { id: string; username: string; display_name: string; avatar: string;
 
 function Leaderboard() {
   const { user } = Route.useRouteContext();
+  const meId = user?.id ?? null;
+  const { gate } = useAuthGate();
   const [scope, setScope] = useState<"global" | "weekly" | "friends">("global");
   const [search, setSearch] = useState("");
-  const friends = useFriendIds(user.id);
+  const friends = useFriendIds(meId);
   const [metric, setMetric] = useState<"rating" | "xp">("rating");
 
   const q = useQuery({
@@ -31,7 +34,7 @@ function Leaderboard() {
     queryFn: async (): Promise<Row[]> => {
       if (scope === "global" || scope === "friends") {
         let qb = supabase.from("profiles").select("*").order(metric, { ascending: false }).limit(100);
-        if (scope === "friends") qb = qb.in("id", [...(friends.data ?? []), user.id]);
+        if (scope === "friends") qb = qb.in("id", [...(friends.data ?? []), ...(meId ? [meId] : [])]);
         const { data, error } = await qb;
         if (error) throw error;
         return data.map((p) => ({
@@ -66,14 +69,14 @@ function Leaderboard() {
       <div className="mb-2 flex gap-1 rounded-2xl border bg-card p-1">
         <button className={seg(scope === "global")} onClick={() => setScope("global")}>Global</button>
         <button className={seg(scope === "weekly")} onClick={() => setScope("weekly")}>This week</button>
-        <button className={seg(scope === "friends")} onClick={() => setScope("friends")}>Friends</button>
+        <button className={seg(scope === "friends")} onClick={() => gate("Create a free account to add friends and see your own league.") && setScope("friends")}>Friends</button>
       </div>
       <div className="mb-5 flex gap-1 rounded-2xl border bg-card p-1">
         <button className={seg(metric === "rating")} onClick={() => setMetric("rating")}>Elo</button>
         <button className={seg(metric === "xp")} onClick={() => setMetric("xp")}>XP / Activity</button>
       </div>
 
-      {scope === "friends" && <FriendSearch meId={user.id} search={search} setSearch={setSearch} />}
+      {scope === "friends" && meId && <FriendSearch meId={meId} search={search} setSearch={setSearch} />}
       {q.data && q.data.length === 0 && (
         <div className="rounded-2xl border border-dashed p-6 text-center text-sm text-muted-foreground">
           {scope === "weekly" ? "No matches played this week yet — log one and you are instantly on the board." : "No players ranked yet."}
@@ -85,7 +88,7 @@ function Leaderboard() {
             key={r.id}
             to="/player/$id"
             params={{ id: r.id }}
-            className={cn("animate-rise flex items-center gap-3 rounded-2xl border bg-card p-3", r.id === user.id && "border-primary/60 bg-primary/10", i < 3 && "py-4")}
+            className={cn("animate-rise flex items-center gap-3 rounded-2xl border bg-card p-3", r.id === meId && "border-primary/60 bg-primary/10", i < 3 && "py-4")}
             style={{ animationDelay: `${Math.min(i, 10) * 40}ms` }}
           >
             <div className={cn("w-8 text-center font-display text-lg font-black", i === 0 ? "text-primary" : i < 3 ? "text-court" : "text-muted-foreground")}>
@@ -103,7 +106,7 @@ function Leaderboard() {
               {scope === "weekly" && r.value > 0 ? "+" : ""}
               {r.value}
             </div>
-            {scope === "friends" && r.id !== user.id && <FollowButton meId={user.id} id={r.id} className="px-2" />}
+            {scope === "friends" && r.id !== meId && <FollowButton meId={meId} id={r.id} className="px-2" />}
           </Link>
         ))}
       </div>

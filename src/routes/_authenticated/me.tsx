@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Crown, LogOut, RefreshCw, Settings, X } from "lucide-react";
+import { ChevronRight, Crown, LogOut, RefreshCw, Settings, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useMyProfile } from "@/hooks/use-auth";
@@ -14,14 +14,16 @@ import { AiCoach } from "@/components/AiCoach";
 import { PrivacySettings } from "@/components/PrivacySettings";
 import { AppPassword } from "@/components/AppPassword";
 import { LinkEmail } from "@/components/LinkEmail";
-import { BossPulse, BossTools } from "@/components/BossControls";
 import { PageGuide, resetGuides } from "@/components/PageGuide";
 import { ProModal, ProTeaser } from "@/components/ProUpgrade";
 import { useServerFn } from "@tanstack/react-start";
 import { deleteMyAccount } from "@/lib/account.functions";
+import { requireUser } from "./route";
+import { useAppSettings } from "@/hooks/use-settings";
 
 
 export const Route = createFileRoute("/_authenticated/me")({
+  beforeLoad: requireUser,
   head: () => ({
     meta: [
       { title: "Your player card — Padel Rival" },
@@ -37,12 +39,12 @@ export const Route = createFileRoute("/_authenticated/me")({
 
 function Me() {
   const { profile } = useMyProfile();
+  const { settings } = useAppSettings();
   const { isAdmin } = useIsAdmin();
   const qc = useQueryClient();
   const navigate = useNavigate();
   const deleteAccount = useServerFn(deleteMyAccount);
   const [editing, setEditing] = useState(false);
-  const [boss, setBoss] = useState(false);
   const [pro, setPro] = useState(false);
 
   const handleSignOut = async () => {
@@ -86,40 +88,24 @@ function Me() {
       </div>
 
       {isAdmin && (
-        <section className="mb-5 rounded-3xl border border-primary/50 bg-primary/5 p-4">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <Crown className="size-5 text-primary" />
-              <h2 className="font-display text-lg font-black uppercase tracking-wide text-primary">Boss controls</h2>
-            </div>
-            <button
-              onClick={() => setBoss((b) => !b)}
-              className="flex items-center gap-1 rounded-full border border-primary px-3 py-1.5 text-[11px] font-black uppercase tracking-wide text-primary"
-            >
-              {boss ? "Hide" : "Open"}
-              {boss ? <ChevronUp className="size-3.5" /> : <ChevronDown className="size-3.5" />}
-            </button>
-          </div>
-
-          {boss && (
-            <div className="mt-4">
-              <BossPulse />
-              <div className="mt-4">
-                <BossTools />
-              </div>
-              <Link to="/admin" className="mt-4 block rounded-2xl border py-3 text-center text-xs font-black uppercase tracking-wide text-muted-foreground">
-                Open full screen panel
-              </Link>
-            </div>
-          )}
-        </section>
+        <Link
+          to="/admin"
+          className="mb-5 flex items-center gap-3 rounded-3xl border border-primary/50 bg-primary/5 p-4 active:scale-[0.99]"
+        >
+          <Crown className="size-6 shrink-0 text-primary" />
+          <span className="min-w-0 flex-1">
+            <span className="block font-display text-sm font-black uppercase tracking-wide text-primary">Boss dashboard</span>
+            <span className="block text-xs text-muted-foreground">Players, pricing, clubs, settings and system health</span>
+          </span>
+          <ChevronRight className="size-5 text-primary" />
+        </Link>
       )}
 
       <PageGuide id="me" />
 
       {profile && <PlayerProfile userId={profile.id} isMe />}
 
-      {profile && <AiCoach userId={profile.id} />}
+      {profile && settings.features.ai_coach && <AiCoach userId={profile.id} />}
 
       <ProTeaser onOpen={() => setPro(true)} />
 

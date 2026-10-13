@@ -23,3 +23,6 @@
 - "Need a 4th" beacons live in `beacons`/`beacon_players`; clients can only read them, and all writes go through `create_beacon`/`join_beacon`/`leave_beacon`/`cancel_beacon` (status flips to `filled` when `players_needed` non-host players join).
 - Venue directory is `venues` (seeded, read-only) plus `venue_checkins` (one per player/venue/day, insert/delete own for `current_date` only); "friends playing today" filters check-ins client-side.
 - The Dossier (`/compare?p1=&p2=`) reads `get_head_to_head` and respects each player's `show_*` toggles.
+- Guests can browse without an account: `_authenticated/route.tsx` returns `user: User | null`, personal screens add `beforeLoad: requireUser`, and save actions call `useAuthGate().gate(reason)` to open the sign-up sheet; anon has read-only RLS on public tables (not `follows` or `venue_checkins`).
+- Boss-editable config (Pro pricing/offer, feature switches, announcement) lives in `app_settings` rows, read via `useAppSettings()` and written only through `admin_update_setting`. Pro membership is `pro_members`, written only by boss RPCs (or a future payment webhook with the service role).
+- The boss dashboard (`/admin?tab=`) uses `admin_*` security-definer functions plus `admin.functions.ts` server fns (delete/suspend user, health checks) that need the service role; every boss action is written to `admin_log`.

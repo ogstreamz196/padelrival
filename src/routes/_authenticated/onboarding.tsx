@@ -7,8 +7,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useMyProfile } from "@/hooks/use-auth";
 import { ProfileForm } from "@/components/ProfileForm";
 import { LinkEmail } from "@/components/LinkEmail";
+import { requireUser } from "./route";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
+  beforeLoad: requireUser,
   head: () => ({ meta: [{ title: "Create your player — Padel Rival" }, { name: "description", content: "Set up your Padel Rival player card." }] }),
   component: Onboarding,
 });

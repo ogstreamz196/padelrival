@@ -21,6 +21,7 @@ import { ACHIEVEMENTS, levelInfo, rankTier } from "@/lib/game";
 import { SITE_URL } from "@/lib/beacons";
 import { whatsappUrl } from "@/lib/share";
 import { cn, haptic } from "@/lib/utils";
+import { FeatureGate } from "@/components/FeatureGate";
 
 type Search = { p1?: string | undefined; p2?: string | undefined };
 
@@ -73,10 +74,19 @@ function usePlayer(id: string | undefined) {
 type Dossier = NonNullable<ReturnType<typeof usePlayer>["data"]>;
 
 function Compare() {
+  return (
+    <FeatureGate feature="dossier">
+      <ComparePage />
+    </FeatureGate>
+  );
+}
+
+function ComparePage() {
   const { user } = Route.useRouteContext();
   const search = Route.useSearch();
   const navigate = useNavigate({ from: "/compare" });
-  const p1 = search.p1 ?? user.id;
+  const meId = user?.id ?? null;
+  const p1 = search.p1 ?? meId ?? undefined;
   const p2 = search.p2 && search.p2 !== p1 ? search.p2 : undefined;
   const [picking, setPicking] = useState<"p1" | "p2" | null>(null);
 
@@ -85,9 +95,9 @@ function Compare() {
 
   const h2h = useQuery({
     queryKey: ["h2h", p1, p2],
-    enabled: !!p2,
+    enabled: !!p1 && !!p2,
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_head_to_head", { _a: p1, _b: p2! });
+      const { data, error } = await supabase.rpc("get_head_to_head", { _a: p1!, _b: p2! });
       if (error) throw error;
       return data?.[0] ?? null;
     },
@@ -96,7 +106,7 @@ function Compare() {
   function pick(slot: "p1" | "p2", id: string) {
     haptic();
     setPicking(null);
-    navigate({ search: (s: Search) => ({ ...s, p1: s.p1 ?? user.id, [slot]: id }) });
+    navigate({ search: (s: Search) => ({ ...s, p1: s.p1 ?? meId ?? undefined, [slot]: id }) });
   }
 
   function swap() {
@@ -110,7 +120,7 @@ function Compare() {
   const visible = (
     d: Dossier | null | undefined,
     k: "show_record" | "show_court_side" | "show_achievements" | "show_rivalries",
-  ) => !!d && (d.profile.id === user.id || d.profile[k] !== false);
+  ) => !!d && (d.profile.id === meId || d.profile[k] !== false);
 
   function share() {
     if (!A || !B) return;
@@ -317,7 +327,7 @@ function Compare() {
       <PlayerPicker
         open={picking !== null}
         onOpenChange={(v) => !v && setPicking(null)}
-        meId={user.id}
+        meId={meId}
         exclude={picking === "p1" ? p2 : p1}
         onPick={(id) => picking && pick(picking, id)}
       />
@@ -469,7 +479,7 @@ function PlayerPicker({
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  meId: string;
+  meId: string | null;
   exclude?: string | undefined;
   onPick: (id: string) => void;
 }) {
@@ -488,7 +498,8 @@ function PlayerPicker({
         query = query
           .or(`display_name.ilike.%${term}%,username.ilike.%${term}%`)
           .order("rating", { ascending: false });
-      else query = query.in("id", [meId, ...(friendIds.data ?? [])]).order("display_name");
+      else if (meId) query = query.in("id", [meId, ...(friendIds.data ?? [])]).order("display_name");
+      else query = query.order("rating", { ascending: false });
       const { data, error } = await query.limit(20);
       if (error) throw error;
       return data;
@@ -515,7 +526,7 @@ function PlayerPicker({
         </div>
         {!term && (
           <div className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-            You & your friends
+            {meId ? "You & your friends" : "Top players"}
           </div>
         )}
         <div className="space-y-1.5">

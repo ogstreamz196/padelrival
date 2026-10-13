@@ -8,6 +8,8 @@ import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { useFriendIds } from "@/hooks/use-friends";
 import { supabase } from "@/integrations/supabase/client";
 import { cn, haptic } from "@/lib/utils";
+import { useAuthGate } from "@/components/AuthPrompt";
+import { FeatureGate } from "@/components/FeatureGate";
 
 export const Route = createFileRoute("/_authenticated/venues")({
   head: () => ({
@@ -41,10 +43,20 @@ function bookingLink(v: { name: string; city: string; booking_url: string | null
 }
 
 function Venues() {
+  return (
+    <FeatureGate feature="venues">
+      <VenuesPage />
+    </FeatureGate>
+  );
+}
+
+function VenuesPage() {
   const { user } = Route.useRouteContext();
+  const meId = user?.id ?? null;
+  const { gate } = useAuthGate();
   const qc = useQueryClient();
   const [q, setQ] = useState("");
-  const friends = useFriendIds(user.id);
+  const friends = useFriendIds(meId);
   const day = todayKey();
 
   const venues = useQuery({
@@ -60,6 +72,7 @@ function Venues() {
   const checkinsKey = ["venue-checkins", day];
   const checkins = useQuery({
     queryKey: checkinsKey,
+    enabled: !!meId,
     queryFn: async (): Promise<Checkin[]> => {
       const { data, error } = await supabase
         .from("venue_checkins")
@@ -77,9 +90,9 @@ function Venues() {
             .from("venue_checkins")
             .delete()
             .eq("venue_id", venueId)
-            .eq("user_id", user.id)
+            .eq("user_id", meId!)
             .eq("playing_at", day)
-        : await supabase.from("venue_checkins").insert({ venue_id: venueId, user_id: user.id });
+        : await supabase.from("venue_checkins").insert({ venue_id: venueId, user_id: meId! });
       if (res.error) throw res.error;
     },
     onMutate: async ({ venueId, on }) => {
@@ -87,8 +100,8 @@ function Venues() {
       const prev = qc.getQueryData<Checkin[]>(checkinsKey);
       qc.setQueryData<Checkin[]>(checkinsKey, (old = []) =>
         on
-          ? old.filter((c) => !(c.venue_id === venueId && c.user_id === user.id))
-          : [...old, { venue_id: venueId, user_id: user.id, profiles: null }],
+          ? old.filter((c) => !(c.venue_id === venueId && c.user_id === meId))
+          : [...old, { venue_id: venueId, user_id: meId!, profiles: null }],
       );
       return { prev };
     },
@@ -118,7 +131,7 @@ function Venues() {
   const score = (id: string) => {
     const cs = byVenue.get(id) ?? [];
     return (
-      (cs.some((c) => c.user_id === user.id) ? 100 : 0) +
+      (cs.some((c) => c.user_id === meId) ? 100 : 0) +
       cs.filter((c) => friendSet.has(c.user_id)).length * 10 +
       cs.length
     );
@@ -151,7 +164,7 @@ function Venues() {
           ? [0, 1, 2].map((i) => <div key={i} className="h-36 animate-pulse rounded-3xl bg-card" />)
           : sorted.map((v) => {
               const cs = byVenue.get(v.id) ?? [];
-              const here = cs.some((c) => c.user_id === user.id);
+              const here = !!meId && cs.some((c) => c.user_id === meId);
               const mates = cs.filter((c) => friendSet.has(c.user_id) && c.profiles);
               return (
                 <article
@@ -223,6 +236,7 @@ function Venues() {
                       disabled={toggle.isPending}
                       onClick={() => {
                         haptic();
+                        if (!gate("Create a free account to check in and let friends know you're playing.")) return;
                         toggle.mutate({ venueId: v.id, on: here });
                       }}
                       className={cn(

@@ -58,8 +58,11 @@ function Landing() {
       </div>
 
       <div>
-        <Link to="/auth" className="block rounded-2xl bg-primary py-4 text-center font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]">
+        <Link to="/home" className="block rounded-2xl bg-primary py-4 text-center font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]">
           Enter the court
+        </Link>
+        <Link to="/auth" className="mt-3 block py-2 text-center text-sm font-bold text-muted-foreground">
+          Already a player? <span className="text-primary">Sign in</span>
         </Link>
         <div className="mt-4 flex justify-center gap-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
           <Link to="/privacy">Privacy</Link>

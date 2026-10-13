@@ -12,9 +12,11 @@ import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { useMyProfile } from "@/hooks/use-auth";
 import { SET_PRESETS, STB_PRESETS, validateSet, type SetScore } from "@/lib/game";
 import { cn, haptic } from "@/lib/utils";
+import { requireUser } from "./route";
 
 
 export const Route = createFileRoute("/_authenticated/record")({
+  beforeLoad: requireUser,
   validateSearch: z.object({ opp: z.string().optional() }),
   head: () => ({ meta: [{ title: "Record match — Padel Rival" }, { name: "description", content: "Log a 2v2 padel match." }] }),
   component: RecordMatch,

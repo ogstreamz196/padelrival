@@ -7,6 +7,7 @@ import { formatSets, undoLeft, type SetScore } from "@/lib/game";
 import { PlayerAvatar } from "./PlayerAvatar";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { useAuthGate } from "@/components/AuthPrompt";
 import { useFriendIds } from "@/hooks/use-friends";
 
 type FeedPlayer = {
@@ -28,7 +29,8 @@ type FeedMatch = {
   match_players: FeedPlayer[];
 };
 
-export function ActivityFeed({ meId }: { meId: string }) {
+export function ActivityFeed({ meId }: { meId: string | null }) {
+  const { gate } = useAuthGate();
   const qc = useQueryClient();
   const [expanded, setExpanded] = useState(false);
   const [scope, setScope] = useState<"all" | "friends">("all");
@@ -58,6 +60,7 @@ export function ActivityFeed({ meId }: { meId: string }) {
 
   const bump = useMutation({
     mutationFn: async ({ matchId, on }: { matchId: string; on: boolean }) => {
+      if (!meId) return;
       if (on) {
         const { error } = await supabase.from("match_reactions").delete().eq("match_id", matchId).eq("user_id", meId);
         if (error) throw error;
@@ -95,7 +98,7 @@ export function ActivityFeed({ meId }: { meId: string }) {
       </div>
     );
 
-  const friendSet = new Set([...(friends.data ?? []), meId]);
+  const friendSet = new Set([...(friends.data ?? []), ...(meId ? [meId] : [])]);
   const filtered = scope === "friends" ? feed.data.filter((m) => m.match_players.some((p) => p.user_id && friendSet.has(p.user_id))) : feed.data;
   const visible = expanded ? filtered : filtered.slice(0, 2);
   const tab = (on: boolean) => cn("flex-1 rounded-lg py-1.5 text-xs font-bold uppercase", on ? "bg-primary text-primary-foreground" : "text-muted-foreground");
@@ -104,7 +107,7 @@ export function ActivityFeed({ meId }: { meId: string }) {
     <div className="space-y-3">
       <div className="flex gap-1 rounded-xl border bg-card p-1">
         <button className={tab(scope === "all")} onClick={() => setScope("all")}>Everyone</button>
-        <button className={tab(scope === "friends")} onClick={() => setScope("friends")}>Friends</button>
+        <button className={tab(scope === "friends")} onClick={() => gate("Create a free account to follow friends and see their matches.") && setScope("friends")}>Friends</button>
       </div>
       {scope === "friends" && !filtered.length && (
         <div className="rounded-2xl border border-dashed p-5 text-center text-sm text-muted-foreground">
@@ -139,7 +142,7 @@ export function ActivityFeed({ meId }: { meId: string }) {
             </div>
             <div className="flex items-center gap-2 border-t px-3 py-2">
               <button
-                onClick={() => bump.mutate({ matchId: m.id, on: mine })}
+                onClick={() => gate("Create a free account to react to matches.") && bump.mutate({ matchId: m.id, on: mine })}
                 className={cn("flex items-center gap-1 rounded-full border px-3 py-1 text-xs font-bold active:scale-95", mine && "border-primary bg-primary/15 text-primary")}
               >
                 🤜🤛 {bumps.length || ""}

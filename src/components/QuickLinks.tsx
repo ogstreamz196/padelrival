@@ -1,18 +1,20 @@
 import { Link } from "@tanstack/react-router";
 import { MapPin, Radio, Swords } from "lucide-react";
+import { useAppSettings } from "@/hooks/use-settings";
 import { cn, haptic } from "@/lib/utils";
 
 const LINKS = [
-  { to: "/beacons", label: "Need a 4th", icon: Radio, tone: "text-primary" },
-  { to: "/venues", label: "Clubs", icon: MapPin, tone: "text-court" },
-  { to: "/compare", label: "Dossier", icon: Swords, tone: "text-fire" },
+  { to: "/beacons", label: "Need a 4th", icon: Radio, tone: "text-primary", feature: "beacons" },
+  { to: "/venues", label: "Clubs", icon: MapPin, tone: "text-court", feature: "venues" },
+  { to: "/compare", label: "Dossier", icon: Swords, tone: "text-fire", feature: "dossier" },
 ] as const;
 
 /** Pills linking to the screens that sit outside the bottom nav. */
 export function QuickLinks({ className }: { className?: string }) {
+  const { settings } = useAppSettings();
   return (
     <div className={cn("flex gap-2 overflow-x-auto pb-1", className)}>
-      {LINKS.map(({ to, label, icon: Icon, tone }) => (
+      {LINKS.filter((l) => settings.features[l.feature]).map(({ to, label, icon: Icon, tone }) => (
         <Link
           key={to}
           to={to}

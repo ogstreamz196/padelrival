@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_log: {
+        Row: {
+          action: string
+          actor: string | null
+          created_at: string
+          detail: Json | null
+          id: number
+          target: string | null
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          created_at?: string
+          detail?: Json | null
+          id?: number
+          target?: string | null
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          created_at?: string
+          detail?: Json | null
+          id?: number
+          target?: string | null
+        }
+        Relationships: []
+      }
       achievements: {
         Row: {
           code: string
@@ -39,6 +66,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: []
       }
       beacon_players: {
         Row: {
@@ -291,6 +339,35 @@ export type Database = {
         }
         Relationships: []
       }
+      pro_members: {
+        Row: {
+          expires_at: string | null
+          source: string
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          expires_at?: string | null
+          source?: string
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          expires_at?: string | null
+          source?: string
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar: string
@@ -455,6 +532,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_activity: {
+        Args: { _days?: number }
+        Returns: { beacons: number; day: string; matches: number; signups: number }[]
+      }
+      admin_cancel_beacon: { Args: { _id: string }; Returns: Json }
+      admin_delete_venue: { Args: { _id: string }; Returns: Json }
+      admin_log_external: {
+        Args: { _action: string; _actor: string; _detail?: Json; _target: string }
+        Returns: undefined
+      }
       admin_matches: {
         Args: { _limit?: number }
         Returns: {
@@ -469,6 +556,7 @@ export type Database = {
           winner_team: number
         }[]
       }
+      admin_overview: { Args: never; Returns: Json }
       admin_players: {
         Args: never
         Returns: {
@@ -490,11 +578,48 @@ export type Database = {
           xp: number
         }[]
       }
+      admin_roster: {
+        Args: never
+        Returns: {
+          avatar: string
+          avatar_color: string
+          banned_until: string | null
+          created_at: string
+          display_name: string
+          email: string | null
+          id: string
+          is_admin: boolean
+          is_pro: boolean
+          last_sign_in_at: string | null
+          losses: number
+          matches: number
+          pro_expires_at: string | null
+          rating: number
+          username: string
+          wins: number
+          xp: number
+        }[]
+      }
+      admin_set_admin: { Args: { _on: boolean; _user: string }; Returns: Json }
+      admin_set_pro: { Args: { _days?: number; _on: boolean; _user: string }; Returns: Json }
       admin_set_rating: {
         Args: { _rating: number; _user: string; _xp?: number }
         Returns: Json
       }
       admin_stats: { Args: never; Returns: Json }
+      admin_update_setting: { Args: { _key: string; _value: Json }; Returns: Json }
+      admin_upsert_venue: {
+        Args: {
+          _booking_url: string
+          _city: string
+          _court_type: string
+          _courts: number
+          _id: string | null
+          _name: string
+          _postcode: string
+        }
+        Returns: string
+      }
       admin_void_match: { Args: { _match_id: string }; Returns: Json }
       cancel_beacon: { Args: { _beacon_id: string }; Returns: string }
       claim_boss: { Args: never; Returns: boolean }

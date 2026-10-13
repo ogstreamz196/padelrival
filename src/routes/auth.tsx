@@ -6,7 +6,18 @@ import { lovable } from "@/integrations/lovable/index";
 import { useIsNative } from "@/hooks/use-native";
 import { signInWithUsername, signUpWithUsername } from "@/lib/username-auth.functions";
 
+type AuthSearch = { mode?: "up" | undefined; redirect?: string | undefined };
+
+/** Only same-site paths, so a crafted link can't bounce people elsewhere after sign-in. */
+function safeRedirect(r?: string) {
+  return r && r.startsWith("/") && !r.startsWith("//") && !r.startsWith("/auth") ? r : "/home";
+}
+
 export const Route = createFileRoute("/auth")({
+  validateSearch: (s: Record<string, unknown>): AuthSearch => ({
+    mode: s["mode"] === "up" ? "up" : undefined,
+    redirect: typeof s["redirect"] === "string" ? s["redirect"] : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "Sign in — Padel Rival" },
@@ -20,7 +31,9 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"in" | "up">("in");
+  const search = Route.useSearch();
+  const [mode, setMode] = useState<"in" | "up">(search.mode === "up" ? "up" : "in");
+  const target = safeRedirect(search.redirect);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -28,11 +41,11 @@ function AuthPage() {
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((_e, s) => {
-      if (s) navigate({ to: "/home" });
+      if (s) navigate({ to: target });
     });
-    supabase.auth.getSession().then(({ data }) => data.session && navigate({ to: "/home" }));
+    supabase.auth.getSession().then(({ data }) => data.session && navigate({ to: target }));
     return () => data.subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, target]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -63,6 +76,9 @@ function AuthPage() {
 
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-6 py-10">
+      <Link to="/home" className="mb-6 text-sm font-bold text-muted-foreground">
+        ← Keep browsing
+      </Link>
       <h1 className="text-4xl font-black">{mode === "in" ? "Welcome back." : "Join the ladder."}</h1>
       <p className="mt-2 text-muted-foreground">{mode === "in" ? "Your rivals have been busy." : "Start at 1000 Elo. Go up from there."}</p>
 

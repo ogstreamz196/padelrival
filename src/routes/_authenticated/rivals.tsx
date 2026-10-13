@@ -5,8 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
 import { PageGuide } from "@/components/PageGuide";
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
+import { requireUser } from "./route";
 
 export const Route = createFileRoute("/_authenticated/rivals")({
+  beforeLoad: requireUser,
   head: () => ({ meta: [{ title: "Rivalries — Padel Rival" }, { name: "description", content: "Your head-to-head rivalries." }] }),
   component: Rivals,
 });

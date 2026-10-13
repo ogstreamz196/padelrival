@@ -13,6 +13,7 @@ export const Route = createFileRoute("/_authenticated/player/$id")({
 function PlayerPage() {
   const { id } = Route.useParams();
   const { user } = Route.useRouteContext();
+  const meId = user?.id ?? null;
   const router = useRouter();
   return (
     <AppShell>
@@ -20,21 +21,21 @@ function PlayerPage() {
         <button onClick={() => router.history.back()} className="flex items-center gap-1 text-sm font-bold text-muted-foreground">
           <ChevronLeft className="size-4" /> Back
         </button>
-        {id !== user.id && (
+        {id !== meId && (
           <div className="flex items-center gap-2">
             <Link
               to="/compare"
-              search={{ p1: user.id, p2: id }}
+              search={meId ? { p1: meId, p2: id } : { p1: id }}
               onClick={() => haptic()}
               className="flex items-center gap-1 rounded-full border bg-card px-3 py-1.5 text-xs font-black uppercase text-court active:scale-95"
             >
-              <Swords className="size-3.5" /> Compare with me
+              <Swords className="size-3.5" /> {meId ? "Compare with me" : "Compare"}
             </Link>
-            <FollowButton meId={user.id} id={id} />
+            <FollowButton meId={meId} id={id} />
           </div>
         )}
       </div>
-      <PlayerProfile userId={id} isMe={id === user.id} />
+      <PlayerProfile userId={id} isMe={id === meId} />
     </AppShell>
   );
 }

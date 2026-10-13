@@ -1,12 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Flame } from "lucide-react";
+import { ChevronRight, Crown, Flame } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { WeeklyLeague } from "@/components/WeeklyLeague";
 import { InstallBanner } from "@/components/InstallBanner";
 import { PageGuide } from "@/components/PageGuide";
 import { QuickLinks } from "@/components/QuickLinks";
+import { useAuthGate } from "@/components/AuthPrompt";
+import { useIsAdmin } from "@/hooks/use-admin";
+import { ProOfferBanner } from "@/components/ProUpgrade";
 import { OpenBeacons } from "@/components/OpenBeacons";
 
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
@@ -35,12 +38,16 @@ export const Route = createFileRoute("/_authenticated/home")({
 
 function Home() {
   const { user } = Route.useRouteContext();
+  const meId = user?.id ?? null;
   const { profile } = useMyProfile();
+  const { gate } = useAuthGate();
+  const { isAdmin } = useIsAdmin();
 
   const rivals = useQuery({
-    queryKey: ["rivals", user.id],
+    queryKey: ["rivals", meId],
+    enabled: !!meId,
     queryFn: async () => {
-      const { data, error } = await supabase.rpc("get_rivalries", { _user: user.id });
+      const { data, error } = await supabase.rpc("get_rivalries", { _user: meId! });
       if (error) throw error;
       return data as Rivalry[];
     },
@@ -77,7 +84,17 @@ function Home() {
         </section>
       )}
 
-      <PageGuide id="home" />
+      {!meId && <GuestWelcome />}
+
+      {isAdmin && (
+        <Link to="/admin" className="mb-4 flex items-center gap-3 rounded-3xl border border-primary/50 bg-primary/5 p-3.5 active:scale-[0.99]">
+          <Crown className="size-5 shrink-0 text-primary" />
+          <span className="flex-1 font-display text-sm font-black uppercase tracking-wide text-primary">Boss dashboard</span>
+          <ChevronRight className="size-5 text-primary" />
+        </Link>
+      )}
+
+      {meId && <PageGuide id="home" />}
 
       {profile && (
         <section className="mb-4">
@@ -85,7 +102,9 @@ function Home() {
         </section>
       )}
 
-      {profile && <WeeklyLeague meId={user.id} rating={profile.rating} />}
+      {profile && <WeeklyLeague meId={profile.id} rating={profile.rating} />}
+
+      {profile && <ProOfferBanner />}
 
 
       <InstallBanner />
@@ -93,6 +112,9 @@ function Home() {
 
       <Link
         to="/record"
+        onClick={(e) => {
+          if (!gate("Create a free account to record matches, earn Elo and keep your stats.")) e.preventDefault();
+        }}
         className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-primary py-4 font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]"
       >
         Record a match
@@ -105,18 +127,46 @@ function Home() {
           <SectionTitle>Revenge radar</SectionTitle>
           <div className="space-y-3">
             {revenge.map((r) => (
-              <RivalryCard key={r.opponent_id} r={r} meId={user.id} showRevenge />
+              <RivalryCard key={r.opponent_id} r={r} meId={meId!} showRevenge />
             ))}
           </div>
         </section>
       )}
 
-      <OpenBeacons meId={user.id} />
+      <OpenBeacons meId={meId} />
 
       <section className="mt-7">
         <SectionTitle>Latest matches</SectionTitle>
-        <ActivityFeed meId={user.id} />
+        <ActivityFeed meId={meId} />
       </section>
     </AppShell>
+  );
+}
+
+function GuestWelcome() {
+  return (
+    <section className="mb-5 rounded-3xl border border-primary/40 bg-primary/5 p-5">
+      <div className="flex items-center gap-2">
+        <img src="/icon-192.png" alt="" className="size-8 rounded-xl" />
+        <span className="font-display text-sm font-black uppercase tracking-wide">Padel Rival</span>
+      </div>
+      <h1 className="mt-3 text-2xl font-black leading-tight">Have a look around.</h1>
+      <p className="mt-1 text-sm text-muted-foreground">
+        See who's on top, find a game that needs a player and check out the clubs. When you want to save a match or add
+        friends, a free account takes about 20 seconds.
+      </p>
+      <div className="mt-4 flex gap-2">
+        <Link
+          to="/auth"
+          search={{ mode: "up" }}
+          className="flex-1 rounded-2xl bg-primary py-3 text-center text-sm font-black uppercase text-primary-foreground"
+        >
+          Join free
+        </Link>
+        <Link to="/auth" className="flex-1 rounded-2xl border py-3 text-center text-sm font-bold">
+          Sign in
+        </Link>
+      </div>
+    </section>
   );
 }
