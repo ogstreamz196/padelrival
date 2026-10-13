@@ -24,6 +24,7 @@ import { cn, haptic } from "@/lib/utils";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/venues")({
+  staticData: { sitemap: false },
   head: () =>
     seo({
       title: "Padel clubs — book a court, see who is playing | Padel Rival",

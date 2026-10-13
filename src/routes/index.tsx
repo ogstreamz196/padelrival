@@ -9,6 +9,7 @@ const DESCRIPTION =
   "Log padel matches in 20 seconds, get an Elo rating, track head-to-head rivalries and find players for your next game. Free padel app for the UK.";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     ...seo({ title: TITLE, description: DESCRIPTION, path: "/" }),
     scripts: [

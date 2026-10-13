@@ -12,6 +12,7 @@ import { hasRecordDraft } from "@/lib/record-draft";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
+  staticData: { sitemap: false },
   beforeLoad: requireUser,
   head: () =>
     seo({

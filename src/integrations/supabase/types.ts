@@ -14,33 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      admin_log: {
-        Row: {
-          action: string
-          actor: string | null
-          created_at: string
-          detail: Json | null
-          id: number
-          target: string | null
-        }
-        Insert: {
-          action: string
-          actor?: string | null
-          created_at?: string
-          detail?: Json | null
-          id?: number
-          target?: string | null
-        }
-        Update: {
-          action?: string
-          actor?: string | null
-          created_at?: string
-          detail?: Json | null
-          id?: number
-          target?: string | null
-        }
-        Relationships: []
-      }
       achievements: {
         Row: {
           code: string
@@ -66,6 +39,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      admin_log: {
+        Row: {
+          action: string
+          actor: string | null
+          created_at: string
+          detail: Json | null
+          id: number
+          target: string | null
+        }
+        Insert: {
+          action: string
+          actor?: string | null
+          created_at?: string
+          detail?: Json | null
+          id?: never
+          target?: string | null
+        }
+        Update: {
+          action?: string
+          actor?: string | null
+          created_at?: string
+          detail?: Json | null
+          id?: never
+          target?: string | null
+        }
+        Relationships: []
       }
       app_settings: {
         Row: {
@@ -534,12 +534,22 @@ export type Database = {
     Functions: {
       admin_activity: {
         Args: { _days?: number }
-        Returns: { beacons: number; day: string; matches: number; signups: number }[]
+        Returns: {
+          beacons: number
+          day: string
+          matches: number
+          signups: number
+        }[]
       }
       admin_cancel_beacon: { Args: { _id: string }; Returns: Json }
       admin_delete_venue: { Args: { _id: string }; Returns: Json }
       admin_log_external: {
-        Args: { _action: string; _actor: string; _detail?: Json; _target: string }
+        Args: {
+          _action: string
+          _actor: string
+          _detail?: Json
+          _target: string
+        }
         Returns: undefined
       }
       admin_matches: {
@@ -555,6 +565,10 @@ export type Database = {
           venue: string
           winner_team: number
         }[]
+      }
+      admin_note: {
+        Args: { _action: string; _detail?: Json; _target: string }
+        Returns: undefined
       }
       admin_overview: { Args: never; Returns: Json }
       admin_players: {
@@ -583,17 +597,17 @@ export type Database = {
         Returns: {
           avatar: string
           avatar_color: string
-          banned_until: string | null
+          banned_until: string
           created_at: string
           display_name: string
-          email: string | null
+          email: string
           id: string
           is_admin: boolean
           is_pro: boolean
-          last_sign_in_at: string | null
+          last_sign_in_at: string
           losses: number
           matches: number
-          pro_expires_at: string | null
+          pro_expires_at: string
           rating: number
           username: string
           wins: number
@@ -601,20 +615,26 @@ export type Database = {
         }[]
       }
       admin_set_admin: { Args: { _on: boolean; _user: string }; Returns: Json }
-      admin_set_pro: { Args: { _days?: number; _on: boolean; _user: string }; Returns: Json }
+      admin_set_pro: {
+        Args: { _days?: number; _on: boolean; _user: string }
+        Returns: Json
+      }
       admin_set_rating: {
         Args: { _rating: number; _user: string; _xp?: number }
         Returns: Json
       }
       admin_stats: { Args: never; Returns: Json }
-      admin_update_setting: { Args: { _key: string; _value: Json }; Returns: Json }
+      admin_update_setting: {
+        Args: { _key: string; _value: Json }
+        Returns: Json
+      }
       admin_upsert_venue: {
         Args: {
           _booking_url: string
           _city: string
           _court_type: string
           _courts: number
-          _id: string | null
+          _id: string
           _name: string
           _postcode: string
         }

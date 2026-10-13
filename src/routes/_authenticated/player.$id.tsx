@@ -7,6 +7,7 @@ import { haptic } from "@/lib/utils";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/player/$id")({
+  staticData: { sitemap: false },
   head: ({ params }) =>
     seo({
       title: "Padel player card — Padel Rival",

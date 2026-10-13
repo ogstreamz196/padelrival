@@ -23,6 +23,7 @@ import { cn } from "@/lib/utils";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/home")({
+  staticData: { sitemap: false },
   head: () =>
     seo({
       title: "Padel Rival — Your padel clubhouse: matches, ratings & rivals",
@@ -54,6 +55,7 @@ function Home() {
 
   return (
     <AppShell>
+      {profile && <h1 className="sr-only">Clubhouse</h1>}
       {profile && lvl && (
         <section className="mb-5 flex items-center gap-3">
           <PlayerAvatar avatar={profile.avatar} color={profile.avatar_color} />

@@ -19,6 +19,7 @@ import { seo } from "@/lib/seo";
 
 
 export const Route = createFileRoute("/_authenticated/record")({
+  staticData: { sitemap: false },
   validateSearch: z.object({ opp: z.string().optional() }),
   head: () =>
     seo({

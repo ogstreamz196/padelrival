@@ -14,6 +14,7 @@ import { useAuthGate } from "@/components/AuthPrompt";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/leaderboard")({
+  staticData: { sitemap: false },
   head: () =>
     seo({
       title: "Padel rankings & leaderboard — Padel Rival",

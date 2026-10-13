@@ -13,6 +13,7 @@ import { requireUser } from "./route";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/celebrate")({
+  staticData: { sitemap: false },
   beforeLoad: requireUser,
   head: () =>
     seo({

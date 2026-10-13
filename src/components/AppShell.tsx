@@ -78,6 +78,7 @@ export function AppShell({ children, hideNav }: { children: ReactNode; hideNav?:
                     key={t.to}
                     to={t.to}
                     onClick={onClick}
+                    aria-label="Record a match"
                     className="-mt-8 grid size-16 place-items-center rounded-full bg-primary text-primary-foreground glow transition-transform active:scale-90"
                   >
                     <Icon className="size-8" strokeWidth={3} />

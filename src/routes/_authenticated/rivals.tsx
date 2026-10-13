@@ -8,6 +8,7 @@ import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
 import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/rivals")({
+  staticData: { sitemap: false },
   head: () =>
     seo({
       title: "Padel rivalries & head-to-head records — Padel Rival",

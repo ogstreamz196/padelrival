@@ -9,6 +9,7 @@ const DESCRIPTION =
   "Find padel courts and clubs across the UK. See indoor and outdoor courts, book a court and find players for your next padel match.";
 
 export const Route = createFileRoute("/padel-courts/")({
+  staticData: { sitemap: true },
   // A database blip shouldn't take the hub page down; it falls back to a short message.
   loader: async () => groupByCity(await fetchClubs().catch(() => [])),
   head: ({ loaderData }) => ({

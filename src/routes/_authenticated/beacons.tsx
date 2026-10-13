@@ -24,6 +24,7 @@ import { seo } from "@/lib/seo";
 type BeaconSearch = { post?: boolean | undefined; venue?: string | undefined; needed?: number | undefined };
 
 export const Route = createFileRoute("/_authenticated/beacons")({
+  staticData: { sitemap: false },
   // ?post=1&venue=…&needed=2 opens the invite form pre-filled (used by the player picker and club cards).
   validateSearch: (s: Record<string, unknown>): BeaconSearch => {
     const n = Number(s["needed"]);

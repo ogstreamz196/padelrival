@@ -24,6 +24,7 @@ import { seo } from "@/lib/seo";
 
 
 export const Route = createFileRoute("/_authenticated/me")({
+  staticData: { sitemap: false },
   beforeLoad: requireUser,
   head: () =>
     seo({

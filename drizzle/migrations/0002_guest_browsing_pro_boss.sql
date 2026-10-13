@@ -1,8 +1,3 @@
--- Guest browsing, Pro pricing/promo settings, and the boss dashboard.
-
--- ---------------------------------------------------------------- guest browsing
--- Signed-out visitors can look around (feeds, ranks, player cards, open games).
--- This is the same data any free account can read; friends and check-ins stay signed-in only.
 grant select on public.profiles, public.matches, public.match_players, public.achievements,
   public.match_reactions, public.beacons, public.beacon_players to anon;
 
@@ -20,16 +15,15 @@ grant execute on function public.get_court_sides(uuid) to anon;
 grant execute on function public.weekly_leaderboard() to anon;
 grant execute on function public.get_head_to_head(uuid, uuid) to anon;
 
--- ---------------------------------------------------------------- app settings
 create table public.app_settings (
   key text primary key,
   value jsonb not null,
   updated_at timestamptz not null default now(),
   updated_by uuid references auth.users(id) on delete set null
 );
-alter table public.app_settings enable row level security;
 grant select on public.app_settings to anon, authenticated;
 grant all on public.app_settings to service_role;
+alter table public.app_settings enable row level security;
 create policy "settings readable" on public.app_settings for select to anon, authenticated using (true);
 
 insert into public.app_settings (key, value) values
@@ -42,20 +36,17 @@ insert into public.app_settings (key, value) values
   ('announcement', jsonb_build_object('enabled', false, 'text', '', 'tone', 'info'))
 on conflict (key) do nothing;
 
--- ---------------------------------------------------------------- pro members
--- Written only by the boss (or a future payment webhook using the service role).
 create table public.pro_members (
   user_id uuid primary key references public.profiles(id) on delete cascade,
   source text not null default 'gift' check (source in ('gift','promo','standard')),
   started_at timestamptz not null default now(),
   expires_at timestamptz
 );
-alter table public.pro_members enable row level security;
 grant select on public.pro_members to anon, authenticated;
 grant all on public.pro_members to service_role;
+alter table public.pro_members enable row level security;
 create policy "pro readable" on public.pro_members for select to anon, authenticated using (true);
 
--- ---------------------------------------------------------------- audit log
 create table public.admin_log (
   id bigint generated always as identity primary key,
   actor uuid references auth.users(id) on delete set null,
@@ -65,9 +56,9 @@ create table public.admin_log (
   created_at timestamptz not null default now()
 );
 create index admin_log_created_idx on public.admin_log (created_at desc);
-alter table public.admin_log enable row level security;
 grant select on public.admin_log to authenticated;
 grant all on public.admin_log to service_role;
+alter table public.admin_log enable row level security;
 create policy "admins read log" on public.admin_log for select to authenticated using (public.has_role(auth.uid(), 'admin'));
 
 create or replace function public.admin_note(_action text, _target text, _detail jsonb default null)
@@ -76,7 +67,6 @@ returns void language sql security definer set search_path = public as $$
 $$;
 revoke all on function public.admin_note(text, text, jsonb) from public, anon, authenticated;
 
--- ---------------------------------------------------------------- boss functions
 create or replace function public.admin_overview()
 returns jsonb language plpgsql stable security definer set search_path = public as $$
 begin
@@ -225,7 +215,6 @@ begin
   return jsonb_build_object('ok', true);
 end $$;
 
--- Existing boss tools now leave a trail too.
 create or replace function public.admin_void_match(_match_id uuid)
 returns jsonb language plpgsql security definer set search_path = public as $$
 declare m public.matches; mp record;
@@ -259,7 +248,6 @@ begin
   return jsonb_build_object('ok', true);
 end $$;
 
--- Server functions (service role) record user deletes and suspensions here.
 create or replace function public.admin_log_external(_actor uuid, _action text, _target text, _detail jsonb default null)
 returns void language sql security definer set search_path = public as $$
   insert into admin_log (actor, action, target, detail) values (_actor, _action, _target, _detail);

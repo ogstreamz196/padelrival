@@ -4,12 +4,14 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/reset-password")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Reset password — Padel Rival" },
       { name: "description", content: "Choose a new password for your Padel Rival account." },
       { property: "og:title", content: "Reset password — Padel Rival" },
       { property: "og:description", content: "Choose a new password for your Padel Rival account." },
+      { name: "robots", content: "noindex" },
     ],
   }),
   component: ResetPage,

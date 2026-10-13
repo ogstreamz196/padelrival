@@ -5,6 +5,8 @@ import { bookingLink, fetchClubs, groupByCity } from "@/lib/clubs";
 import { jsonLd, seo, SITE_URL } from "@/lib/seo";
 
 export const Route = createFileRoute("/padel-courts/$city")({
+  // City pages are added to the sitemap by /sitemap.xml from the club list.
+  staticData: { sitemap: false },
   loader: async ({ params }) => {
     const groups = groupByCity(await fetchClubs());
     const here = groups.find((g) => g.slug === params.city);
