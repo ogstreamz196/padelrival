@@ -27,3 +27,6 @@
 - Boss-editable config (Pro pricing/offer, feature switches, announcement) lives in `app_settings` rows, read via `useAppSettings()` and written only through `admin_update_setting`. Pro membership is `pro_members`, written only by boss RPCs (or a future payment webhook with the service role).
 - The boss dashboard (`/admin?tab=`) uses `admin_*` security-definer functions plus `admin.functions.ts` server fns (delete/suspend user, health checks) that need the service role; every boss action is written to `admin_log`.
 - Database migrations go in `drizzle/migrations/NNNN_name.sql` with a matching `meta/_journal.json` entry and `meta/NNNN_snapshot.json` (Lovable applies these); `supabase/migrations/` holds only the older history.
+
+## Workflow
+- The owner wants finished, checked work merged straight into `main` (no pull requests): validate (typecheck + build), push the working branch, then fast-forward or merge into `main` without rewriting history.
