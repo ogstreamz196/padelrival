@@ -22,6 +22,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/home")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Clubhouse — Padel Rival" },
@@ -57,6 +58,7 @@ function Home() {
 
   return (
     <AppShell>
+      {profile && <h1 className="sr-only">Clubhouse</h1>}
       {profile && lvl && (
         <section className="mb-5 flex items-center gap-3">
           <PlayerAvatar avatar={profile.avatar} color={profile.avatar_color} />

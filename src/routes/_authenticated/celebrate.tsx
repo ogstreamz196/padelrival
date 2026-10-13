@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { requireUser } from "./route";
 
 export const Route = createFileRoute("/_authenticated/celebrate")({
+  staticData: { sitemap: false },
   beforeLoad: requireUser,
   head: () => ({ meta: [{ title: "Match result — Padel Rival" }, { name: "description", content: "Your match result." }] }),
   component: Celebrate,

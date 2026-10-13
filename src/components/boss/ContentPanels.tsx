@@ -112,7 +112,8 @@ export function ClubsPanel() {
   const save = useMutation({
     mutationFn: async (v: typeof EMPTY) => {
       const { error } = await supabase.rpc("admin_upsert_venue", {
-        _id: v.id,
+        // null creates a new club; generated types don't mark the arg nullable.
+        _id: v.id as string,
         _name: v.name,
         _city: v.city,
         _postcode: v.postcode ?? "",

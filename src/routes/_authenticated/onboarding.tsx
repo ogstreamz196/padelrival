@@ -11,6 +11,7 @@ import { requireUser } from "./route";
 import { hasRecordDraft } from "@/lib/record-draft";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
+  staticData: { sitemap: false },
   beforeLoad: requireUser,
   head: () => ({ meta: [{ title: "Create your player — Padel Rival" }, { name: "description", content: "Set up your Padel Rival player card." }] }),
   component: Onboarding,

@@ -23,6 +23,7 @@ import { useAppSettings } from "@/hooks/use-settings";
 
 
 export const Route = createFileRoute("/_authenticated/me")({
+  staticData: { sitemap: false },
   beforeLoad: requireUser,
   head: () => ({
     meta: [
