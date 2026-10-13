@@ -6,6 +6,23 @@ type BIPEvent = Event & { prompt: () => Promise<void>; userChoice: Promise<{ out
 // Set only once we know the app is installed; "Not now" hides it for this visit only.
 const INSTALLED_KEY = "appInstalled";
 const SESSION_KEY = "installPopupHidden";
+// iPhone users see the prompt at most twice per 7 days.
+const IOS_SHOWN_KEY = "installPopupIosShown";
+const IOS_MAX_PER_WEEK = 2;
+
+function iosAllowanceLeft() {
+  try {
+    const raw = localStorage.getItem(IOS_SHOWN_KEY);
+    const stamps: number[] = raw ? JSON.parse(raw) : [];
+    const recent = stamps.filter((t) => Date.now() - t < 7 * 24 * 60 * 60 * 1000);
+    if (recent.length >= IOS_MAX_PER_WEEK) return false;
+    recent.push(Date.now());
+    localStorage.setItem(IOS_SHOWN_KEY, JSON.stringify(recent));
+    return true;
+  } catch {
+    return true;
+  }
+}
 
 function isInstalledNow() {
   const cap = (window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
