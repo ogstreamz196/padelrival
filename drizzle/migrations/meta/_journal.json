@@ -22,6 +22,13 @@
       "when": 1791858214033,
       "tag": "0002_guest_browsing_pro_boss",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791858405188,
+      "tag": "0003_pro_members_own_row",
+      "breakpoints": true
     }
   ]
 }
