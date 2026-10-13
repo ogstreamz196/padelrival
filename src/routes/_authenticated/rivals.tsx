@@ -7,6 +7,7 @@ import { PageGuide } from "@/components/PageGuide";
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
 
 export const Route = createFileRoute("/_authenticated/rivals")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Rivalries — Padel Rival" },

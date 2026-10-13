@@ -18,6 +18,7 @@ import { DRAFT_KEY, loadDraft, type Draft, type Slot } from "@/lib/record-draft"
 
 
 export const Route = createFileRoute("/_authenticated/record")({
+  staticData: { sitemap: false },
   validateSearch: z.object({ opp: z.string().optional() }),
   head: () => ({ meta: [{ title: "Record match — Padel Rival" }, { name: "description", content: "Log a 2v2 padel match." }] }),
   component: RecordMatch,

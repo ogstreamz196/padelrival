@@ -6,6 +6,7 @@ import { FollowButton } from "@/components/FollowButton";
 import { haptic } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/player/$id")({
+  staticData: { sitemap: false },
   head: () => ({ meta: [{ title: "Player — Padel Rival" }, { name: "description", content: "Player card, rivalries and match history." }] }),
   component: PlayerPage,
 });

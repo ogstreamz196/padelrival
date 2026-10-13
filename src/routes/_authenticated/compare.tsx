@@ -27,6 +27,7 @@ import { PageGuide } from "@/components/PageGuide";
 type Search = { p1?: string | undefined; p2?: string | undefined };
 
 export const Route = createFileRoute("/_authenticated/compare")({
+  staticData: { sitemap: false },
   validateSearch: (s: Record<string, unknown>): Search => ({
     p1: typeof s["p1"] === "string" && s["p1"] ? s["p1"] : undefined,
     p2: typeof s["p2"] === "string" && s["p2"] ? s["p2"] : undefined,

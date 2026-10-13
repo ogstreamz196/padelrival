@@ -13,7 +13,17 @@ import { cn } from "@/lib/utils";
 import { useAuthGate } from "@/components/AuthPrompt";
 
 export const Route = createFileRoute("/_authenticated/leaderboard")({
-  head: () => ({ meta: [{ title: "Leaderboard — Padel Rival" }, { name: "description", content: "Global and weekly padel rankings." }] }),
+  staticData: { sitemap: false },
+  head: () => ({
+    meta: [
+      { title: "Leaderboard — Padel Rival" },
+      { name: "description", content: "Global and weekly padel rankings." },
+      { property: "og:title", content: "Leaderboard — Padel Rival" },
+      { property: "og:description", content: "See who tops the global and weekly padel Elo rankings." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Leaderboard,
 });
 

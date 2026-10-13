@@ -29,6 +29,7 @@ const TABS = [
 type Tab = (typeof TABS)[number]["id"];
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  staticData: { sitemap: false },
   beforeLoad: requireUser,
   validateSearch: (s: Record<string, unknown>): { tab?: Tab | undefined } => ({
     tab: TABS.some((t) => t.id === s["tab"]) ? (s["tab"] as Tab) : undefined,

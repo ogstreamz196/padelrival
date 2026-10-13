@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 // Guests can browse everything under here; screens that only make sense with an
 // account (record, rivals, profile, onboarding, boss) add `beforeLoad: requireUser`.
 export const Route = createFileRoute("/_authenticated")({
+  staticData: { sitemap: "exclude-subtree" },
   ssr: false,
   beforeLoad: async (): Promise<{ user: User | null }> => {
     const { data } = await supabase.auth.getSession();

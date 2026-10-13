@@ -23,6 +23,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn, haptic } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/venues")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Clubs — Padel Rival" },
