@@ -80,8 +80,8 @@ export function InstallBanner() {
         <div className="flex items-center gap-3">
           <img src="/icon-192.png" alt="" className="size-14 rounded-2xl" />
           <div>
-            <h2 id="install-title" className="font-display text-lg font-black leading-tight">Get the Padel Rival app</h2>
-            <p className="text-xs text-muted-foreground">Free · opens full screen from your home screen</p>
+            <h2 id="install-title" className="font-display text-lg font-black leading-tight">Add a home screen shortcut</h2>
+            <p className="text-xs text-muted-foreground">Free · one tap · opens Padel Rival straight from your home screen</p>
           </div>
         </div>
 
@@ -94,18 +94,18 @@ export function InstallBanner() {
               <span className="font-black text-primary">2</span> Choose <SquarePlus className="size-4 text-primary" /> <b>Add to Home Screen</b>
             </li>
             <li className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2">
-              <span className="font-black text-primary">3</span> Tap <b>Add</b>, then open it from your home screen
+              <span className="font-black text-primary">3</span> Tap <b>Add</b> — the shortcut lands on your home screen
             </li>
           </ol>
         ) : (
           <button onClick={install} className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 font-display font-black uppercase text-primary-foreground glow active:scale-[0.98]">
-            <Smartphone className="size-5" /> Install app
+            <Smartphone className="size-5" /> Add shortcut
           </button>
         )}
 
         <div className="mt-3 flex justify-between text-xs font-bold text-muted-foreground">
           <button onClick={later} className="py-2">Not now</button>
-          {ios && <button onClick={markInstalled} className="py-2">I've already installed it</button>}
+          {ios && <button onClick={markInstalled} className="py-2">I've already added it</button>}
         </div>
       </div>
     </div>
