@@ -4,7 +4,6 @@ import { ChevronRight, Crown, Flame } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { WeeklyLeague } from "@/components/WeeklyLeague";
-import { InstallBanner } from "@/components/InstallBanner";
 import { PageGuide } from "@/components/PageGuide";
 import { QuickLinks } from "@/components/QuickLinks";
 import { useIsAdmin } from "@/hooks/use-admin";
@@ -104,7 +103,6 @@ function Home() {
       {profile && <ProOfferBanner />}
 
 
-      <InstallBanner />
 
 
       <Link

@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { NativeAndNetwork } from "@/components/NativeAndNetwork";
 import { AuthPromptProvider } from "@/components/AuthPrompt";
+import { InstallBanner } from "@/components/InstallBanner";
 import { OG_IMAGE } from "@/lib/seo";
 
 function NotFoundComponent() {
@@ -144,6 +145,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <NativeAndNetwork />
+      <InstallBanner />
       <AuthPromptProvider>
         <Outlet />
       </AuthPromptProvider>
