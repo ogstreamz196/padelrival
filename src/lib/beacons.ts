@@ -71,7 +71,8 @@ export function sideLabel(s: string) {
 export function beaconShareText(b: Beacon) {
   const n = slotsLeft(b) || b.players_needed;
   const lines = [
-    `🎾 Need ${n} player${n > 1 ? "s" : ""} ${dayWord(b.scheduled_at)} at ${b.venue} (${timeLabel(b.scheduled_at)})!`,
+    `🎾 Open match: ${n} spot${n > 1 ? "s" : ""} free ${dayWord(b.scheduled_at)} at ${b.venue} (${timeLabel(b.scheduled_at)})`,
+    "Any player can join. The first to accept get the spots.",
   ];
   const extras = [
     b.target_tier !== "open" ? tierLabel(b.target_tier) : null,
@@ -82,6 +83,6 @@ export function beaconShareText(b: Beacon) {
     .join(" · ");
   if (extras) lines.push(extras);
   if (b.notes) lines.push(b.notes);
-  lines.push(`Tap to join: ${SITE_URL}/beacons`);
+  lines.push(`Claim a spot: ${SITE_URL}/beacons`);
   return lines.join("\n");
 }

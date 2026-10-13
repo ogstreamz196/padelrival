@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Minus, Plus, Repeat, UserPlus, X } from "lucide-react";
+import { Minus, Plus, Repeat, UserPlus, UsersRound, X } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,24 +9,26 @@ import { AppShell } from "@/components/AppShell";
 import { PageGuide } from "@/components/PageGuide";
 import { QuickLinks } from "@/components/QuickLinks";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
+import { useAuthGate } from "@/components/AuthPrompt";
 import { useMyProfile } from "@/hooks/use-auth";
+import { useFriendIds } from "@/hooks/use-friends";
 import { SET_PRESETS, STB_PRESETS, validateSet, type SetScore } from "@/lib/game";
 import { cn, haptic } from "@/lib/utils";
-import { requireUser } from "./route";
+import { DRAFT_KEY, loadDraft, type Draft, type Slot } from "@/lib/record-draft";
 
 
 export const Route = createFileRoute("/_authenticated/record")({
-  beforeLoad: requireUser,
   validateSearch: z.object({ opp: z.string().optional() }),
   head: () => ({ meta: [{ title: "Record match — Padel Rival" }, { name: "description", content: "Log a 2v2 padel match." }] }),
   component: RecordMatch,
 });
 
-type Slot = { user_id?: string; guest_name?: string; display_name: string; avatar?: string; avatar_color?: string; rating?: number } | null;
+
 
 function RecordMatch() {
   const { opp } = Route.useSearch();
   const { profile } = useMyProfile();
+  const { user, gate } = useAuthGate();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [partner, setPartner] = useState<Slot>(null);
@@ -40,6 +42,21 @@ function RecordMatch() {
   const [mySide, setMySide] = useState<"left" | "right" | null>(null);
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
+
+  // Bring back a match a guest set up before signing up.
+  useEffect(() => {
+    const d = loadDraft();
+    if (!d) return;
+    setPartner(d.partner);
+    setOpp1(d.opp1);
+    setOpp2(d.opp2);
+    setSets(d.sets);
+    setSuperTb(d.superTb);
+    setVenue(d.venue);
+    setType(d.type);
+    setMySide(d.mySide);
+    setNotes(d.notes);
+  }, []);
 
   useEffect(() => {
     if (!opp) return;
@@ -133,12 +150,27 @@ function RecordMatch() {
   const ready = partner && opp1 && opp2 && t1 !== t2 && !firstError;
 
 
+  function saveDraft() {
+    try {
+      const d: Draft = { at: Date.now(), partner, opp1, opp2, sets, superTb, venue, type, mySide, notes };
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+    } catch {
+      /* storage blocked: they'll just re-enter it */
+    }
+  }
+
   async function submit() {
-    if (!partner || !opp1 || !opp2 || !profile || t1 === t2) return;
+    if (!partner || !opp1 || !opp2 || t1 === t2) return;
     if (firstError) {
       toast.error(firstError);
       return;
     }
+    if (!user) {
+      saveDraft();
+      gate("Your match is set up. Create a free account to save it, update everyone's rating and earn XP. We'll keep what you've entered.");
+      return;
+    }
+    if (!profile) return;
 
     setBusy(true);
     const otherSide = mySide === "left" ? "right" : mySide === "right" ? "left" : null;
@@ -164,6 +196,11 @@ function RecordMatch() {
     if (error) {
       toast.error(error.message);
       return;
+    }
+    try {
+      sessionStorage.removeItem(DRAFT_KEY);
+    } catch {
+      /* ignore */
     }
     sessionStorage.setItem(
       "lastMatch",
@@ -200,7 +237,7 @@ function RecordMatch() {
       <div className="grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
         <div className="space-y-2 rounded-3xl border-2 border-primary/50 bg-primary/5 p-2">
           <div className="text-center text-[11px] font-black uppercase tracking-widest text-primary">Your team</div>
-          <SlotBtn slot={profile ? { display_name: "You", avatar: profile.avatar, avatar_color: profile.avatar_color, rating: profile.rating } : null} fixed />
+          <SlotBtn slot={profile ? { display_name: "You", avatar: profile.avatar, avatar_color: profile.avatar_color, rating: profile.rating } : { display_name: "You", avatar: "🎾", avatar_color: "lime", note: "Not signed in" }} fixed />
           <SlotBtn slot={partner} label="Partner" onClick={() => setPicking("partner")} onClear={() => setPartner(null)} />
         </div>
         <div className="grid place-items-center font-display text-lg font-black text-muted-foreground">VS</div>
@@ -358,15 +395,24 @@ function RecordMatch() {
               ? "Check the scores"
               : t1 === t2
                 ? "Need a winner"
-                : t1 > t2
-                  ? `Log victory ${t1}-${t2}`
-                  : `Log defeat ${t1}-${t2}`}
+                : !user
+                  ? "Sign up free to save this match"
+                  : t1 > t2
+                    ? `Log victory ${t1}-${t2}`
+                    : `Log defeat ${t1}-${t2}`}
       </button>
 
       {picking && (
         <PlayerPicker
           exclude={taken}
           meId={profile?.id}
+          openSpots={[partner, opp1, opp2].filter((x) => !x).length}
+          onInviteAnyone={() => {
+            haptic();
+            const needed = [partner, opp1, opp2].filter((x) => !x).length;
+            setPicking(null);
+            navigate({ to: "/beacons", search: { post: true, needed, ...(venue.trim() ? { venue: venue.trim() } : {}) } });
+          }}
           onClose={() => setPicking(null)}
           onPick={(s) => {
             setters[picking](s);
@@ -400,7 +446,7 @@ function SlotBtn({ slot, label, fixed, onClick, onClear }: { slot: Slot; label?:
     <div className="relative flex h-24 w-full flex-col items-center justify-center gap-1 rounded-2xl bg-card">
       <PlayerAvatar avatar={slot.avatar ?? (slot.guest_name ? "👤" : null)} color={slot.avatar_color ?? "court"} size="sm" />
       <span className="max-w-full truncate px-1 text-xs font-bold">{slot.display_name}</span>
-      <span className="text-[10px] text-muted-foreground">{slot.rating ?? "Guest"}</span>
+      <span className="text-[10px] text-muted-foreground">{slot.note ?? slot.rating ?? "Guest"}</span>
       {!fixed && (
         <button onClick={onClear} className="absolute right-1 top-1 p-1 text-muted-foreground" aria-label="Remove">
           <X className="size-3" />
@@ -412,16 +458,57 @@ function SlotBtn({ slot, label, fixed, onClick, onClear }: { slot: Slot; label?:
 
 type PickerPlayer = { id: string; username: string; display_name: string; avatar: string; avatar_color: string; rating: number };
 
-function PlayerPicker({ exclude, meId, onPick, onClose }: { exclude: string[]; meId?: string | undefined; onPick: (s: NonNullable<Slot>) => void; onClose: () => void }) {
+const PLAYER_COLS = "id,username,display_name,avatar,avatar_color,rating";
+const toSlot = (p: PickerPlayer): NonNullable<Slot> => ({
+  user_id: p.id,
+  display_name: p.display_name,
+  avatar: p.avatar,
+  avatar_color: p.avatar_color,
+  rating: p.rating,
+});
+
+/**
+ * Order under the search bar: open invite to any player, then friends (or recent partners),
+ * then a shuffled handful of players who've played in the last 30 days.
+ */
+function PlayerPicker({
+  exclude,
+  meId,
+  openSpots,
+  onPick,
+  onInviteAnyone,
+  onClose,
+}: {
+  exclude: string[];
+  meId?: string | undefined;
+  openSpots: number;
+  onPick: (s: NonNullable<Slot>) => void;
+  onInviteAnyone: () => void;
+  onClose: () => void;
+}) {
   const [term, setTerm] = useState("");
-  const q = useQuery({
-    queryKey: ["search", term],
+  const t = term.trim().replace(/[%,()]/g, "");
+  const friendIds = useFriendIds(meId);
+
+  const search = useQuery({
+    queryKey: ["search", t],
+    enabled: !!t,
     queryFn: async () => {
-      let req = supabase.from("profiles").select("id,username,display_name,avatar,avatar_color,rating").limit(20);
-      const t = term.trim().replace(/[%,()]/g, "");
-      if (t) req = req.or(`username.ilike.%${t}%,display_name.ilike.%${t}%`);
-      else req = req.order("created_at", { ascending: false });
-      const { data } = await req;
+      const { data } = await supabase
+        .from("profiles")
+        .select(PLAYER_COLS)
+        .or(`username.ilike.%${t}%,display_name.ilike.%${t}%`)
+        .order("rating", { ascending: false })
+        .limit(20);
+      return (data ?? []) as PickerPlayer[];
+    },
+  });
+
+  const friends = useQuery({
+    queryKey: ["picker-friends", friendIds.data],
+    enabled: !!friendIds.data?.length,
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select(PLAYER_COLS).in("id", friendIds.data!).order("display_name");
       return (data ?? []) as PickerPlayer[];
     },
   });
@@ -430,12 +517,12 @@ function PlayerPicker({ exclude, meId, onPick, onClose }: { exclude: string[]; m
     queryKey: ["recent-players", meId],
     enabled: !!meId,
     queryFn: async (): Promise<PickerPlayer[]> => {
-      const { data: mine } = await supabase.from("match_players").select("match_id").eq("user_id", meId!).order("id", { ascending: false }).limit(30);
+      const { data: mine } = await supabase.from("match_players").select("match_id").eq("user_id", meId!).order("created_at", { ascending: false }).limit(30);
       const ids = (mine ?? []).map((m) => m.match_id);
       if (!ids.length) return [];
       const { data: others } = await supabase
         .from("match_players")
-        .select("user_id, profiles(id,username,display_name,avatar,avatar_color,rating)")
+        .select(`user_id, profiles(${PLAYER_COLS})`)
         .in("match_id", ids)
         .not("user_id", "is", null);
       const seen = new Set<string>();
@@ -450,60 +537,135 @@ function PlayerPicker({ exclude, meId, onPick, onClose }: { exclude: string[]; m
     },
   });
 
-  const results = (q.data ?? []).filter((p) => !exclude.includes(p.id));
-  const recents = (recent.data ?? []).filter((p) => !exclude.includes(p.id));
+  const active = useQuery({
+    queryKey: ["active-players"],
+    staleTime: 5 * 60 * 1000,
+    queryFn: async (): Promise<PickerPlayer[]> => {
+      const since = new Date(Date.now() - 30 * 86400000).toISOString();
+      const { data } = await supabase
+        .from("match_players")
+        .select(`user_id, profiles(${PLAYER_COLS})`)
+        .gte("created_at", since)
+        .not("user_id", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(200);
+      const seen = new Map<string, PickerPlayer>();
+      for (const row of data ?? []) {
+        const p = row.profiles as PickerPlayer | null;
+        if (p && !seen.has(p.id)) seen.set(p.id, p);
+      }
+      const list = [...seen.values()];
+      // Shuffle so the same faces don't always come first.
+      for (let i = list.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [list[i], list[j]] = [list[j]!, list[i]!];
+      }
+      return list;
+    },
+  });
+
+  const hide = new Set([...exclude, ...(meId ? [meId] : [])]);
+  const mates = (friends.data?.length ? friends.data : (recent.data ?? [])).filter((p) => !hide.has(p.id));
+  const mateIds = new Set(mates.map((p) => p.id));
+  const others = (active.data ?? []).filter((p) => !hide.has(p.id) && !mateIds.has(p.id)).slice(0, 12);
+  const results = (search.data ?? []).filter((p) => !hide.has(p.id));
+
+  const Row = ({ p }: { p: PickerPlayer }) => (
+    <button
+      onClick={() => onPick(toSlot(p))}
+      className="flex w-full items-center gap-3 rounded-2xl border bg-card p-3 text-left active:scale-[0.98]"
+    >
+      <PlayerAvatar avatar={p.avatar} color={p.avatar_color} size="sm" />
+      <div className="min-w-0 flex-1">
+        <div className="truncate font-bold">{p.display_name}</div>
+        <div className="text-xs text-muted-foreground">@{p.username}</div>
+      </div>
+      <div className="font-display font-black tabular-nums">{p.rating}</div>
+    </button>
+  );
+  const Heading = ({ children }: { children: React.ReactNode }) => (
+    <div className="mb-2 mt-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground">{children}</div>
+  );
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-background/95 backdrop-blur-md">
-      <div className="mx-auto flex w-full max-w-md flex-1 flex-col px-4 pt-[max(env(safe-area-inset-top),1rem)]">
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col overflow-hidden px-4 pt-[max(env(safe-area-inset-top),1rem)]">
         <div className="flex items-center gap-2">
-          <input autoFocus value={term} onChange={(e) => setTerm(e.target.value)} placeholder="Search players or type a guest name" className="flex-1 rounded-2xl border bg-card px-4 py-4 outline-none focus:border-primary" />
-          <button onClick={onClose} className="p-3 font-bold text-muted-foreground">Cancel</button>
-        </div>
-        {term.trim() && (
-          <button
-            onClick={() => onPick({ guest_name: term.trim().slice(0, 40), display_name: term.trim().slice(0, 40) })}
-            className="mt-3 flex items-center gap-3 rounded-2xl border border-dashed border-primary/60 p-3 text-left"
-          >
-            <PlayerAvatar avatar="👤" color="court" size="sm" />
-            <div>
-              <div className="font-bold">Add “{term.trim()}” as guest</div>
-              <div className="text-xs text-muted-foreground">Not on Padel Rival yet — no rating change</div>
-            </div>
+          <input
+            autoFocus
+            value={term}
+            onChange={(e) => setTerm(e.target.value)}
+            placeholder="Search players or type a guest name"
+            className="flex-1 rounded-2xl border bg-card px-4 py-4 outline-none focus:border-primary"
+          />
+          <button onClick={onClose} className="p-3 font-bold text-muted-foreground">
+            Cancel
           </button>
-        )}
-        {!term.trim() && recents.length > 0 && (
-          <div className="mt-4">
-            <div className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Recently played with</div>
-            <div className="flex flex-wrap gap-2">
-              {recents.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => onPick({ user_id: p.id, display_name: p.display_name, avatar: p.avatar, avatar_color: p.avatar_color, rating: p.rating })}
-                  className="flex items-center gap-2 rounded-full border bg-card py-1.5 pl-1.5 pr-3 text-left active:scale-95"
-                >
-                  <PlayerAvatar avatar={p.avatar} color={p.avatar_color} size="sm" />
-                  <span className="max-w-28 truncate text-xs font-bold">{p.display_name}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-        <div className="mt-3 flex-1 space-y-2 overflow-y-auto pb-10">
-          {results.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => onPick({ user_id: p.id, display_name: p.display_name, avatar: p.avatar, avatar_color: p.avatar_color, rating: p.rating })}
-              className="flex w-full items-center gap-3 rounded-2xl border bg-card p-3 text-left active:scale-[0.98]"
-            >
-              <PlayerAvatar avatar={p.avatar} color={p.avatar_color} size="sm" />
-              <div className="min-w-0 flex-1">
-                <div className="truncate font-bold">{p.display_name}</div>
-                <div className="text-xs text-muted-foreground">@{p.username}</div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto pb-10">
+          {term.trim() ? (
+            <>
+              <button
+                onClick={() => onPick({ guest_name: term.trim().slice(0, 40), display_name: term.trim().slice(0, 40) })}
+                className="mt-3 flex w-full items-center gap-3 rounded-2xl border border-dashed border-primary/60 p-3 text-left"
+              >
+                <PlayerAvatar avatar="👤" color="court" size="sm" />
+                <div>
+                  <div className="font-bold">Add “{term.trim()}” as guest</div>
+                  <div className="text-xs text-muted-foreground">Not on Padel Rival yet, so no rating change</div>
+                </div>
+              </button>
+              <div className="mt-3 space-y-2">
+                {results.map((p) => (
+                  <Row key={p.id} p={p} />
+                ))}
+                {!search.isLoading && results.length === 0 && (
+                  <p className="py-4 text-center text-sm text-muted-foreground">No players match “{term.trim()}”.</p>
+                )}
               </div>
-              <div className="font-display font-black tabular-nums">{p.rating}</div>
-            </button>
-          ))}
+            </>
+          ) : (
+            <>
+              <button
+                onClick={onInviteAnyone}
+                className="mt-3 flex w-full items-center gap-3 rounded-2xl border border-primary/60 bg-primary/10 p-3 text-left active:scale-[0.98]"
+              >
+                <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground">
+                  <UsersRound className="size-5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block font-black">Invite any player</span>
+                  <span className="block text-xs text-muted-foreground">
+                    Open {openSpots === 1 ? "this spot" : `your ${openSpots} free spots`} to everyone on the app. The first
+                    players to accept are added to your match automatically.
+                  </span>
+                </span>
+              </button>
+
+              {mates.length > 0 && (
+                <>
+                  <Heading>{friends.data?.length ? "Your friends" : "Recently played with"}</Heading>
+                  <div className="space-y-2">
+                    {mates.map((p) => (
+                      <Row key={p.id} p={p} />
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {others.length > 0 && (
+                <>
+                  <Heading>Active players</Heading>
+                  <div className="space-y-2">
+                    {others.map((p) => (
+                      <Row key={p.id} p={p} />
+                    ))}
+                  </div>
+                </>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>

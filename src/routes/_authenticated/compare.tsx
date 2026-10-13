@@ -22,6 +22,7 @@ import { SITE_URL } from "@/lib/beacons";
 import { whatsappUrl } from "@/lib/share";
 import { cn, haptic } from "@/lib/utils";
 import { FeatureGate } from "@/components/FeatureGate";
+import { PageGuide } from "@/components/PageGuide";
 
 type Search = { p1?: string | undefined; p2?: string | undefined };
 
@@ -153,6 +154,9 @@ function ComparePage() {
       </Link>
       <h1 className="text-3xl font-black">The Dossier</h1>
       <p className="mt-1 text-muted-foreground">Two players. Every number that matters.</p>
+      <div className="mt-4">
+        <PageGuide id="compare" />
+      </div>
 
       <div className="mt-5 grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
         <PlayerSlot

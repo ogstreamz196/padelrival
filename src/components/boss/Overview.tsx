@@ -141,7 +141,7 @@ export function OverviewPanel({
           <StatTile icon={Swords} label="Matches" value={s?.matches} />
           <StatTile icon={Swords} label="Today" value={s?.matches_today} tone="text-primary" />
           <StatTile icon={Swords} label="7 days" value={s?.matches_week} />
-          <StatTile icon={Radio} label="Open games" value={s?.open_beacons} tone="text-primary" />
+          <StatTile icon={Radio} label="Open matches" value={s?.open_beacons} tone="text-primary" />
           <StatTile icon={CalendarCheck} label="Check-ins today" value={s?.checkins_today} />
           <StatTile icon={MapPin} label="Clubs" value={s?.venues} />
         </div>
@@ -159,7 +159,7 @@ export function OverviewPanel({
               rows={activity.data.map((d) => ({ day: d.day, v: d.matches }))}
             />
             <MiniBars
-              label="Games posted"
+              label="Open matches posted"
               rows={activity.data.map((d) => ({ day: d.day, v: d.beacons }))}
             />
           </div>

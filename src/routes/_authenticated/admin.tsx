@@ -19,7 +19,7 @@ const TABS = [
   { id: "overview", label: "Overview" },
   { id: "players", label: "Players" },
   { id: "matches", label: "Matches" },
-  { id: "games", label: "Games" },
+  { id: "games", label: "Open matches" },
   { id: "clubs", label: "Clubs" },
   { id: "pricing", label: "Pricing" },
   { id: "settings", label: "Settings" },

@@ -7,7 +7,6 @@ import { WeeklyLeague } from "@/components/WeeklyLeague";
 import { InstallBanner } from "@/components/InstallBanner";
 import { PageGuide } from "@/components/PageGuide";
 import { QuickLinks } from "@/components/QuickLinks";
-import { useAuthGate } from "@/components/AuthPrompt";
 import { useIsAdmin } from "@/hooks/use-admin";
 import { ProOfferBanner } from "@/components/ProUpgrade";
 import { OpenBeacons } from "@/components/OpenBeacons";
@@ -40,7 +39,6 @@ function Home() {
   const { user } = Route.useRouteContext();
   const meId = user?.id ?? null;
   const { profile } = useMyProfile();
-  const { gate } = useAuthGate();
   const { isAdmin } = useIsAdmin();
 
   const rivals = useQuery({
@@ -94,7 +92,7 @@ function Home() {
         </Link>
       )}
 
-      {meId && <PageGuide id="home" />}
+      <PageGuide id="home" />
 
       {profile && (
         <section className="mb-4">
@@ -112,9 +110,6 @@ function Home() {
 
       <Link
         to="/record"
-        onClick={(e) => {
-          if (!gate("Create a free account to record matches, earn Elo and keep your stats.")) e.preventDefault();
-        }}
         className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-primary py-4 font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]"
       >
         Record a match

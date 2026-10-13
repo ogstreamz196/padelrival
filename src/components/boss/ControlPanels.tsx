@@ -170,7 +170,7 @@ export function PricingPanel() {
 }
 
 const FEATURE_LABELS: Record<keyof Features, [string, string]> = {
-  beacons: ["Need a 4th (beacons)", "Posting and joining open games"],
+  beacons: ["Open matches", "Posting open invites and claiming spots"],
   venues: ["Club directory", "Club list, booking links and check-ins"],
   dossier: ["The Dossier", "Side-by-side player comparison"],
   ai_coach: ["AI coach", "Match insights on the profile page"],
@@ -341,7 +341,7 @@ const ACTION_LABEL: Record<string, string> = {
   revoke_admin: "Removed boss",
   save_venue: "Saved club",
   delete_venue: "Removed club",
-  cancel_beacon: "Cancelled game",
+  cancel_beacon: "Cancelled open match",
   void_match: "Deleted match",
   set_rating: "Set Elo",
   delete_user: "Deleted player",

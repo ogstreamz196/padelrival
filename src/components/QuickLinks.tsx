@@ -1,10 +1,10 @@
 import { Link } from "@tanstack/react-router";
-import { MapPin, Radio, Swords } from "lucide-react";
+import { MapPin, Swords, UsersRound } from "lucide-react";
 import { useAppSettings } from "@/hooks/use-settings";
 import { cn, haptic } from "@/lib/utils";
 
 const LINKS = [
-  { to: "/beacons", label: "Need a 4th", icon: Radio, tone: "text-primary", feature: "beacons" },
+  { to: "/beacons", label: "Open matches", icon: UsersRound, tone: "text-primary", feature: "beacons" },
   { to: "/venues", label: "Clubs", icon: MapPin, tone: "text-court", feature: "venues" },
   { to: "/compare", label: "Dossier", icon: Swords, tone: "text-fire", feature: "dossier" },
 ] as const;

@@ -9,19 +9,8 @@ import { cn } from "@/lib/utils";
 // `gate` marks tabs that only make sense with an account; guests get the sign-up sheet instead.
 const tabs = [
   { to: "/home", label: "Home", icon: Home },
-  {
-    to: "/rivals",
-    label: "Rivals",
-    icon: Swords,
-    gate: "Create a free account to track your rivalries.",
-  },
-  {
-    to: "/record",
-    label: "Record",
-    icon: Plus,
-    primary: true,
-    gate: "Create a free account to record matches, earn Elo and keep your stats.",
-  },
+  { to: "/rivals", label: "Rivals", icon: Swords },
+  { to: "/record", label: "Record", icon: Plus, primary: true },
   { to: "/leaderboard", label: "Ranks", icon: Trophy },
   {
     to: "/me",

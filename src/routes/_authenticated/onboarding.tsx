@@ -8,6 +8,7 @@ import { useMyProfile } from "@/hooks/use-auth";
 import { ProfileForm } from "@/components/ProfileForm";
 import { LinkEmail } from "@/components/LinkEmail";
 import { requireUser } from "./route";
+import { hasRecordDraft } from "@/lib/record-draft";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   beforeLoad: requireUser,
@@ -34,8 +35,8 @@ function Onboarding() {
             You signed up with a username only. If you forget your password there is <span className="font-black">no way to get back in</span> — your rating, badges and match history would be lost. Add an email and you can always reset it.
           </p>
         </div>
-        <LinkEmail onLinked={() => navigate({ to: "/home" })} />
-        <button onClick={() => navigate({ to: "/home" })} className="mt-4 w-full py-3 text-sm font-bold text-muted-foreground">
+        <LinkEmail onLinked={() => navigate({ to: hasRecordDraft() ? "/record" : "/home" })} />
+        <button onClick={() => navigate({ to: hasRecordDraft() ? "/record" : "/home" })} className="mt-4 w-full py-3 text-sm font-bold text-muted-foreground">
           Skip for now
         </button>
       </div>
@@ -62,7 +63,7 @@ function Onboarding() {
           await qc.invalidateQueries();
           const needsEmail = !user?.email || user.email.endsWith("@players.padelrival.app");
           if (needsEmail) setAskEmail(true);
-          else navigate({ to: "/home" });
+          else navigate({ to: hasRecordDraft() ? "/record" : "/home" });
         }}
       />
     </div>

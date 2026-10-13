@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronLeft, Plus, Radio } from "lucide-react";
+import { ChevronLeft, Plus, UsersRound, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { BeaconCard } from "@/components/BeaconCard";
@@ -18,14 +18,26 @@ import { supabase } from "@/integrations/supabase/client";
 import { cn, haptic } from "@/lib/utils";
 import { useAuthGate } from "@/components/AuthPrompt";
 import { FeatureGate } from "@/components/FeatureGate";
+import { PageGuide } from "@/components/PageGuide";
+
+type BeaconSearch = { post?: boolean | undefined; venue?: string | undefined; needed?: number | undefined };
 
 export const Route = createFileRoute("/_authenticated/beacons")({
+  // ?post=1&venue=…&needed=2 opens the invite form pre-filled (used by the player picker and club cards).
+  validateSearch: (s: Record<string, unknown>): BeaconSearch => {
+    const n = Number(s["needed"]);
+    return {
+      post: s["post"] === true || s["post"] === "1" || s["post"] === 1 ? true : undefined,
+      venue: typeof s["venue"] === "string" && s["venue"] ? s["venue"].slice(0, 120) : undefined,
+      needed: n >= 1 && n <= 3 ? n : undefined,
+    };
+  },
   head: () => ({
     meta: [
-      { title: "Need a 4th — Padel Rival" },
+      { title: "Open matches — Padel Rival" },
       {
         name: "description",
-        content: "Open padel games near you that need one more player. Join in one tap.",
+        content: "Short of players? Open your spare spots to any player and the first to accept is added automatically.",
       },
     ],
   }),
@@ -65,16 +77,24 @@ function BeaconsPage() {
   const { user } = Route.useRouteContext();
   const meId = user?.id ?? null;
   const { gate } = useAuthGate();
-  const post = () => gate("Create a free account to post a game and let players join you.") && setOpen(true);
+  const search = Route.useSearch();
+  const post = () =>
+    gate("Create a free account to post an open match and let other players join you.") && setOpen(true);
   const beacons = useBeacons();
   const now = useNow();
-  const [venue, setVenue] = useState("all");
+  const [venue, setVenue] = useState(search.post ? "all" : (search.venue ?? "all"));
   const [day, setDay] = useState<DayFilter>("all");
   const [open, setOpen] = useState(false);
 
+  useEffect(() => {
+    if (search.post) post();
+    // Only on arrival with ?post=1.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search.post]);
+
   const venues = useMemo(
-    () => [...new Set((beacons.data ?? []).map((b) => b.venue))].sort(),
-    [beacons.data],
+    () => [...new Set([...(beacons.data ?? []).map((b) => b.venue), ...(venue !== "all" ? [venue] : [])])].sort(),
+    [beacons.data, venue],
   );
   const list = (beacons.data ?? []).filter(
     (b) => (venue === "all" || b.venue === venue) && inDay(b.scheduled_at, day),
@@ -92,8 +112,8 @@ function BeaconsPage() {
       </Link>
       <div className="flex items-end justify-between gap-3">
         <div>
-          <h1 className="text-3xl font-black">Need a 4th</h1>
-          <p className="mt-1 text-muted-foreground">Short of players? Light a beacon.</p>
+          <h1 className="text-3xl font-black">Open matches</h1>
+          <p className="mt-1 text-muted-foreground">Games with spare spots that any player can claim.</p>
         </div>
         <button
           onClick={() => {
@@ -102,8 +122,28 @@ function BeaconsPage() {
           }}
           className="flex shrink-0 items-center gap-1 rounded-2xl bg-primary px-4 py-3 text-xs font-black uppercase text-primary-foreground glow active:scale-95"
         >
-          <Plus className="size-4" strokeWidth={3} /> Post
+          <Plus className="size-4" strokeWidth={3} /> Invite
         </button>
+      </div>
+
+      <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+        {[
+          ["1", "Post your game", "Club, time and how many spots are free"],
+          ["2", "Anyone can claim", "Any player on the app can join, no invite needed"],
+          ["3", "Auto-matched", "The first players to accept are added automatically"],
+        ].map(([n, t, d]) => (
+          <div key={n} className="rounded-2xl border bg-card p-2.5">
+            <div className="mx-auto grid size-6 place-items-center rounded-full bg-primary/15 font-display text-xs font-black text-primary">
+              {n}
+            </div>
+            <div className="mt-1.5 text-[11px] font-black leading-tight">{t}</div>
+            <div className="mt-0.5 text-[10px] leading-snug text-muted-foreground">{d}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4">
+        <PageGuide id="beacons" />
       </div>
 
       <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
@@ -120,13 +160,13 @@ function BeaconsPage() {
           </button>
         ))}
       </div>
-      {venues.length > 1 && (
+      {(venues.length > 1 || venue !== "all") && (
         <select
           value={venue}
           onChange={(e) => setVenue(e.target.value)}
           className="mt-2 w-full rounded-2xl border bg-card px-4 py-3 text-sm outline-none focus:border-primary"
         >
-          <option value="all">All venues</option>
+          <option value="all">All clubs</option>
           {venues.map((v) => (
             <option key={v} value={v}>
               {v}
@@ -144,17 +184,18 @@ function BeaconsPage() {
       ) : list.length === 0 ? (
         <div className="mt-6 rounded-3xl border border-dashed p-6 text-center">
           <div className="mx-auto grid size-12 place-items-center rounded-2xl bg-muted">
-            <Radio className="size-6 text-muted-foreground" />
+            <UsersRound className="size-6 text-muted-foreground" />
           </div>
-          <p className="mt-3 font-bold">No open games right now</p>
+          <p className="mt-3 font-bold">No open matches right now</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Post one and share it to your WhatsApp group. Whoever taps first gets the spot.
+            Short of players? Open your spare spots to everyone. The first players to accept are added to your
+            game automatically, and you can share the invite to WhatsApp too.
           </p>
           <button
             onClick={post}
             className="mt-4 rounded-2xl bg-primary px-6 py-3 text-sm font-black uppercase tracking-wide text-primary-foreground"
           >
-            Post a beacon
+            Invite any player
           </button>
         </div>
       ) : (
@@ -162,7 +203,7 @@ function BeaconsPage() {
           {mine.length > 0 && (
             <section className="space-y-3">
               <h2 className="text-sm font-black uppercase tracking-widest text-primary">
-                Your games
+                Your matches
               </h2>
               {mine.map((b) => (
                 <BeaconCard key={b.id} b={b} meId={meId} now={now} />
@@ -172,7 +213,7 @@ function BeaconsPage() {
           {others.length > 0 && (
             <section className="space-y-3">
               <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground">
-                Open games
+                Spots available
               </h2>
               {others.map((b) => (
                 <BeaconCard key={b.id} b={b} meId={meId} now={now} />
@@ -182,7 +223,15 @@ function BeaconsPage() {
         </div>
       )}
 
-      {meId && <PostBeaconDialog open={open} onOpenChange={setOpen} meId={meId} />}
+      {meId && (
+        <PostBeaconDialog
+          open={open}
+          onOpenChange={setOpen}
+          meId={meId}
+          initialVenue={search.venue ?? ""}
+          initialNeeded={search.needed ?? 1}
+        />
+      )}
     </AppShell>
   );
 }
@@ -203,15 +252,19 @@ function PostBeaconDialog({
   open,
   onOpenChange,
   meId,
+  initialVenue,
+  initialNeeded,
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   meId: string;
+  initialVenue: string;
+  initialNeeded: number;
 }) {
   const qc = useQueryClient();
-  const [venue, setVenue] = useState("");
+  const [venue, setVenue] = useState(initialVenue);
   const [when, setWhen] = useState(defaultTime);
-  const [needed, setNeeded] = useState(1);
+  const [needed, setNeeded] = useState(initialNeeded);
   const [tier, setTier] = useState<string>("open");
   const [side, setSide] = useState<string>("any");
   const [type, setType] = useState<"competitive" | "friendly">("competitive");
@@ -258,7 +311,7 @@ function PostBeaconDialog({
     },
     onSuccess: () => {
       haptic(25);
-      toast.success("Beacon is live — share it to your group!");
+      toast.success("Your open match is live. Any player can now claim a spot.");
       qc.invalidateQueries({ queryKey: ["beacons"] });
       setNotes("");
       onOpenChange(false);
@@ -272,8 +325,11 @@ function PostBeaconDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90dvh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-display">Post a beacon</DialogTitle>
-          <DialogDescription>Tell the club you're short and when you're playing.</DialogDescription>
+          <DialogTitle className="font-display">Invite any player</DialogTitle>
+          <DialogDescription>
+            Your spare spots become visible to every player on the app. The first to accept are added
+            to your match automatically.
+          </DialogDescription>
         </DialogHeader>
 
         <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
@@ -324,7 +380,7 @@ function PostBeaconDialog({
         />
 
         <label className="mt-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-          Players needed
+          Spots to fill
         </label>
         <div className="grid grid-cols-3 gap-2">
           {[1, 2, 3].map((n) => (
@@ -409,7 +465,7 @@ function PostBeaconDialog({
           onClick={() => create.mutate()}
           className="mt-1 w-full rounded-2xl bg-primary py-4 font-display text-base font-black uppercase text-primary-foreground glow active:scale-[0.98] disabled:opacity-40"
         >
-          {create.isPending ? "Posting…" : "Light the beacon"}
+          {create.isPending ? "Posting…" : "Open my match to everyone"}
         </button>
       </DialogContent>
     </Dialog>

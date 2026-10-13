@@ -8,7 +8,7 @@ import { joiners, slotsLeft, timeLabel } from "@/lib/beacons";
 import { cn } from "@/lib/utils";
 import { Field, inputCls, Panel } from "./shared";
 
-/** Upcoming "Need a 4th" games, with a cancel button for spam or mistakes. */
+/** Upcoming open matches, with a cancel button for spam or mistakes. */
 export function GamesPanel() {
   const qc = useQueryClient();
   const beacons = useBeacons(100);

@@ -48,9 +48,9 @@ export function BeaconCard({
       {
         onSuccess: (status) => {
           if (action === "join")
-            toast.success(status === "filled" ? "You're in — game is full!" : "You're in!");
-          else if (action === "leave") toast.success("You left the game");
-          else toast.success("Game cancelled");
+            toast.success(status === "filled" ? "Spot claimed. The match is now full!" : "Spot claimed. You're in the match!");
+          else if (action === "leave") toast.success("You gave up your spot");
+          else toast.success("Open match cancelled");
         },
         onError: (e) => toast.error(e.message),
       },
@@ -84,7 +84,7 @@ export function BeaconCard({
             full ? "bg-win/15 text-win" : "bg-primary/15 text-primary",
           )}
         >
-          {full ? "Full" : `+${left} needed`}
+          {full ? "Full" : `${left} spot${left > 1 ? "s" : ""} open`}
         </span>
       </div>
 
@@ -153,7 +153,7 @@ export function BeaconCard({
           <button
             disabled={act.isPending}
             onClick={() => {
-              if (confirm("Cancel this game for everyone?")) run("cancel");
+              if (confirm("Cancel this open match for everyone who joined?")) run("cancel");
             }}
             className="flex-1 rounded-2xl border py-2.5 text-xs font-black uppercase text-destructive active:scale-95 disabled:opacity-50"
           >
@@ -165,7 +165,7 @@ export function BeaconCard({
             onClick={() => run("leave")}
             className="flex-1 rounded-2xl border py-2.5 text-xs font-black uppercase text-muted-foreground active:scale-95 disabled:opacity-50"
           >
-            Leave game
+            Give up spot
           </button>
         ) : (
           <button
@@ -173,7 +173,7 @@ export function BeaconCard({
             onClick={() => run("join")}
             className="flex-1 rounded-2xl bg-primary py-2.5 text-xs font-black uppercase text-primary-foreground active:scale-95 disabled:opacity-40"
           >
-            {full ? "Game full" : "Join game"}
+            {full ? "Match full" : "Claim a spot"}
           </button>
         )}
         <a

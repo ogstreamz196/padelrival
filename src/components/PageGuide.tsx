@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { HelpCircle, Sparkles, X } from "lucide-react";
 
-export type GuideId = "home" | "rivals" | "record" | "leaderboard" | "me";
+export type GuideId =
+  "home" | "rivals" | "record" | "leaderboard" | "me" | "beacons" | "venues" | "compare";
 
 const GUIDES: Record<GuideId, { title: string; body: string; points: string[] }> = {
   home: {
@@ -40,6 +41,33 @@ const GUIDES: Record<GuideId, { title: string; body: string; points: string[] }>
       "Switch to XP / Activity to reward whoever plays the most.",
     ],
   },
+  beacons: {
+    title: "Fill your game with anyone",
+    body: "An open match puts your spare spots in front of every player on the app.",
+    points: [
+      "Tap Invite, pick the club and time, and say how many spots are free.",
+      "Any player can claim a spot. The first to accept are added automatically.",
+      "Share the invite to WhatsApp too. Your group taps the link and joins in one go.",
+    ],
+  },
+  venues: {
+    title: "Your clubs, in one place",
+    body: "Find a club, book a court and see who is playing today.",
+    points: [
+      "Star the clubs you play at and they stay at the top.",
+      "Tap “I’m playing today” so friends know where to find you.",
+      "Short of players? Open a match at any club straight from its card.",
+    ],
+  },
+  compare: {
+    title: "Put two players side by side",
+    body: "Rating, head-to-head, form and court side, all in one place.",
+    points: [
+      "Tap either card to swap in any player.",
+      "Head to head shows their record against each other and as partners.",
+      "Share the comparison to settle the argument in the group chat.",
+    ],
+  },
   me: {
     title: "Your player card",
     body: "The card you show off — and where you tune everything.",
@@ -53,8 +81,28 @@ const GUIDES: Record<GuideId, { title: string; body: string; points: string[] }>
 
 const key = (id: GuideId) => `guide:${id}:v1`;
 
+// Storage can be blocked (private mode); the guide then simply shows every visit.
+function seen(id: GuideId) {
+  try {
+    return localStorage.getItem(key(id)) === "1";
+  } catch {
+    return false;
+  }
+}
+function markSeen(id: GuideId) {
+  try {
+    localStorage.setItem(key(id), "1");
+  } catch {
+    /* ignore */
+  }
+}
+
 export function resetGuides() {
-  (Object.keys(GUIDES) as GuideId[]).forEach((id) => localStorage.removeItem(key(id)));
+  try {
+    (Object.keys(GUIDES) as GuideId[]).forEach((id) => localStorage.removeItem(key(id)));
+  } catch {
+    /* ignore */
+  }
 }
 
 export function PageGuide({ id }: { id: GuideId }) {
@@ -63,7 +111,7 @@ export function PageGuide({ id }: { id: GuideId }) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    setOpen(localStorage.getItem(key(id)) !== "1");
+    setOpen(!seen(id));
     setReady(true);
   }, [id]);
 
@@ -86,12 +134,14 @@ export function PageGuide({ id }: { id: GuideId }) {
       <div className="flex items-start gap-2">
         <Sparkles className="mt-0.5 size-4 shrink-0 text-primary" />
         <div className="min-w-0 flex-1">
-          <h2 className="font-display text-base font-black uppercase tracking-wide text-primary">{g.title}</h2>
+          <h2 className="font-display text-base font-black uppercase tracking-wide text-primary">
+            {g.title}
+          </h2>
           <p className="mt-1 text-sm text-muted-foreground">{g.body}</p>
         </div>
         <button
           onClick={() => {
-            localStorage.setItem(key(id), "1");
+            markSeen(id);
             setOpen(false);
           }}
           className="-mr-1 -mt-1 p-1 text-muted-foreground"
