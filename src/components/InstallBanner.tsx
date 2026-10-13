@@ -94,7 +94,7 @@ export function InstallBanner() {
               <span className="font-black text-primary">2</span> Choose <SquarePlus className="size-4 text-primary" /> <b>Add to Home Screen</b>
             </li>
             <li className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2">
-              <span className="font-black text-primary">3</span> Tap <b>Add</b>, then open it from your home screen
+              <span className="font-black text-primary">3</span> Tap <b>Add</b> — the shortcut lands on your home screen
             </li>
           </ol>
         ) : (
