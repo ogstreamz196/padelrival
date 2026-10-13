@@ -19,6 +19,7 @@ import { cn, haptic } from "@/lib/utils";
 import { useAuthGate } from "@/components/AuthPrompt";
 import { FeatureGate } from "@/components/FeatureGate";
 import { PageGuide } from "@/components/PageGuide";
+import { seo } from "@/lib/seo";
 
 type BeaconSearch = { post?: boolean | undefined; venue?: string | undefined; needed?: number | undefined };
 
@@ -32,15 +33,12 @@ export const Route = createFileRoute("/_authenticated/beacons")({
       needed: n >= 1 && n <= 3 ? n : undefined,
     };
   },
-  head: () => ({
-    meta: [
-      { title: "Open matches — Padel Rival" },
-      {
-        name: "description",
-        content: "Short of players? Open your spare spots to any player and the first to accept is added automatically.",
-      },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Open padel matches — find players near you | Padel Rival",
+      description: "Short of players for padel? Join an open match with a spare spot, or open your own game to any player. The first to accept are added automatically.",
+      path: "/beacons",
+    }),
   component: Beacons,
 });
 

@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "@/components/ui/sonner";
 import { NativeAndNetwork } from "@/components/NativeAndNetwork";
 import { AuthPromptProvider } from "@/components/AuthPrompt";
+import { OG_IMAGE } from "@/lib/seo";
 
 function NotFoundComponent() {
   return (
@@ -74,10 +75,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "Padel Rival" },
-      { title: "Padel Rival" },
-      { name: "description", content: "Track padel matches, climb the Elo ladder and settle rivalries." },
+      { title: "Padel Rival — Free padel score tracker, ratings & rivalries" },
+      {
+        name: "description",
+        content:
+          "Log padel matches in 20 seconds, get an Elo rating, track rivalries and find players for your next game. Free padel app for the UK.",
+      },
+      { name: "application-name", content: "Padel Rival" },
+      { property: "og:site_name", content: "Padel Rival" },
       { property: "og:type", content: "website" },
+      { property: "og:locale", content: "en_GB" },
+      { property: "og:image", content: OG_IMAGE },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Padel Rival — every match counts, every rival remembered" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: OG_IMAGE },
+      { name: "format-detection", content: "telephone=no" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -100,7 +114,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en-GB" className="dark">
       <head>
         <HeadContent />
       </head>

@@ -10,10 +10,17 @@ import { ShareResult } from "@/components/ShareResult";
 import { useMyProfile } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 import { requireUser } from "./route";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/celebrate")({
   beforeLoad: requireUser,
-  head: () => ({ meta: [{ title: "Match result — Padel Rival" }, { name: "description", content: "Your match result." }] }),
+  head: () =>
+    seo({
+      title: "Match result — Padel Rival",
+      description: "Your match result.",
+      path: "/celebrate",
+      noindex: true,
+    }),
   component: Celebrate,
 });
 

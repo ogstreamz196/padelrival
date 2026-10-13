@@ -23,6 +23,7 @@ import { whatsappUrl } from "@/lib/share";
 import { cn, haptic } from "@/lib/utils";
 import { FeatureGate } from "@/components/FeatureGate";
 import { PageGuide } from "@/components/PageGuide";
+import { seo } from "@/lib/seo";
 
 type Search = { p1?: string | undefined; p2?: string | undefined };
 
@@ -31,16 +32,12 @@ export const Route = createFileRoute("/_authenticated/compare")({
     p1: typeof s["p1"] === "string" && s["p1"] ? s["p1"] : undefined,
     p2: typeof s["p2"] === "string" && s["p2"] ? s["p2"] : undefined,
   }),
-  head: () => ({
-    meta: [
-      { title: "The Dossier — Padel Rival" },
-      {
-        name: "description",
-        content:
-          "Compare two padel players side by side: rating, head-to-head, form and court side.",
-      },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Compare padel players head to head — Padel Rival",
+      description: "Put two padel players side by side: rating, head-to-head record, win rate, streaks and court side.",
+      path: "/compare",
+    }),
   component: Compare,
 });
 

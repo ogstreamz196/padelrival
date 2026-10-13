@@ -5,14 +5,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { AppShell } from "@/components/AppShell";
 import { PageGuide } from "@/components/PageGuide";
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/rivals")({
-  head: () => ({
-    meta: [
-      { title: "Rivalries — Padel Rival" },
-      { name: "description", content: "Your head-to-head rivalries." },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Padel rivalries & head-to-head records — Padel Rival",
+      description: "Play the same opponents twice and a rivalry starts on its own, with your head-to-head record, revenge alerts and one-tap rematches.",
+      path: "/rivals",
+    }),
   component: Rivals,
 });
 

@@ -1,0 +1,20 @@
+# Padel Rival
+
+> Padel Rival is a free padel score tracker and rating app for the UK. Players log 2v2 padel matches in about 20 seconds, get an Elo-style rating, track head-to-head rivalries, find players for open matches and browse padel clubs with court booking links. It runs in any phone browser at https://padel.ogbot.co.uk.
+
+## What it does
+- Records 2v2 padel matches (sets, super tie-break, court side, venue) and updates every player's rating, XP and win streak.
+- Rating starts at 1000; tiers run Bronze, Silver, Gold, Platinum, Diamond. The first five matches are provisional.
+- Rivalries start automatically after playing the same opponents twice, with head-to-head records and rematch shortcuts.
+- Open matches: a player posts a game with spare spots, any player can claim a spot, and the first to accept are added automatically. Invites can be shared to WhatsApp.
+- Club directory of UK padel clubs with indoor/outdoor details, court booking links and "playing today" check-ins.
+- Side-by-side player comparison ("the Dossier"), weekly leaderboards and shareable result cards.
+- Free to use. An optional Pro plan adds deeper statistics and extra share cards.
+
+## Key pages
+- [Home](https://padel.ogbot.co.uk/): what Padel Rival is, how it works and FAQs
+- [Padel courts in the UK](https://padel.ogbot.co.uk/padel-courts): padel clubs grouped by city
+- [Leaderboard](https://padel.ogbot.co.uk/leaderboard): live padel rankings
+- [Open matches](https://padel.ogbot.co.uk/beacons): games looking for players
+- [Privacy policy](https://padel.ogbot.co.uk/privacy)
+- [Terms](https://padel.ogbot.co.uk/terms)

@@ -21,18 +21,15 @@ import { useBeacons } from "@/hooks/use-beacons";
 import { useFriendIds } from "@/hooks/use-friends";
 import { supabase } from "@/integrations/supabase/client";
 import { cn, haptic } from "@/lib/utils";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/venues")({
-  head: () => ({
-    meta: [
-      { title: "Clubs — Padel Rival" },
-      {
-        name: "description",
-        content:
-          "Find padel clubs, book a court, see who is playing today and open a match at any club.",
-      },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Padel clubs — book a court, see who is playing | Padel Rival",
+      description: "Find padel clubs, go straight to court booking, see which friends are playing today and open a match at any club.",
+      path: "/venues",
+    }),
   component: Venues,
 });
 

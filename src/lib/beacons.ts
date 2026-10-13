@@ -1,4 +1,6 @@
-export const SITE_URL = "https://padel.ogbot.co.uk";
+import { SITE_URL } from "@/lib/seo";
+
+export { SITE_URL };
 
 export type BeaconPlayer = {
   id: string;

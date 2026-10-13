@@ -20,20 +20,18 @@ import { useServerFn } from "@tanstack/react-start";
 import { deleteMyAccount } from "@/lib/account.functions";
 import { requireUser } from "./route";
 import { useAppSettings } from "@/hooks/use-settings";
+import { seo } from "@/lib/seo";
 
 
 export const Route = createFileRoute("/_authenticated/me")({
   beforeLoad: requireUser,
-  head: () => ({
-    meta: [
-      { title: "Your player card — Padel Rival" },
-      { name: "description", content: "Your rating, level, streaks, achievements, best partners and match history." },
-      { property: "og:title", content: "Your player card — Padel Rival" },
-      { property: "og:description", content: "Rating, level, streaks, achievements and match history." },
-      { property: "og:type", content: "profile" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Your player card — Padel Rival",
+      description: "Your rating, level, streaks, achievements, best partners and match history.",
+      path: "/me",
+      noindex: true,
+    }),
   component: Me,
 });
 

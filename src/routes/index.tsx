@@ -1,18 +1,90 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { ChevronDown, MapPin, Share2, Swords, Trophy, UsersRound, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { FAQ, jsonLd, OG_IMAGE, seo, SITE_NAME, SITE_URL } from "@/lib/seo";
+
+const TITLE = "Padel Rival — Free padel score tracker, ratings & rivalries";
+const DESCRIPTION =
+  "Log padel matches in 20 seconds, get an Elo rating, track head-to-head rivalries and find players for your next game. Free padel app for the UK.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
-    meta: [
-      { title: "Padel Rival — Compete, rank up, settle rivalries" },
-      { name: "description", content: "Record 2v2 padel matches, earn Elo and XP, unlock badges and track head-to-head rivalries with your crew." },
-      { property: "og:title", content: "Padel Rival — Compete, rank up, settle rivalries" },
-      { property: "og:description", content: "Record 2v2 padel matches, earn Elo and XP, unlock badges and track rivalries." },
+    ...seo({ title: TITLE, description: DESCRIPTION, path: "/" }),
+    scripts: [
+      jsonLd({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: SITE_NAME,
+        url: SITE_URL,
+        description: DESCRIPTION,
+        inLanguage: "en-GB",
+      }),
+      jsonLd({
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        name: SITE_NAME,
+        url: SITE_URL,
+        applicationCategory: "SportsApplication",
+        operatingSystem: "Any (web browser)",
+        browserRequirements: "Requires JavaScript",
+        description: DESCRIPTION,
+        image: OG_IMAGE,
+        offers: { "@type": "Offer", price: "0", priceCurrency: "GBP" },
+        featureList: [
+          "Padel match score tracker",
+          "Elo-style padel rating",
+          "Head-to-head rivalries",
+          "Open matches to find padel players",
+          "Padel club directory with court booking links",
+        ],
+      }),
+      jsonLd({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: FAQ.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      }),
     ],
   }),
   component: Landing,
 });
+
+const FEATURES = [
+  {
+    icon: Trophy,
+    title: "A real padel rating",
+    body: "Everyone starts at 1000. Beat a stronger pair and you climb faster. Climb from Bronze to Diamond on the leaderboard.",
+  },
+  {
+    icon: Swords,
+    title: "Rivalries that remember",
+    body: "Play the same people twice and a head-to-head record starts on its own, with revenge alerts and one-tap rematches.",
+  },
+  {
+    icon: UsersRound,
+    title: "Find players for your game",
+    body: "Short of a fourth? Open your spare spots to everyone. The first players to accept are added automatically.",
+  },
+  {
+    icon: MapPin,
+    title: "Padel clubs near you",
+    body: "Browse UK padel clubs, jump to court booking and see which friends are playing today.",
+  },
+  {
+    icon: Zap,
+    title: "Logged in 20 seconds",
+    body: "Pick your team, tap the score, done. Friends not on the app yet can be added as guests.",
+  },
+  {
+    icon: Share2,
+    title: "Made for the group chat",
+    body: "Share results, player cards and side-by-side comparisons straight to WhatsApp and Instagram.",
+  },
+];
 
 function Landing() {
   const navigate = useNavigate();
@@ -23,53 +95,158 @@ function Landing() {
   }, [navigate]);
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-between px-6 py-10">
-      <div className="flex items-center gap-2">
-        <img src="/icon-192.png" alt="" className="size-9 rounded-xl" />
-        <span className="font-display text-lg font-black">PADEL RIVAL</span>
-      </div>
+    <div className="mx-auto max-w-md px-6">
+      <section className="flex min-h-dvh flex-col justify-between py-10">
+        <header className="flex items-center gap-2">
+          <img
+            src="/icon-192.png"
+            alt="Padel Rival logo"
+            width={36}
+            height={36}
+            className="size-9 rounded-xl"
+          />
+          <span className="font-display text-lg font-black">PADEL RIVAL</span>
+        </header>
 
-      <div className="animate-rise">
-        <p className="mb-4 text-sm font-bold uppercase tracking-[0.3em] text-primary">Season 1 is live</p>
-        <h1 className="text-[2.5rem] font-black leading-[0.95]">
-          Every match
-          <br />
-          counts.
-          <br />
-          <span className="text-primary">Every rival</span>
-          <br />
-          remembered.
-        </h1>
-        <p className="mt-6 text-lg text-muted-foreground">
-          Log your 2v2 games in seconds. Climb the Elo ladder, stack XP, keep the streak on fire and never let a rival forget who won last.
-        </p>
-        <div className="mt-8 grid grid-cols-3 gap-2 text-center">
+        <div className="animate-rise">
+          <p className="mb-4 text-sm font-bold uppercase tracking-[0.3em] text-primary">
+            Season 1 is live
+          </p>
+          <h1 className="text-[2.5rem] font-black leading-[0.95]">
+            Every match
+            <br />
+            counts.
+            <br />
+            <span className="text-primary">Every rival</span>
+            <br />
+            remembered.
+          </h1>
+          <p className="mt-6 text-lg text-muted-foreground">
+            The free padel score tracker. Log your 2v2 games in seconds, climb the Elo ladder, keep
+            the streak on fire and never let a rival forget who won last.
+          </p>
+          <div className="mt-8 grid grid-cols-3 gap-2 text-center">
+            {[
+              ["1000", "Starting Elo"],
+              ["+100", "XP per win"],
+              ["H2H", "Rivalries"],
+            ].map(([a, b]) => (
+              <div key={b} className="rounded-2xl border bg-card p-3">
+                <div className="font-display text-xl font-black text-primary">{a}</div>
+                <div className="text-[11px] font-bold uppercase text-muted-foreground">{b}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <Link
+            to="/home"
+            className="block rounded-2xl bg-primary py-4 text-center font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]"
+          >
+            Enter the court
+          </Link>
+          <Link
+            to="/auth"
+            className="mt-3 block py-2 text-center text-sm font-bold text-muted-foreground"
+          >
+            Already a player? <span className="text-primary">Sign in</span>
+          </Link>
+          <a
+            href="#how-it-works"
+            className="mx-auto mt-2 flex w-fit items-center gap-1 text-xs text-muted-foreground"
+          >
+            How it works <ChevronDown className="size-3.5" />
+          </a>
+        </div>
+      </section>
+
+      <section id="how-it-works" className="py-10">
+        <h2 className="text-2xl font-black">How Padel Rival works</h2>
+        <ol className="mt-5 space-y-3">
           {[
-            ["1000", "Starting Elo"],
-            ["+100", "XP per win"],
-            ["H2H", "Rivalries"],
-          ].map(([a, b]) => (
-            <div key={b} className="rounded-2xl border bg-card p-3">
-              <div className="font-display text-xl font-black text-primary">{a}</div>
-              <div className="text-[11px] font-bold uppercase text-muted-foreground">{b}</div>
-            </div>
+            ["Play your match", "Any 2v2 padel game, at any club, with anyone."],
+            ["Log the score", "Pick your partner and opponents, tap the sets. About 20 seconds."],
+            [
+              "Watch the table move",
+              "Ratings, XP, streaks and rivalries update for all four players.",
+            ],
+          ].map(([t, d], i) => (
+            <li key={t} className="flex gap-3 rounded-2xl border bg-card p-4">
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary font-display text-sm font-black text-primary-foreground">
+                {i + 1}
+              </span>
+              <span>
+                <span className="block font-bold">{t}</span>
+                <span className="block text-sm text-muted-foreground">{d}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="py-10">
+        <h2 className="text-2xl font-black">Everything your padel group needs</h2>
+        <div className="mt-5 grid gap-3">
+          {FEATURES.map(({ icon: Icon, title, body }) => (
+            <article key={title} className="flex gap-3 rounded-2xl border bg-card p-4">
+              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
+                <Icon className="size-5" />
+              </span>
+              <span>
+                <h3 className="font-bold">{title}</h3>
+                <p className="mt-0.5 text-sm text-muted-foreground">{body}</p>
+              </span>
+            </article>
           ))}
         </div>
-      </div>
+      </section>
 
-      <div>
-        <Link to="/home" className="block rounded-2xl bg-primary py-4 text-center font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]">
-          Enter the court
+      <section className="py-10">
+        <h2 className="text-2xl font-black">Find padel courts near you</h2>
+        <p className="mt-2 text-muted-foreground">
+          Browse padel clubs across the UK, see indoor and outdoor courts, and go straight to
+          booking.
+        </p>
+        <Link
+          to="/padel-courts"
+          className="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-court/60 py-3.5 font-bold text-court"
+        >
+          <MapPin className="size-4" /> Browse UK padel clubs
         </Link>
-        <Link to="/auth" className="mt-3 block py-2 text-center text-sm font-bold text-muted-foreground">
-          Already a player? <span className="text-primary">Sign in</span>
-        </Link>
-        <div className="mt-4 flex justify-center gap-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-          <Link to="/privacy">Privacy</Link>
-          <Link to="/terms">Terms</Link>
+      </section>
+
+      <section className="py-10">
+        <h2 className="text-2xl font-black">Questions</h2>
+        <div className="mt-5 space-y-2">
+          {FAQ.map((f) => (
+            <details key={f.q} className="group rounded-2xl border bg-card p-4">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-bold">
+                <h3>{f.q}</h3>
+                <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+              </summary>
+              <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
+            </details>
+          ))}
         </div>
-      </div>
+      </section>
 
+      <section className="py-10 text-center">
+        <h2 className="text-2xl font-black">Ready for your next match?</h2>
+        <p className="mt-2 text-muted-foreground">Free to use. No download needed.</p>
+        <Link
+          to="/home"
+          className="mt-5 block rounded-2xl bg-primary py-4 font-display text-lg font-black uppercase text-primary-foreground glow"
+        >
+          Start playing
+        </Link>
+      </section>
+
+      <footer className="flex flex-wrap justify-center gap-4 pb-12 pt-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+        <Link to="/padel-courts">Padel clubs</Link>
+        <Link to="/privacy">Privacy</Link>
+        <Link to="/terms">Terms</Link>
+      </footer>
     </div>
   );
 }

@@ -20,18 +20,15 @@ import { useMyProfile } from "@/hooks/use-auth";
 import { levelInfo, isProvisional } from "@/lib/game";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/home")({
-  head: () => ({
-    meta: [
-      { title: "Clubhouse — Padel Rival" },
-      { name: "description", content: "Your weekly division, live rivalries and the latest matches from your padel circle." },
-      { property: "og:title", content: "Clubhouse — Padel Rival" },
-      { property: "og:description", content: "Weekly divisions, rivalries and live padel match activity." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Padel Rival — Your padel clubhouse: matches, ratings & rivals",
+      description: "See the latest padel matches, weekly rankings and open matches looking for players. Log your own games and climb the ladder.",
+      path: "/home",
+    }),
   component: Home,
 });
 

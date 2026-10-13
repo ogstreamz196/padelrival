@@ -4,9 +4,16 @@ import { AppShell } from "@/components/AppShell";
 import { PlayerProfile } from "@/components/PlayerProfile";
 import { FollowButton } from "@/components/FollowButton";
 import { haptic } from "@/lib/utils";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/player/$id")({
-  head: () => ({ meta: [{ title: "Player — Padel Rival" }, { name: "description", content: "Player card, rivalries and match history." }] }),
+  head: ({ params }) =>
+    seo({
+      title: "Padel player card — Padel Rival",
+      description: "Padel player card with rating, form, rivalries and match history.",
+      path: `/player/${params.id}`,
+      noindex: true,
+    }),
   component: PlayerPage,
 });
 

@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useIsNative } from "@/hooks/use-native";
 import { signInWithUsername, signUpWithUsername } from "@/lib/username-auth.functions";
+import { seo } from "@/lib/seo";
 
 type AuthSearch = { mode?: "up" | undefined; redirect?: string | undefined };
 
@@ -18,14 +19,13 @@ export const Route = createFileRoute("/auth")({
     mode: s["mode"] === "up" ? "up" : undefined,
     redirect: typeof s["redirect"] === "string" ? s["redirect"] : undefined,
   }),
-  head: () => ({
-    meta: [
-      { title: "Sign in — Padel Rival" },
-      { name: "description", content: "Sign in or create your Padel Rival player account." },
-      { property: "og:title", content: "Sign in — Padel Rival" },
-      { property: "og:description", content: "Sign in or create your Padel Rival player account." },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Sign in or join free — Padel Rival",
+      description: "Sign in or create your free Padel Rival account to log matches, get a padel rating and track your rivals.",
+      path: "/auth",
+      noindex: true,
+    }),
   component: AuthPage,
 });
 

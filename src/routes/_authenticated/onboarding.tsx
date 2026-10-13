@@ -9,10 +9,17 @@ import { ProfileForm } from "@/components/ProfileForm";
 import { LinkEmail } from "@/components/LinkEmail";
 import { requireUser } from "./route";
 import { hasRecordDraft } from "@/lib/record-draft";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/onboarding")({
   beforeLoad: requireUser,
-  head: () => ({ meta: [{ title: "Create your player — Padel Rival" }, { name: "description", content: "Set up your Padel Rival player card." }] }),
+  head: () =>
+    seo({
+      title: "Create your player — Padel Rival",
+      description: "Set up your Padel Rival player card.",
+      path: "/onboarding",
+      noindex: true,
+    }),
   component: Onboarding,
 });
 

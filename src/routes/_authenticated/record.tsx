@@ -15,11 +15,17 @@ import { useFriendIds } from "@/hooks/use-friends";
 import { SET_PRESETS, STB_PRESETS, validateSet, type SetScore } from "@/lib/game";
 import { cn, haptic } from "@/lib/utils";
 import { DRAFT_KEY, loadDraft, type Draft, type Slot } from "@/lib/record-draft";
+import { seo } from "@/lib/seo";
 
 
 export const Route = createFileRoute("/_authenticated/record")({
   validateSearch: z.object({ opp: z.string().optional() }),
-  head: () => ({ meta: [{ title: "Record match — Padel Rival" }, { name: "description", content: "Log a 2v2 padel match." }] }),
+  head: () =>
+    seo({
+      title: "Record a padel match — free score tracker | Padel Rival",
+      description: "Log a 2v2 padel match in about 20 seconds. Ratings, XP and rivalries update for all four players.",
+      path: "/record",
+    }),
   component: RecordMatch,
 });
 

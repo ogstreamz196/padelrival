@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedBeaconsRouteImport } from './routes/_authenticated/beacons'
@@ -26,6 +27,8 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedRecordRouteImport } from './routes/_authenticated/record'
 import { Route as AuthenticatedRivalsRouteImport } from './routes/_authenticated/rivals'
 import { Route as AuthenticatedVenuesRouteImport } from './routes/_authenticated/venues'
+import { Route as PadelCourtsIndexRouteImport } from './routes/padel-courts.index'
+import { Route as PadelCourtsCityRouteImport } from './routes/padel-courts.$city'
 import { Route as AuthenticatedPlayerIdRouteImport } from './routes/_authenticated/player.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -50,6 +53,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -113,6 +121,16 @@ const AuthenticatedVenuesRoute = AuthenticatedVenuesRouteImport.update({
   path: '/venues',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const PadelCourtsIndexRoute = PadelCourtsIndexRouteImport.update({
+  id: '/padel-courts/',
+  path: '/padel-courts/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PadelCourtsCityRoute = PadelCourtsCityRouteImport.update({
+  id: '/padel-courts/$city',
+  path: '/padel-courts/$city',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedPlayerIdRoute = AuthenticatedPlayerIdRouteImport.update({
   id: '/player/$id',
   path: '/player/$id',
@@ -124,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/beacons': typeof AuthenticatedBeaconsRoute
@@ -136,6 +155,8 @@ export interface FileRoutesByFullPath {
   '/record': typeof AuthenticatedRecordRoute
   '/rivals': typeof AuthenticatedRivalsRoute
   '/venues': typeof AuthenticatedVenuesRoute
+  '/padel-courts/$city': typeof PadelCourtsCityRoute
+  '/padel-courts/': typeof PadelCourtsIndexRoute
   '/player/$id': typeof AuthenticatedPlayerIdRoute
 }
 export interface FileRoutesByTo {
@@ -143,6 +164,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/beacons': typeof AuthenticatedBeaconsRoute
@@ -155,6 +177,8 @@ export interface FileRoutesByTo {
   '/record': typeof AuthenticatedRecordRoute
   '/rivals': typeof AuthenticatedRivalsRoute
   '/venues': typeof AuthenticatedVenuesRoute
+  '/padel-courts/$city': typeof PadelCourtsCityRoute
+  '/padel-courts': typeof PadelCourtsIndexRoute
   '/player/$id': typeof AuthenticatedPlayerIdRoute
 }
 export interface FileRoutesById {
@@ -164,6 +188,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/terms': typeof TermsRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/beacons': typeof AuthenticatedBeaconsRoute
@@ -176,6 +201,8 @@ export interface FileRoutesById {
   '/_authenticated/record': typeof AuthenticatedRecordRoute
   '/_authenticated/rivals': typeof AuthenticatedRivalsRoute
   '/_authenticated/venues': typeof AuthenticatedVenuesRoute
+  '/padel-courts/$city': typeof PadelCourtsCityRoute
+  '/padel-courts/': typeof PadelCourtsIndexRoute
   '/_authenticated/player/$id': typeof AuthenticatedPlayerIdRoute
 }
 export interface FileRouteTypes {
@@ -185,6 +212,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/privacy'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/terms'
     | '/admin'
     | '/beacons'
@@ -197,6 +225,8 @@ export interface FileRouteTypes {
     | '/record'
     | '/rivals'
     | '/venues'
+    | '/padel-courts/$city'
+    | '/padel-courts/'
     | '/player/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -204,6 +234,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/privacy'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/terms'
     | '/admin'
     | '/beacons'
@@ -216,6 +247,8 @@ export interface FileRouteTypes {
     | '/record'
     | '/rivals'
     | '/venues'
+    | '/padel-courts/$city'
+    | '/padel-courts'
     | '/player/$id'
   id:
     | '__root__'
@@ -224,6 +257,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/privacy'
     | '/reset-password'
+    | '/sitemap.xml'
     | '/terms'
     | '/_authenticated/admin'
     | '/_authenticated/beacons'
@@ -236,6 +270,8 @@ export interface FileRouteTypes {
     | '/_authenticated/record'
     | '/_authenticated/rivals'
     | '/_authenticated/venues'
+    | '/padel-courts/$city'
+    | '/padel-courts/'
     | '/_authenticated/player/$id'
   fileRoutesById: FileRoutesById
 }
@@ -245,7 +281,10 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
+  PadelCourtsCityRoute: typeof PadelCourtsCityRoute
+  PadelCourtsIndexRoute: typeof PadelCourtsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -283,6 +322,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/terms': {
@@ -369,6 +415,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedVenuesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/padel-courts/': {
+      id: '/padel-courts/'
+      path: '/padel-courts'
+      fullPath: '/padel-courts/'
+      preLoaderRoute: typeof PadelCourtsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/padel-courts/$city': {
+      id: '/padel-courts/$city'
+      path: '/padel-courts/$city'
+      fullPath: '/padel-courts/$city'
+      preLoaderRoute: typeof PadelCourtsCityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/player/$id': {
       id: '/_authenticated/player/$id'
       path: '/player/$id'
@@ -418,7 +478,10 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
+  PadelCourtsCityRoute: PadelCourtsCityRoute,
+  PadelCourtsIndexRoute: PadelCourtsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

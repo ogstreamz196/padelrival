@@ -11,9 +11,15 @@ import { FollowButton } from "@/components/FollowButton";
 import { useFriendIds } from "@/hooks/use-friends";
 import { cn } from "@/lib/utils";
 import { useAuthGate } from "@/components/AuthPrompt";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/leaderboard")({
-  head: () => ({ meta: [{ title: "Leaderboard — Padel Rival" }, { name: "description", content: "Global and weekly padel rankings." }] }),
+  head: () =>
+    seo({
+      title: "Padel rankings & leaderboard — Padel Rival",
+      description: "Live padel rankings by Elo rating and weekly form. See who is top this week and how you compare.",
+      path: "/leaderboard",
+    }),
   component: Leaderboard,
 });
 
