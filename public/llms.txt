@@ -1,6 +1,6 @@
 # Padel Rival
 
-> Padel Rival is a free padel score tracker and rating app for the UK. Players log 2v2 padel matches in about 20 seconds, get an Elo-style rating, track head-to-head rivalries, find players for open matches and browse padel clubs with court booking links. It runs in any phone browser at https://padel.ogbot.co.uk.
+> Padel Rival is a free padel score tracker and rating app for the UK. Players log 2v2 padel matches in about 20 seconds, get an Elo-style rating, track head-to-head rivalries, find players for open matches and browse padel clubs with court booking links. It runs in any phone browser at https://padelrival.co.uk.
 
 ## What it does
 - Records 2v2 padel matches (sets, super tie-break, court side, venue) and updates every player's rating, XP and win streak.
@@ -12,9 +12,9 @@
 - Free to use. An optional Pro plan adds deeper statistics and extra share cards.
 
 ## Key pages
-- [Home](https://padel.ogbot.co.uk/): what Padel Rival is, how it works and FAQs
-- [Padel courts in the UK](https://padel.ogbot.co.uk/padel-courts): padel clubs grouped by city
-- [Leaderboard](https://padel.ogbot.co.uk/leaderboard): live padel rankings
-- [Open matches](https://padel.ogbot.co.uk/beacons): games looking for players
-- [Privacy policy](https://padel.ogbot.co.uk/privacy)
-- [Terms](https://padel.ogbot.co.uk/terms)
+- [Home](https://padelrival.co.uk/): what Padel Rival is, how it works and FAQs
+- [Padel courts in the UK](https://padelrival.co.uk/padel-courts): padel clubs grouped by city
+- [Leaderboard](https://padelrival.co.uk/leaderboard): live padel rankings
+- [Open matches](https://padelrival.co.uk/beacons): games looking for players
+- [Privacy policy](https://padelrival.co.uk/privacy)
+- [Terms](https://padelrival.co.uk/terms)

@@ -11,7 +11,7 @@ export const Route = createFileRoute("/terms")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
-    links: [{ rel: "canonical", href: "https://padel.ogbot.co.uk/terms" }],
+    links: [{ rel: "canonical", href: "https://padelrival.co.uk/terms" }],
   }),
   component: Terms,
 });
