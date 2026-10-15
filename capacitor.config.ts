@@ -7,9 +7,9 @@ const config: CapacitorConfig = {
   backgroundColor: "#0b1020",
   server: {
     // The native apps load the live web app, so every web update ships to Android/iOS instantly.
-    url: "https://padel.ogbot.co.uk/home",
+    url: "https://padelrival.co.uk/home",
     cleartext: false,
-    allowNavigation: ["padel.ogbot.co.uk", "*.lovable.app", "*.supabase.co", "accounts.google.com"],
+    allowNavigation: ["padelrival.co.uk", "www.padelrival.co.uk", "*.lovable.app", "*.supabase.co", "accounts.google.com"],
   },
   android: { allowMixedContent: false },
   ios: { contentInset: "always" },
