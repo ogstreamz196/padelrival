@@ -1,4 +1,4 @@
-export const SITE_URL = "https://padel.ogbot.co.uk";
+export const SITE_URL = "https://padelrival.co.uk";
 export const SITE_NAME = "Padel Rival";
 export const OG_IMAGE = `${SITE_URL}/og-image.png`;
 

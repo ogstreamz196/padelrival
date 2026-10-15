@@ -81,7 +81,7 @@ function providers(): Provider[] {
       url: "https://openrouter.ai/api/v1/chat/completions",
       key: or,
       model: "openrouter/free",
-      extra: { "HTTP-Referer": "https://padel.ogbot.co.uk", "X-Title": "Padel Rival" },
+      extra: { "HTTP-Referer": "https://padelrival.co.uk", "X-Title": "Padel Rival" },
     });
   const pol = env("POLLINATIONS_API_KEY");
   if (pol) out.push({ name: "pollinations", url: "https://text.pollinations.ai/openai", key: pol, model: "openai" });

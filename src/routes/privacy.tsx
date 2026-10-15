@@ -11,7 +11,7 @@ export const Route = createFileRoute("/privacy")({
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
-    links: [{ rel: "canonical", href: "https://padel.ogbot.co.uk/privacy" }],
+    links: [{ rel: "canonical", href: "https://padelrival.co.uk/privacy" }],
   }),
   component: Privacy,
 });

@@ -280,7 +280,7 @@ export async function renderPlayerCard(d: PlayerCardData): Promise<Blob | null> 
     y += 90;
   }
 
-  center("padel.ogbot.co.uk", 1790, 32, "rgba(255,255,255,0.35)");
+  center("padelrival.co.uk", 1790, 32, "rgba(255,255,255,0.35)");
 
   return await new Promise((resolve) => c.toBlob((b) => resolve(b), "image/png"));
 }
