@@ -101,7 +101,9 @@ export function AppShell({ children, hideNav, wide }: { children: ReactNode; hid
               <span>{note.text}</span>
             </div>
           )}
-          {children}
+          <div key={pathname} className="fx-page">
+            {children}
+          </div>
         </main>
       </div>
       {shown && (
@@ -117,7 +119,7 @@ export function AppShell({ children, hideNav, wide }: { children: ReactNode; hid
                     to={t.to}
                     onClick={onClick}
                     aria-label="Record a match"
-                    className="-mt-8 grid size-16 place-items-center rounded-full bg-primary text-primary-foreground glow transition-transform active:scale-90"
+                    className="fx-pulse -mt-8 grid size-16 place-items-center rounded-full bg-primary text-primary-foreground glow transition-transform active:scale-90"
                   >
                     <Icon className="size-8" strokeWidth={3} />
                   </Link>
@@ -176,7 +178,7 @@ function SideRail({ navProps }: { navProps: NavProps }) {
                 to={t.to}
                 onClick={onClick}
                 aria-label="Record a match"
-                className="my-1 flex items-center justify-center gap-2 rounded-2xl bg-primary py-2.5 font-display text-sm font-black uppercase text-primary-foreground glow active:scale-95 lg:py-3"
+                className="fx-shine my-1 flex items-center justify-center gap-2 rounded-2xl bg-primary py-2.5 font-display text-sm font-black uppercase text-primary-foreground glow active:scale-95 lg:py-3"
               >
                 <Icon className="size-5" strokeWidth={3} />
                 <span className="hidden lg:inline">Record match</span>

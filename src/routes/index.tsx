@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { CountUp, CourtFx, Reveal, Spotlight, Tilt } from "@/components/fx";
 import { useEffect } from "react";
 import { ChevronDown, MapPin, Share2, Swords, Trophy, UsersRound, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -97,7 +98,11 @@ function Landing() {
 
   return (
     <div className="mx-auto max-w-md px-6 md:max-w-3xl md:px-10 lg:max-w-6xl">
-      <section className="flex min-h-dvh flex-col justify-between py-10 lg:grid lg:grid-cols-[1.1fr_0.9fr] lg:grid-rows-[auto_1fr_auto] lg:gap-x-16 short:grid short:min-h-0 short:grid-cols-[1.3fr_1fr] short:items-end short:gap-x-8 short:gap-y-4 short:py-6">
+      <section className="relative isolate flex min-h-dvh flex-col justify-between py-10 lg:grid lg:grid-cols-[1.1fr_0.9fr] lg:grid-rows-[auto_1fr_auto] lg:gap-x-16 short:grid short:min-h-0 short:grid-cols-[1.3fr_1fr] short:items-end short:gap-x-8 short:gap-y-4 short:py-6">
+        <Spotlight />
+        <div className="pointer-events-none absolute inset-y-0 left-1/2 -z-10 w-screen -translate-x-1/2 overflow-hidden short:hidden">
+          <CourtFx className="bottom-0 left-1/2 h-[40vh] w-[115vw] -translate-x-1/2 opacity-70 lg:h-[46vh] lg:w-[110vw]" />
+        </div>
         <header className="flex items-center gap-2 lg:col-span-2 short:col-span-2">
           <img
             src="/icon-192.png"
@@ -118,7 +123,7 @@ function Landing() {
             <br />
             counts.
             <br />
-            <span className="text-primary">Every rival</span>
+            <span className="fx-text-shimmer text-primary">Every rival</span>
             <br />
             remembered.
           </h1>
@@ -133,7 +138,9 @@ function Landing() {
               ["H2H", "Rivalries"],
             ].map(([a, b]) => (
               <div key={b} className="rounded-2xl border bg-card p-3">
-                <div className="font-display text-xl font-black text-primary">{a}</div>
+                <div className="font-display text-xl font-black text-primary">
+                  <CountUp value={a!} />
+                </div>
                 <div className="text-[11px] font-bold uppercase text-muted-foreground">{b}</div>
               </div>
             ))}
@@ -143,7 +150,7 @@ function Landing() {
         <div className="lg:max-w-md lg:self-start lg:pt-8 short:self-end short:pt-0">
           <Link
             to="/home"
-            className="block rounded-2xl bg-primary py-4 text-center font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]"
+            className="fx-shine block rounded-2xl bg-primary py-4 text-center font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]"
           >
             Enter the court
           </Link>
@@ -161,97 +168,111 @@ function Landing() {
           </a>
         </div>
         <div className="hidden lg:col-start-2 lg:row-span-2 lg:row-start-2 lg:flex lg:items-center lg:justify-center">
-          <img
-            src="/screens/app-home.webp"
-            alt="Padel Rival home screen showing a player's rating, weekly division and rivalries"
-            width={540}
-            height={997}
-            loading="lazy"
-            className="max-h-[78vh] w-auto rounded-[2.5rem] border-[10px] border-card shadow-2xl"
-          />
+          <div className="fx-float">
+            <Tilt className="rounded-[2.5rem]">
+              <img
+                src="/screens/app-home.webp"
+                alt="Padel Rival home screen showing a player's rating, weekly division and rivalries"
+                width={540}
+                height={997}
+                loading="lazy"
+                className="max-h-[78vh] w-auto rounded-[2.5rem] border-[10px] border-card shadow-2xl"
+              />
+            </Tilt>
+          </div>
         </div>
       </section>
 
-      <section id="how-it-works" className="py-10">
-        <h2 className="text-2xl font-black">How Padel Rival works</h2>
-        <ol className="mt-5 space-y-3 md:grid md:grid-cols-3 md:gap-3 md:space-y-0">
-          {[
-            ["Play your match", "Any 2v2 padel game, at any club, with anyone."],
-            ["Log the score", "Pick your partner and opponents, tap the sets. About 20 seconds."],
-            [
-              "Watch the table move",
-              "Ratings, XP, streaks and rivalries update for all four players.",
-            ],
-          ].map(([t, d], i) => (
-            <li key={t} className="flex gap-3 rounded-2xl border bg-card p-4">
-              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary font-display text-sm font-black text-primary-foreground">
-                {i + 1}
-              </span>
-              <span>
-                <span className="block font-bold">{t}</span>
-                <span className="block text-sm text-muted-foreground">{d}</span>
-              </span>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <Reveal>
+        <section id="how-it-works" className="py-10">
+          <h2 className="text-2xl font-black">How Padel Rival works</h2>
+          <ol className="mt-5 space-y-3 md:grid md:grid-cols-3 md:gap-3 md:space-y-0">
+            {[
+              ["Play your match", "Any 2v2 padel game, at any club, with anyone."],
+              ["Log the score", "Pick your partner and opponents, tap the sets. About 20 seconds."],
+              [
+                "Watch the table move",
+                "Ratings, XP, streaks and rivalries update for all four players.",
+              ],
+            ].map(([t, d], i) => (
+              <li key={t} className="fx-lift flex gap-3 rounded-2xl border bg-card p-4">
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary font-display text-sm font-black text-primary-foreground">
+                  {i + 1}
+                </span>
+                <span>
+                  <span className="block font-bold">{t}</span>
+                  <span className="block text-sm text-muted-foreground">{d}</span>
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </Reveal>
 
-      <section className="py-10">
-        <h2 className="text-2xl font-black">Everything your padel group needs</h2>
-        <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map(({ icon: Icon, title, body }) => (
-            <article key={title} className="flex gap-3 rounded-2xl border bg-card p-4">
-              <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
-                <Icon className="size-5" />
-              </span>
-              <span>
-                <h3 className="font-bold">{title}</h3>
-                <p className="mt-0.5 text-sm text-muted-foreground">{body}</p>
-              </span>
-            </article>
-          ))}
-        </div>
-      </section>
+      <Reveal>
+        <section className="py-10">
+          <h2 className="text-2xl font-black">Everything your padel group needs</h2>
+          <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {FEATURES.map(({ icon: Icon, title, body }) => (
+              <article key={title} className="fx-lift flex gap-3 rounded-2xl border bg-card p-4">
+                <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
+                  <Icon className="size-5" />
+                </span>
+                <span>
+                  <h3 className="font-bold">{title}</h3>
+                  <p className="mt-0.5 text-sm text-muted-foreground">{body}</p>
+                </span>
+              </article>
+            ))}
+          </div>
+        </section>
+      </Reveal>
 
-      <section className="py-10">
-        <h2 className="text-2xl font-black">Find padel courts near you</h2>
-        <p className="mt-2 text-muted-foreground">
-          Browse padel clubs across the UK, see indoor and outdoor courts, and go straight to
-          booking.
-        </p>
-        <Link
-          to="/padel-courts"
-          className="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-court/60 py-3.5 font-bold text-court md:inline-flex md:px-8"
-        >
-          <MapPin className="size-4" /> Browse UK padel clubs
-        </Link>
-      </section>
+      <Reveal>
+        <section className="py-10">
+          <h2 className="text-2xl font-black">Find padel courts near you</h2>
+          <p className="mt-2 text-muted-foreground">
+            Browse padel clubs across the UK, see indoor and outdoor courts, and go straight to
+            booking.
+          </p>
+          <Link
+            to="/padel-courts"
+            className="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-court/60 py-3.5 font-bold text-court md:inline-flex md:px-8"
+          >
+            <MapPin className="size-4" /> Browse UK padel clubs
+          </Link>
+        </section>
+      </Reveal>
 
-      <section className="py-10">
-        <h2 className="text-2xl font-black">Questions</h2>
-        <div className="mt-5 max-w-3xl space-y-2">
-          {FAQ.map((f) => (
-            <details key={f.q} className="group rounded-2xl border bg-card p-4">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-bold">
-                <h3>{f.q}</h3>
-                <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
-              </summary>
-              <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
-            </details>
-          ))}
-        </div>
-      </section>
+      <Reveal>
+        <section className="py-10">
+          <h2 className="text-2xl font-black">Questions</h2>
+          <div className="mt-5 max-w-3xl space-y-2">
+            {FAQ.map((f) => (
+              <details key={f.q} className="group rounded-2xl border bg-card p-4">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-bold">
+                  <h3>{f.q}</h3>
+                  <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" />
+                </summary>
+                <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
+              </details>
+            ))}
+          </div>
+        </section>
+      </Reveal>
 
-      <section className="py-10 text-center">
-        <h2 className="text-2xl font-black">Ready for your next match?</h2>
-        <p className="mt-2 text-muted-foreground">Free to use. No download needed.</p>
-        <Link
-          to="/home"
-          className="mx-auto mt-5 block max-w-sm rounded-2xl bg-primary py-4 font-display text-lg font-black uppercase text-primary-foreground glow"
-        >
-          Start playing
-        </Link>
-      </section>
+      <Reveal>
+        <section className="py-10 text-center">
+          <h2 className="text-2xl font-black">Ready for your next match?</h2>
+          <p className="mt-2 text-muted-foreground">Free to use. No download needed.</p>
+          <Link
+            to="/home"
+            className="fx-shine mx-auto mt-5 block max-w-sm rounded-2xl bg-primary py-4 font-display text-lg font-black uppercase text-primary-foreground glow"
+          >
+            Start playing
+          </Link>
+        </section>
+      </Reveal>
 
       <footer className="flex flex-wrap justify-center gap-4 pb-12 pt-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
         <Link to="/padel-courts">Padel clubs</Link>

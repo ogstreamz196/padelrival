@@ -150,3 +150,80 @@
 @media (prefers-reduced-motion: reduce) {
   .xp-event { animation: none; }
 }
+
+/* ---------- Special effects (all skipped when the device asks for reduced motion) ---------- */
+.fx-reveal { opacity: 1; }
+.fx-tilt { position: relative; transform: perspective(1200px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform 0.25s ease-out; transform-style: preserve-3d; }
+.fx-glare { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 0.3s; background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), oklch(1 0 0 / 0.22), transparent 45%); }
+.fx-tilt:hover .fx-glare { opacity: 1; }
+.fx-spotlight { background: radial-gradient(500px circle at var(--sx, 50%) var(--sy, 50%), oklch(0.93 0.23 122 / 0.09), transparent 60%); }
+
+.fx-court { position: absolute; perspective: 700px; }
+.fx-court svg { width: 100%; height: 100%; transform: rotateX(68deg); transform-origin: 50% 100%; overflow: visible; }
+.fx-court rect, .fx-court path { fill: none; stroke: oklch(1 0 0 / 0.3); stroke-width: 0.8; vector-effect: non-scaling-stroke; stroke-dasharray: 1; stroke-dashoffset: 0; }
+.fx-court rect { fill: oklch(0.58 0.17 248 / 0.08); }
+.fx-court .fx-net { stroke: oklch(0.93 0.23 122 / 0.7); stroke-width: 2; }
+.fx-ball, .fx-ball-shadow { display: none; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .fx-reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease-out, transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .fx-reveal.fx-in { opacity: 1; transform: none; }
+
+  /* Light sweeping across the main buttons every few seconds. */
+  .fx-shine { position: relative; overflow: hidden; isolation: isolate; }
+  .fx-shine::after {
+    content: ""; position: absolute; inset: -20% auto -20% -60%; width: 40%; z-index: 1; pointer-events: none;
+    background: linear-gradient(100deg, transparent, oklch(1 0 0 / 0.55), transparent);
+    transform: skewX(-20deg); animation: fx-shine 4.5s ease-in-out infinite;
+  }
+  @keyframes fx-shine { 0%, 62% { left: -60%; } 100% { left: 130%; } }
+
+  /* Lime text with a slow light running through it. */
+  .fx-text-shimmer {
+    background: linear-gradient(100deg, var(--primary) 35%, oklch(1 0 0) 50%, var(--primary) 65%) 0 0 / 250% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: fx-text 5s linear infinite;
+  }
+  @keyframes fx-text { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+
+  /* Soft heartbeat ring round the floating record button. */
+  .fx-pulse { position: relative; }
+  .fx-pulse::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    box-shadow: 0 0 0 0 oklch(0.93 0.23 122 / 0.55); animation: fx-pulse 2.6s ease-out infinite;
+  }
+  @keyframes fx-pulse { 0% { box-shadow: 0 0 0 0 oklch(0.93 0.23 122 / 0.5); } 70%, 100% { box-shadow: 0 0 0 18px oklch(0.93 0.23 122 / 0); } }
+
+  .fx-float { animation: fx-float 6s ease-in-out infinite; }
+  @keyframes fx-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -12px; } }
+
+  .fx-lift { transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
+  @media (hover: hover) {
+    .fx-lift:hover { transform: translateY(-4px); border-color: oklch(0.93 0.23 122 / 0.45); box-shadow: 0 18px 40px -18px oklch(0.93 0.23 122 / 0.35); }
+  }
+
+  .fx-page { animation: fx-page 0.35s ease-out both; }
+  @keyframes fx-page { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* Court lines draw in, then the ball bounces from end to end. */
+  .fx-court rect, .fx-court path { stroke-dashoffset: 1; animation: fx-draw 1.6s ease-out forwards; }
+  .fx-court path:nth-of-type(2) { animation-delay: 0.3s; }
+  .fx-court path:nth-of-type(3) { animation-delay: 0.45s; }
+  .fx-court path:nth-of-type(4) { animation-delay: 0.6s; }
+  .fx-court path:nth-of-type(5) { animation-delay: 0.75s; }
+  @keyframes fx-draw { to { stroke-dashoffset: 0; } }
+  .fx-ball, .fx-ball-shadow { display: block; position: absolute; left: 50%; border-radius: 50%; }
+  .fx-ball {
+    width: 18px; height: 18px; margin-left: -9px; top: 0;
+    background: radial-gradient(circle at 35% 35%, #f4ff9a, #c8ec1c 60%, #8aa600);
+    box-shadow: 0 0 22px oklch(0.93 0.23 122 / 0.8);
+    animation: fx-ball-x 2.4s ease-in-out 1.4s infinite alternate, fx-ball-y 1.2s cubic-bezier(0.3, 0, 0.7, 1) 1.4s infinite;
+    opacity: 0; animation-fill-mode: both;
+  }
+  .fx-ball-shadow { width: 22px; height: 7px; margin-left: -11px; background: oklch(0 0 0 / 0.45); filter: blur(3px); animation: fx-ball-x 2.4s ease-in-out 1.4s infinite alternate, fx-shadow 1.2s cubic-bezier(0.3, 0, 0.7, 1) 1.4s infinite; opacity: 0; animation-fill-mode: both; }
+  @keyframes fx-ball-x { from { translate: -38vw 0; } to { translate: 38vw 0; } }
+  @keyframes fx-ball-y {
+    0% { top: 78%; opacity: 1; } 50% { top: 40%; opacity: 1; } 100% { top: 78%; opacity: 1; }
+  }
+  @keyframes fx-shadow { 0%, 100% { top: 82%; opacity: 0.9; scale: 1; } 50% { top: 82%; opacity: 0.35; scale: 0.6; } }
+}

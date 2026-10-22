@@ -1,4 +1,5 @@
 import { createFileRoute, Link, Navigate, useNavigate } from "@tanstack/react-router";
+import { Confetti } from "@/components/fx";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Flame } from "lucide-react";
@@ -95,6 +96,7 @@ function Celebrate() {
         className={cn("pointer-events-none absolute inset-x-0 top-0 h-96 blur-3xl", r.won ? "bg-primary/30" : "bg-destructive/25")}
         style={{ clipPath: "ellipse(60% 50% at 50% 0%)" }}
       />
+      {(r.won || leveledUp) && <Confetti count={r.won ? 160 : 90} />}
       <div className="relative mx-auto flex min-h-dvh max-w-md flex-col px-5 pb-8 pt-[max(env(safe-area-inset-top),2rem)]">
         <div className="animate-pop text-center">
           <div className="text-7xl">{r.won ? "🏆" : "💥"}</div>

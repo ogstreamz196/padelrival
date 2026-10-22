@@ -137,7 +137,7 @@ function Home() {
 
           <Link
             to="/record"
-            className="mt-4 flex items-center justify-center gap-2 rounded-2xl bg-primary py-4 font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]"
+            className="fx-shine mt-4 flex items-center justify-center gap-2 rounded-2xl bg-primary py-4 font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]"
           >
             Record a match
           </Link>
