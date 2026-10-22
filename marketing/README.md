@@ -6,7 +6,7 @@ Everything you need for the launch: videos, images and the words to go with them
 
 | Folder | What it is | Sizes |
 |---|---|---|
-| `videos/` | 6 one-minute promo videos, a 15-second teaser and a 30-second landscape cut | 1080×1920 vertical (Reels, TikTok, Shorts, Stories) and 1920×1080 |
+| `videos/` | 6 one-minute promo videos, a 16-second teaser and a 30-second landscape cut | 1080×1920 vertical (Reels, TikTok, Shorts, Stories) and 1920×1080 |
 | `social/instagram-posts/` | 17 feed posts | 1080×1350 (4:5, also fine on Facebook and LinkedIn) |
 | `social/stories/` | 15 stories | 1080×1920 |
 | `social/square/` | Square post | 1080×1080 |
@@ -26,7 +26,7 @@ Every video has burned-in captions, so it works on mute, and its own backing tra
 | `04-unfinished-business.mp4` | Group-chat banter about a rematch | Shares and tags, the most "viral" one |
 | `05-never-short-of-a-fourth.mp4` | "Three players. One court. No fourth." | Club WhatsApp groups and Facebook groups |
 | `06-climb-the-ladder.mp4` | Bronze to Diamond, challenges, Double XP | Week 2, when people are already playing |
-| `07-teaser-15s.mp4` | "Something is coming to your court." | The day before launch |
+| `07-teaser-16s.mp4` | "Something is coming to your court." | The day before launch |
 | `08-play-promo-landscape.mp4` | 30-second overview | Upload to YouTube (unlisted is fine) and paste the link into Play Console as the promo video |
 
 ## Captions ready to paste
