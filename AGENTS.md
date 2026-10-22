@@ -35,3 +35,5 @@
 
 ## Workflow
 - The owner wants finished, checked work merged straight into `main` (no pull requests): validate (typecheck + build), push the working branch, then fast-forward or merge into `main` without rewriting history.
+- Layout is responsive through the `wide` and `short` Tailwind variants (`src/styles.css`): on tablets, desktops and landscape phones a left `SideRail` replaces the bottom nav, and its width is the `--rail` CSS variable. Custom variants sort after `lg:`/`xl:`, so don't mix them on the same property.
+- Simple/Advanced view is `useViewMode()` (`src/hooks/use-view-mode.tsx`), stored per device in localStorage and provided in `_authenticated/route.tsx`; newcomers default to Simple and players with 10+ matches to Advanced until they choose. Advanced shows every stat and the two-column desktop layouts.

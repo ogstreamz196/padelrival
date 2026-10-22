@@ -5,6 +5,7 @@ import { PlayerProfile } from "@/components/PlayerProfile";
 import { FollowButton } from "@/components/FollowButton";
 import { haptic } from "@/lib/utils";
 import { seo } from "@/lib/seo";
+import { useViewMode } from "@/hooks/use-view-mode";
 
 export const Route = createFileRoute("/_authenticated/player/$id")({
   staticData: { sitemap: false },
@@ -23,8 +24,9 @@ function PlayerPage() {
   const { user } = Route.useRouteContext();
   const meId = user?.id ?? null;
   const router = useRouter();
+  const { advanced } = useViewMode();
   return (
-    <AppShell>
+    <AppShell wide={advanced}>
       <div className="mb-3 flex items-center justify-between">
         <button onClick={() => router.history.back()} className="flex items-center gap-1 text-sm font-bold text-muted-foreground">
           <ChevronLeft className="size-4" /> Back

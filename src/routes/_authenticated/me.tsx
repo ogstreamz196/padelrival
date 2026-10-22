@@ -21,6 +21,7 @@ import { deleteMyAccount } from "@/lib/account.functions";
 import { requireUser } from "./route";
 import { useAppSettings } from "@/hooks/use-settings";
 import { seo } from "@/lib/seo";
+import { useViewMode, ViewModeToggle } from "@/hooks/use-view-mode";
 
 
 export const Route = createFileRoute("/_authenticated/me")({
@@ -45,6 +46,7 @@ function Me() {
   const deleteAccount = useServerFn(deleteMyAccount);
   const [editing, setEditing] = useState(false);
   const [pro, setPro] = useState(false);
+  const { advanced } = useViewMode();
 
   const handleSignOut = async () => {
     await qc.cancelQueries();
@@ -55,10 +57,11 @@ function Me() {
 
 
   return (
-    <AppShell>
-      <div className="mb-5 flex items-center justify-between">
-        <h1 className="text-3xl font-black">Player card</h1>
+    <AppShell wide={advanced}>
+      <div className="mb-5 flex items-center justify-between gap-2">
+        <h1 className="whitespace-nowrap text-2xl font-black min-[400px]:text-3xl">Player card</h1>
         <div className="flex items-center gap-2">
+        <ViewModeToggle compact className="lg:hidden" />
         {isAdmin && (
           <Link
             to="/admin"
@@ -73,7 +76,7 @@ function Me() {
           className="flex items-center gap-1.5 rounded-full border px-3 py-2 text-xs font-black uppercase tracking-wide text-muted-foreground"
         >
           <Settings className="size-4" />
-          Edit
+          <span className="hidden min-[420px]:inline">Edit</span>
         </button>
         <button
           onClick={handleSignOut}
@@ -104,7 +107,7 @@ function Me() {
 
       {profile && <PlayerProfile userId={profile.id} isMe />}
 
-      {profile && settings.features.ai_coach && <AiCoach userId={profile.id} />}
+      {profile && advanced && settings.features.ai_coach && <AiCoach userId={profile.id} />}
 
       <ProTeaser onOpen={() => setPro(true)} />
 

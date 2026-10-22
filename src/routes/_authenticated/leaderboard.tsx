@@ -12,6 +12,7 @@ import { useFriendIds } from "@/hooks/use-friends";
 import { cn } from "@/lib/utils";
 import { useAuthGate } from "@/components/AuthPrompt";
 import { seo } from "@/lib/seo";
+import { useViewMode } from "@/hooks/use-view-mode";
 
 export const Route = createFileRoute("/_authenticated/leaderboard")({
   staticData: { sitemap: false },
@@ -33,10 +34,13 @@ function Leaderboard() {
   const [scope, setScope] = useState<"global" | "weekly" | "friends">("global");
   const [search, setSearch] = useState("");
   const friends = useFriendIds(meId);
-  const [metric, setMetric] = useState<"rating" | "xp">("rating");
+  const [pickedMetric, setMetric] = useState<"rating" | "xp">("rating");
+  const { advanced } = useViewMode();
+  // Simple mode sticks to the rating ladder.
+  const metric = advanced ? pickedMetric : "rating";
 
   const q = useQuery({
-    queryKey: ["leaderboard", scope, metric, scope === "friends" ? friends.data : null],
+    queryKey: ["leaderboard", scope, metric, advanced, scope === "friends" ? friends.data : null],
     enabled: scope !== "friends" || !!friends.data,
     queryFn: async (): Promise<Row[]> => {
       if (scope === "global" || scope === "friends") {
@@ -47,7 +51,10 @@ function Leaderboard() {
         return data.map((p) => ({
           ...p,
           value: metric === "rating" ? p.rating : p.xp,
-          sub: metric === "rating" ? `${p.wins}-${p.losses}` : `Lv ${levelInfo(p.xp).level}`,
+          sub:
+            metric === "rating"
+              ? `${p.wins}-${p.losses}${advanced && p.wins + p.losses ? ` · ${Math.round((p.wins / (p.wins + p.losses)) * 100)}% wins` : ""}`
+              : `Lv ${levelInfo(p.xp).level}`,
         }));
       }
       const { data, error } = await supabase.rpc("weekly_leaderboard");
@@ -78,10 +85,11 @@ function Leaderboard() {
         <button className={seg(scope === "weekly")} onClick={() => setScope("weekly")}>This week</button>
         <button className={seg(scope === "friends")} onClick={() => gate("Create a free account to add friends and see your own league.") && setScope("friends")}>Friends</button>
       </div>
-      <div className="mb-5 flex gap-1 rounded-2xl border bg-card p-1">
+      {advanced && <div className="mb-5 flex gap-1 rounded-2xl border bg-card p-1">
         <button className={seg(metric === "rating")} onClick={() => setMetric("rating")}>Elo</button>
         <button className={seg(metric === "xp")} onClick={() => setMetric("xp")}>XP / Activity</button>
-      </div>
+      </div>}
+      {!advanced && <div className="mb-3" />}
 
       {scope === "friends" && meId && <FriendSearch meId={meId} search={search} setSearch={setSearch} />}
       {q.data && q.data.length === 0 && (
@@ -107,7 +115,7 @@ function Leaderboard() {
                 <span className="truncate font-bold">{r.display_name}</span>
                 {scope !== "weekly" && <RankCrest rating={r.value} size="sm" />}
               </div>
-              <div className="text-xs text-muted-foreground">@{r.username} · {r.sub}</div>
+              <div className="truncate text-xs text-muted-foreground">{advanced ? `@${r.username} · ${r.sub}` : r.sub}</div>
             </div>
             <div className="font-display text-lg font-black tabular-nums">
               {scope === "weekly" && r.value > 0 ? "+" : ""}

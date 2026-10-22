@@ -10,6 +10,7 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { useIsAdmin } from "@/hooks/use-admin";
 import { ProOfferBanner } from "@/components/ProUpgrade";
 import { OpenBeacons } from "@/components/OpenBeacons";
+import { useViewMode, ViewModeToggle } from "@/hooks/use-view-mode";
 
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
@@ -39,6 +40,7 @@ function Home() {
   const meId = user?.id ?? null;
   const { profile } = useMyProfile();
   const { isAdmin } = useIsAdmin();
+  const { advanced } = useViewMode();
 
   const rivals = useQuery({
     queryKey: ["rivals", meId],
@@ -55,7 +57,7 @@ function Home() {
   const played = profile ? profile.wins + profile.losses : 0;
 
   return (
-    <AppShell wide>
+    <AppShell wide={advanced}>
       {profile && <h1 className="sr-only">Clubhouse</h1>}
       {profile && lvl && (
         <section className="mb-5 flex items-center gap-3">
@@ -64,7 +66,7 @@ function Home() {
             <div className="truncate text-lg font-black">
               Hey {profile.display_name.split(" ")[0]}
             </div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 overflow-hidden whitespace-nowrap text-xs text-muted-foreground">
               <span className="font-bold text-foreground tabular-nums">{profile.rating}</span>
               {isProvisional(played) ? (
                 <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-black uppercase">
@@ -75,7 +77,7 @@ function Home() {
                   Calibrated
                 </span>
               )}
-              <span>Lv {lvl.level}</span>
+              <span className="hidden min-[420px]:inline">Lv {lvl.level}</span>
               {profile.current_streak > 0 && (
                 <span className="inline-flex items-center gap-0.5 text-fire">
                   <Flame
@@ -86,6 +88,7 @@ function Home() {
               )}
             </div>
           </div>
+          <ViewModeToggle compact className="lg:hidden" />
           <NotificationBell meId={profile.id} />
         </section>
       )}
@@ -105,18 +108,28 @@ function Home() {
         </Link>
       )}
 
-      {/* Desktop: two columns (you on the left, what's happening on the right). */}
-      <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-8">
+      {!profile && (
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <span className="text-xs font-bold text-muted-foreground">How much detail?</span>
+          <ViewModeToggle />
+        </div>
+      )}
+
+      {/* Advanced on desktop: two columns (you on the left, what's happening on the right).
+          Simple: one column with just your rating, the record button, open matches and the feed. */}
+      <div className={cn(advanced && "lg:grid lg:grid-cols-2 lg:items-start lg:gap-8")}>
         <div>
           <PageGuide id="home" />
 
-          {profile && (
+          {profile && !advanced && <SimpleSummary profile={profile} />}
+
+          {profile && advanced && (
             <section className="mb-4">
               <TierProgress rating={profile.rating} />
             </section>
           )}
 
-          {profile && <WeeklyLeague meId={profile.id} rating={profile.rating} />}
+          {profile && advanced && <WeeklyLeague meId={profile.id} rating={profile.rating} />}
 
           {profile && <ProOfferBanner />}
 
@@ -129,8 +142,8 @@ function Home() {
 
           <QuickLinks className="mt-3" />
         </div>
-        <div className="lg:[&>*:first-child]:mt-0">
-          {revenge.length > 0 && (
+        <div className={cn(advanced && "lg:[&>*:first-child]:mt-0")}>
+          {advanced && revenge.length > 0 && (
             <section className="mt-7">
               <SectionTitle>Revenge radar</SectionTitle>
               <div className="space-y-3">
@@ -150,6 +163,30 @@ function Home() {
         </div>
       </div>
     </AppShell>
+  );
+}
+
+/** The one card Simple mode keeps: rating, record and how far to the next tier. */
+function SimpleSummary({ profile }: { profile: { rating: number; wins: number; losses: number } }) {
+  const total = profile.wins + profile.losses;
+  const pct = total ? Math.round((profile.wins / total) * 100) : 0;
+  const cell = (label: string, value: React.ReactNode) => (
+    <div className="rounded-2xl bg-background/50 p-3 text-center">
+      <div className="whitespace-nowrap font-display text-xl font-black tabular-nums min-[400px]:text-2xl">{value}</div>
+      <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</div>
+    </div>
+  );
+  return (
+    <section className="mb-4 rounded-3xl border bg-card p-3">
+      <div className="grid grid-cols-3 gap-2">
+        {cell("Rating", profile.rating)}
+        {cell("Record", `${profile.wins}-${profile.losses}`)}
+        {cell("Win %", total ? `${pct}%` : "–")}
+      </div>
+      <div className="mt-3 px-1">
+        <TierProgress rating={profile.rating} compact />
+      </div>
+    </section>
   );
 }
 

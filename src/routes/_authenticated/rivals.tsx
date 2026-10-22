@@ -6,6 +6,8 @@ import { AppShell } from "@/components/AppShell";
 import { PageGuide } from "@/components/PageGuide";
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
 import { seo } from "@/lib/seo";
+import { useViewMode } from "@/hooks/use-view-mode";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/rivals")({
   staticData: { sitemap: false },
@@ -21,6 +23,7 @@ export const Route = createFileRoute("/_authenticated/rivals")({
 function Rivals() {
   const { user } = Route.useRouteContext();
   const meId = user?.id ?? null;
+  const { advanced } = useViewMode();
   const q = useQuery({
     queryKey: ["rivals", meId],
     enabled: !!meId,
@@ -33,7 +36,7 @@ function Rivals() {
   const revenge = q.data?.filter((r) => r.losses > r.wins) ?? [];
   const rest = q.data?.filter((r) => r.losses <= r.wins) ?? [];
   return (
-    <AppShell>
+    <AppShell wide={advanced}>
       <h1 className="text-3xl font-black">Rivalries</h1>
       <p className="mb-4 mt-1 text-muted-foreground">Face someone twice and it gets personal.</p>
       <PageGuide id="rivals" />
@@ -68,7 +71,7 @@ function Rivals() {
           </Link>
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className={cn("space-y-6", advanced && "lg:grid lg:grid-cols-2 lg:items-start lg:gap-8 lg:space-y-0")}>
           {revenge.length > 0 && (
             <section className="space-y-3">
               <h2 className="text-sm font-black uppercase tracking-widest text-destructive">
@@ -84,7 +87,7 @@ function Rivals() {
               <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground">
                 Holding the edge
               </h2>
-              {rest.map((r) => (
+              {(advanced ? rest : rest.slice(0, 5)).map((r) => (
                 <RivalryCard key={r.opponent_id} r={r} meId={meId} />
               ))}
             </section>

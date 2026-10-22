@@ -14,6 +14,7 @@ import { sharePlayerCard } from "@/lib/share";
 
 import { RivalryCard, type Rivalry } from "./RivalryCard";
 import { cn, haptic } from "@/lib/utils";
+import { useViewMode } from "@/hooks/use-view-mode";
 
 type MP = { team: number; guest_name: string | null; user_id: string | null; profiles: { display_name: string } | null };
 
@@ -36,6 +37,7 @@ type HistoryRow = {
 
 export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean }) {
   const [allHistory, setAllHistory] = useState(false);
+  const { advanced } = useViewMode();
   const profile = useQuery({
     queryKey: ["profile", userId],
     queryFn: async () => {
@@ -138,7 +140,8 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
   }
 
   return (
-    <div className="space-y-6">
+    <div className={cn("space-y-6", advanced && "lg:grid lg:grid-cols-2 lg:items-start lg:gap-8 lg:space-y-0")}>
+      <div className="space-y-6">
       {/* Collectible player card */}
       <section
         className={cn("court-lines animate-rise relative overflow-hidden rounded-3xl border-2 p-5")}
@@ -180,7 +183,7 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
             <div className="font-display text-3xl font-black">{lvl.level}</div>
           </div>
         </div>
-        <div className="relative mt-3">
+        {advanced && <div className="relative mt-3">
           <div className="h-3 overflow-hidden rounded-full bg-background/60">
             <div className="h-full rounded-full bg-primary transition-all duration-700" style={{ width: `${lvl.pct}%` }} />
           </div>
@@ -188,9 +191,9 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
             <span>{p.xp} XP</span>
             <span>{lvl.needed - lvl.into} XP to Lv {lvl.level + 1}</span>
           </div>
-        </div>
+        </div>}
 
-        {show("show_record") && <div className="relative mt-5 grid grid-cols-4 gap-2">
+        {show("show_record") && <div className={cn("relative mt-5 grid gap-2", advanced ? "grid-cols-4" : "grid-cols-3")}>
           <Stat label="Record" value={`${p.wins}-${p.losses}`} />
           <Stat label="Win %" value={`${winPct}%`} />
           <Stat
@@ -202,14 +205,14 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
               </span>
             }
           />
-          <Stat label="Best" value={p.best_streak} />
+          {advanced && <Stat label="Best" value={p.best_streak} />}
         </div>}
 
         <div className="relative mt-5 border-t pt-4">
           <TierProgress rating={p.rating} compact />
         </div>
 
-        {show("show_history") && formResults.length > 0 && (
+        {advanced && show("show_history") && formResults.length > 0 && (
           <div className="relative mt-4 border-t pt-4">
             <div className="mb-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground">Recent form · last {formResults.length}</div>
             <FormStrip results={formResults} netDelta={netDelta} />
@@ -226,7 +229,7 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
         {sharing ? "Making your card…" : "Share player card"}
       </button>
 
-      {show("show_court_side") && hasSides && (
+      {advanced && show("show_court_side") && hasSides && (
         <section>
           <SectionTitle>Court side split</SectionTitle>
           <CourtSideSplit left={leftSide} right={rightSide} />
@@ -239,14 +242,16 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
         </Link>
       )}
 
+      </div>
+      <div className="space-y-6">
       {/* Trophy case */}
-      {show("show_achievements") && <section>
+      {advanced && show("show_achievements") && <section>
         <SectionTitle>Trophy case</SectionTitle>
         <TrophyCase unlocked={unlockedMap} stats={{ wins: p.wins, best_streak: p.best_streak }} />
       </section>}
 
       {/* Partner chemistry */}
-      {show("show_partners") && <section>
+      {advanced && show("show_partners") && <section>
         <SectionTitle>Best partners</SectionTitle>
         {partners.data?.length ? (
           <div className="space-y-2">
@@ -279,7 +284,7 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
         <SectionTitle>Rivalries</SectionTitle>
         {rivals.data?.length ? (
           <div className="space-y-3">
-            {rivals.data.slice(0, 3).map((r) => (
+            {rivals.data.slice(0, advanced ? 3 : 1).map((r) => (
               <RivalryCard key={r.opponent_id} r={r} meId={userId} showRevenge={!!isMe} />
             ))}
           </div>
@@ -344,6 +349,12 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
         )}
       </section>}
       {!isMe && PRIVATE_NOTE(show)}
+      {!advanced && (
+        <p className="text-center text-xs text-muted-foreground">
+          Switch to Advanced for court sides, partners, trophies and full form.
+        </p>
+      )}
+      </div>
     </div>
   );
 }

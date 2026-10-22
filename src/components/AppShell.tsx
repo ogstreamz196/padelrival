@@ -5,6 +5,7 @@ import { useAuthGate } from "@/components/AuthPrompt";
 import { useMyProfile } from "@/hooks/use-auth";
 import { useAppSettings } from "@/hooks/use-settings";
 import { useNotifications } from "@/components/NotificationBell";
+import { ViewModeToggle } from "@/hooks/use-view-mode";
 import { cn } from "@/lib/utils";
 
 // `gate` marks tabs that only make sense with an account; guests get the sign-up sheet instead.
@@ -199,6 +200,11 @@ function SideRail({ navProps }: { navProps: NavProps }) {
           ))}
         </div>
       </nav>
+      <div className="px-2 pt-3 lg:px-3">
+        <div className="mb-1.5 hidden text-[10px] font-black uppercase tracking-widest text-muted-foreground lg:block">Detail</div>
+        <ViewModeToggle className="hidden lg:flex" />
+        <ViewModeToggle compact className="flex-col rounded-2xl lg:hidden" />
+      </div>
     </aside>
   );
 }
