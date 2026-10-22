@@ -15,10 +15,12 @@ import { sharePlayerCard } from "@/lib/share";
 import { RivalryCard, type Rivalry } from "./RivalryCard";
 import { cn, haptic } from "@/lib/utils";
 import { useViewMode } from "@/hooks/use-view-mode";
+import { PerformanceLab } from "./PerformanceLab";
 
-type MP = { team: number; guest_name: string | null; user_id: string | null; profiles: { display_name: string } | null };
+type MP = { team: number; guest_name: string | null; user_id: string | null; rating_before: number | null; profiles: { display_name: string } | null };
 
 type HistoryRow = {
+  rating_before: number | null;
   rating_delta: number;
   xp_gained: number;
   team: number;
@@ -51,10 +53,10 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
     queryFn: async () => {
       const { data, error } = await supabase
         .from("match_players")
-        .select("rating_delta,xp_gained,team,court_side,matches(id,created_at,venue,match_type,notes,sets,winner_team,match_players(team,guest_name,user_id,profiles(display_name)))")
+        .select("rating_before,rating_delta,xp_gained,team,court_side,matches(id,created_at,venue,match_type,notes,sets,winner_team,match_players(team,guest_name,user_id,rating_before,profiles(display_name)))")
         .eq("user_id", userId)
         .order("created_at", { ascending: false })
-        .limit(20);
+        .limit(50);
       if (error) throw error;
       return data as unknown as HistoryRow[];
     },
@@ -229,6 +231,8 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
         {sharing ? "Making your card…" : "Share player card"}
       </button>
 
+      {advanced && show("show_history") && history.data && <PerformanceLab rows={history.data} />}
+
       {advanced && show("show_court_side") && hasSides && (
         <section>
           <SectionTitle>Court side split</SectionTitle>
@@ -370,7 +374,7 @@ function PRIVATE_NOTE(show: (k: PrivacyKey) => boolean) {
 function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="rounded-xl bg-background/50 p-2 text-center">
-      <div className="font-display text-lg font-black tabular-nums">{value}</div>
+      <div className="whitespace-nowrap font-display text-base font-black tabular-nums min-[400px]:text-lg">{value}</div>
       <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</div>
     </div>
   );

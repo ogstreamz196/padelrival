@@ -12,7 +12,8 @@ import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { useAuthGate } from "@/components/AuthPrompt";
 import { useMyProfile } from "@/hooks/use-auth";
 import { useFriendIds } from "@/hooks/use-friends";
-import { SET_PRESETS, STB_PRESETS, validateSet, type SetScore } from "@/lib/game";
+import { SET_PRESETS, STB_PRESETS, ratingSwing, validateSet, winChance, type SetScore } from "@/lib/game";
+import { useViewMode } from "@/hooks/use-view-mode";
 import { cn, haptic } from "@/lib/utils";
 import { DRAFT_KEY, loadDraft, type Draft, type Slot } from "@/lib/record-draft";
 import { seo } from "@/lib/seo";
@@ -49,6 +50,7 @@ function RecordMatch() {
   const [mySide, setMySide] = useState<"left" | "right" | null>(null);
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
+  const { advanced } = useViewMode();
 
   // Bring back a match a guest set up before signing up.
   useEffect(() => {
@@ -218,7 +220,7 @@ function RecordMatch() {
   }
 
   return (
-    <AppShell>
+    <AppShell wide>
       <h1 className="text-3xl font-black">Record match</h1>
       <p className="mt-1 text-muted-foreground">2v2 · takes 20 seconds</p>
       <QuickLinks className="mb-4 mt-3" />
@@ -241,6 +243,9 @@ function RecordMatch() {
 
 
 
+      {/* Desktop: line-up and preview on the left, scores and details on the right. */}
+      <div className="lg:grid lg:grid-cols-2 lg:items-start lg:gap-8">
+      <div>
       <div className="grid grid-cols-[1fr_auto_1fr] items-stretch gap-2">
         <div className="space-y-2 rounded-3xl border-2 border-primary/50 bg-primary/5 p-2">
           <div className="text-center text-[11px] font-black uppercase tracking-widest text-primary">Your team</div>
@@ -282,9 +287,19 @@ function RecordMatch() {
         </p>
       </div>
 
+      {partner && opp1 && opp2 && (
+        <MatchPreview
+          detailed={advanced}
+          team={[profile?.rating, partner.rating]}
+          opponents={[opp1.rating, opp2.rating]}
+        />
+      )}
+      </div>
+      <div>
 
 
-      <div className="mb-3 mt-8 flex items-center justify-between">
+
+      <div className="mb-3 mt-8 flex items-center justify-between lg:mt-0">
         <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground">Set scores</h2>
         <button
           onClick={() => {
@@ -408,6 +423,8 @@ function RecordMatch() {
                     ? `Log victory ${t1}-${t2}`
                     : `Log defeat ${t1}-${t2}`}
       </button>
+      </div>
+      </div>
 
       {picking && (
         <PlayerPicker
@@ -676,5 +693,56 @@ function PlayerPicker({
         </div>
       </div>
     </div>
+  );
+}
+
+/** Pre-match odds from the same Elo maths the server uses when the match is saved. */
+function MatchPreview({
+  team,
+  opponents,
+  detailed,
+}: {
+  team: (number | undefined)[];
+  opponents: (number | undefined)[];
+  detailed: boolean;
+}) {
+  const chance = winChance(team, opponents);
+  const pct = Math.round(chance * 100);
+  const swing = ratingSwing(chance);
+  const avg = (xs: (number | undefined)[]) => Math.round(xs.reduce<number>((s, r) => s + (r ?? 1000), 0) / xs.length);
+  const verdict =
+    pct >= 65 ? "You're clear favourites" : pct >= 55 ? "You're slight favourites" : pct > 45 ? "Too close to call" : pct > 35 ? "You're the underdogs" : "Big upset on the cards";
+  const guests = [...team, ...opponents].some((r) => r == null);
+  return (
+    <section className="mt-4 rounded-2xl border bg-card p-3" aria-label="Match preview">
+      <div className="flex items-baseline justify-between gap-2">
+        <span className="text-[11px] font-black uppercase tracking-widest text-muted-foreground">Match preview</span>
+        <span className="text-sm font-black">{verdict}</span>
+      </div>
+      <div className="mt-2 flex h-2.5 gap-0.5 overflow-hidden rounded-full" role="img" aria-label={`Your team ${pct}% to win`}>
+        <div className="rounded-l-full bg-primary" style={{ width: `${pct}%` }} />
+        <div className="flex-1 rounded-r-full bg-court" />
+      </div>
+      <div className="mt-1.5 flex justify-between text-xs font-bold tabular-nums">
+        <span>You {pct}%</span>
+        <span className="text-muted-foreground">{100 - pct}% them</span>
+      </div>
+      {detailed && (
+        <div className="mt-3 grid grid-cols-2 gap-2 border-t pt-3 text-center">
+          <div className="rounded-xl bg-background/50 p-2">
+            <div className="font-display text-lg font-black tabular-nums text-win">+{swing.win}</div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">If you win</div>
+          </div>
+          <div className="rounded-xl bg-background/50 p-2">
+            <div className="font-display text-lg font-black tabular-nums text-destructive">{swing.loss}</div>
+            <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">If you lose</div>
+          </div>
+          <p className="col-span-2 text-[11px] text-muted-foreground">
+            Team ratings {avg(team)} vs {avg(opponents)}. Your partner moves by the same amount.
+            {guests && " Guests count as 1000."}
+          </p>
+        </div>
+      )}
+    </section>
   );
 }

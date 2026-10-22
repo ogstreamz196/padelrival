@@ -143,3 +143,18 @@ export function validateSet([a, b]: SetScore, decider = false): string | null {
   return null;
 }
 
+
+/** Same Elo maths as the record_match SQL function (K = 32, guests count as 1000). */
+export const ELO_K = 32;
+
+export function winChance(team: (number | null | undefined)[], opponents: (number | null | undefined)[]) {
+  const avg = (xs: (number | null | undefined)[]) => xs.reduce<number>((s, r) => s + (r ?? 1000), 0) / Math.max(xs.length, 1);
+  return 1 / (1 + Math.pow(10, (avg(opponents) - avg(team)) / 400));
+}
+
+/** Rating change for a win and a loss at a given win chance. */
+export function ratingSwing(chance: number) {
+  // Postgres round() goes half away from zero; Math.round doesn't for negatives.
+  const round = (x: number) => Math.sign(x) * Math.round(Math.abs(x));
+  return { win: round(ELO_K * (1 - chance)), loss: round(ELO_K * (0 - chance)) };
+}
