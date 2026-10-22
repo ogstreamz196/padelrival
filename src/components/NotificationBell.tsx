@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bell, CalendarX, Swords, UserPlus, UsersRound } from "lucide-react";
+import { Bell, CalendarX, Crown, Megaphone, Swords, UserPlus, UsersRound } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { cn, haptic } from "@/lib/utils";
@@ -33,6 +33,8 @@ const ICONS: Record<string, typeof Bell> = {
   beacon_cancelled: CalendarX,
   match_logged: Swords,
   follow: UserPlus,
+  broadcast: Megaphone,
+  boss: Crown,
 };
 
 function ago(iso: string) {

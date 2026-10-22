@@ -39,7 +39,7 @@ export function PlayersAtYourLevel({ meId, rating, limit = 4 }: { meId: string; 
       <div className="space-y-2">
         {list.map((p) => {
           const chance = Math.round(winChance([rating], [p.rating]) * 100);
-          const fit = Math.abs(chance - 50) <= 6 ? "Even match" : chance > 50 ? "Just below you" : "A step up";
+          const fit = Math.abs(chance - 50) <= 6 ? "Even match" : chance > 50 ? "Just below" : "A step up";
           return (
             <Link
               key={p.id}

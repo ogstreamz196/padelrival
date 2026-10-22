@@ -66,7 +66,7 @@ function Me() {
         {isAdmin && (
           <Link
             to="/admin"
-            className="flex items-center gap-1.5 rounded-full border border-primary px-3 py-2 text-xs font-black uppercase tracking-wide text-primary"
+            className="hidden items-center gap-1.5 rounded-full border border-primary px-3 py-2 text-xs font-black uppercase tracking-wide text-primary sm:flex"
           >
             <Crown className="size-4" />
             Boss
