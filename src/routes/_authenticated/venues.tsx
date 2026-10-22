@@ -22,6 +22,7 @@ import { useFriendIds } from "@/hooks/use-friends";
 import { supabase } from "@/integrations/supabase/client";
 import { cn, haptic } from "@/lib/utils";
 import { seo } from "@/lib/seo";
+import { useViewMode } from "@/hooks/use-view-mode";
 
 export const Route = createFileRoute("/_authenticated/venues")({
   staticData: { sitemap: false },
@@ -100,6 +101,7 @@ function Venues() {
 function VenuesPage() {
   const { user } = Route.useRouteContext();
   const meId = user?.id ?? null;
+  const { advanced } = useViewMode();
   const { gate } = useAuthGate();
   const qc = useQueryClient();
   const [q, setQ] = useState("");
@@ -229,7 +231,7 @@ function VenuesPage() {
   );
 
   return (
-    <AppShell>
+    <AppShell wide>
       <Link
         to="/home"
         className="mb-3 flex items-center gap-1 text-sm font-bold text-muted-foreground"
@@ -239,7 +241,7 @@ function VenuesPage() {
       <h1 className="text-3xl font-black">Clubs</h1>
       <p className="mt-1 text-muted-foreground">Book a court, see who's on and fill your game.</p>
 
-      <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+      <div className="mt-4 grid grid-cols-3 gap-2 text-center lg:max-w-3xl">
         <div className="rounded-2xl border bg-card p-2.5">
           <div className="font-display text-xl font-black tabular-nums">{all.length || "—"}</div>
           <div className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
@@ -268,7 +270,7 @@ function VenuesPage() {
         <PageGuide id="venues" />
       </div>
 
-      <div className="relative">
+      <div className="relative lg:max-w-3xl">
         <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
         <input
           value={q}
@@ -289,7 +291,7 @@ function VenuesPage() {
         {cities.map((c) => chip(c, c))}
       </div>
 
-      <div className="mt-3 space-y-3">
+      <div className="mt-3 grid items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
         {venues.isLoading
           ? [0, 1, 2].map((i) => <div key={i} className="h-44 animate-pulse rounded-3xl bg-card" />)
           : sorted.map((v) => {
@@ -333,7 +335,7 @@ function VenuesPage() {
                     </button>
                   </div>
 
-                  <div className="mt-3 grid grid-cols-3 gap-1.5 text-center">
+                  {advanced && <div className="mt-3 grid grid-cols-3 gap-1.5 text-center">
                     <div className="rounded-xl bg-background/40 px-1 py-1.5">
                       <div className="font-display text-sm font-black tabular-nums text-win">
                         {meId ? cs.length : "—"}
@@ -363,7 +365,7 @@ function VenuesPage() {
                         Matches logged
                       </div>
                     </div>
-                  </div>
+                  </div>}
 
                   {mates.length > 0 && (
                     <div className="mt-3 flex items-center gap-2">

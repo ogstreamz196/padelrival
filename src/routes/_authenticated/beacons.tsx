@@ -104,7 +104,7 @@ function BeaconsPage() {
   const others = list.filter((b) => !b.beacon_players.some((p) => p.user_id === meId));
 
   return (
-    <AppShell>
+    <AppShell wide>
       <Link
         to="/home"
         className="mb-3 flex items-center gap-1 text-sm font-bold text-muted-foreground"
@@ -127,7 +127,7 @@ function BeaconsPage() {
         </button>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+      <div className="mt-4 grid grid-cols-3 gap-2 text-center lg:max-w-3xl">
         {[
           ["1", "Post your game", "Club, time and how many spots are free"],
           ["2", "Anyone can claim", "Any player on the app can join, no invite needed"],
@@ -165,7 +165,7 @@ function BeaconsPage() {
         <select
           value={venue}
           onChange={(e) => setVenue(e.target.value)}
-          className="mt-2 w-full rounded-2xl border bg-card px-4 py-3 text-sm outline-none focus:border-primary"
+          className="mt-2 w-full rounded-2xl border bg-card px-4 py-3 text-sm outline-none focus:border-primary md:max-w-sm"
         >
           <option value="all">All clubs</option>
           {venues.map((v) => (
@@ -202,23 +202,27 @@ function BeaconsPage() {
       ) : (
         <div className="mt-5 space-y-6">
           {mine.length > 0 && (
-            <section className="space-y-3">
-              <h2 className="text-sm font-black uppercase tracking-widest text-primary">
+            <section>
+              <h2 className="mb-3 text-sm font-black uppercase tracking-widest text-primary">
                 Your matches
               </h2>
-              {mine.map((b) => (
-                <BeaconCard key={b.id} b={b} meId={meId} now={now} />
-              ))}
+              <div className="grid items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {mine.map((b) => (
+                  <BeaconCard key={b.id} b={b} meId={meId} now={now} />
+                ))}
+              </div>
             </section>
           )}
           {others.length > 0 && (
-            <section className="space-y-3">
-              <h2 className="text-sm font-black uppercase tracking-widest text-muted-foreground">
+            <section>
+              <h2 className="mb-3 text-sm font-black uppercase tracking-widest text-muted-foreground">
                 Spots available
               </h2>
-              {others.map((b) => (
-                <BeaconCard key={b.id} b={b} meId={meId} now={now} />
-              ))}
+              <div className="grid items-start gap-3 md:grid-cols-2 xl:grid-cols-3">
+                {others.map((b) => (
+                  <BeaconCard key={b.id} b={b} meId={meId} now={now} />
+                ))}
+              </div>
             </section>
           )}
         </div>

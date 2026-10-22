@@ -17,7 +17,7 @@ import { SectionTitle } from "@/components/PlayerProfile";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useFriendIds } from "@/hooks/use-friends";
 import { supabase } from "@/integrations/supabase/client";
-import { ACHIEVEMENTS, levelInfo, rankTier } from "@/lib/game";
+import { ACHIEVEMENTS, levelInfo, rankTier, winChance } from "@/lib/game";
 import { SITE_URL } from "@/lib/beacons";
 import { whatsappUrl } from "@/lib/share";
 import { cn, haptic } from "@/lib/utils";
@@ -258,6 +258,8 @@ function ComparePage() {
               )}
             </div>
           </section>
+
+          <Edge a={A.profile} b={B.profile} />
 
           <section className="mt-6">
             <SectionTitle>Court side</SectionTitle>
@@ -557,5 +559,35 @@ function PlayerPicker({
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+/** Who'd be favourite if these two faced each other with equally rated partners. */
+function Edge({ a, b }: { a: { display_name: string; rating: number }; b: { display_name: string; rating: number } }) {
+  const p = Math.round(winChance([a.rating], [b.rating]) * 100);
+  const first = (n: string) => n.split(" ")[0];
+  const fav = p === 50 ? null : p > 50 ? first(a.display_name) : first(b.display_name);
+  const gap = Math.abs(a.rating - b.rating);
+  return (
+    <section className="mt-6">
+      <SectionTitle>The edge</SectionTitle>
+      <div className="rounded-3xl border bg-card p-4">
+        <p className="text-sm font-bold">
+          {fav ? `${fav} would start as favourite` : "Dead even on paper"}
+          <span className="font-normal text-muted-foreground"> · {gap} rating apart</span>
+        </p>
+        <div className="mt-3 flex h-2.5 gap-0.5 overflow-hidden rounded-full" role="img" aria-label={`${first(a.display_name)} ${p}%, ${first(b.display_name)} ${100 - p}%`}>
+          <div className="rounded-l-full bg-primary" style={{ width: `${p}%` }} />
+          <div className="flex-1 rounded-r-full bg-court" />
+        </div>
+        <div className="mt-1.5 flex justify-between text-xs font-bold tabular-nums">
+          <span>{first(a.display_name)} {p}%</span>
+          <span>{100 - p}% {first(b.display_name)}</span>
+        </div>
+        <p className="mt-2 text-[11px] text-muted-foreground">
+          Chance of winning if they played each other with equally rated partners, from the same rating maths the app uses.
+        </p>
+      </div>
+    </section>
   );
 }
