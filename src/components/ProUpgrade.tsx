@@ -214,8 +214,9 @@ export function ProModal({ onClose }: { onClose: () => void }) {
             )}
             {offer.eligible && (
               <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-                New players get this price for their first {pricing.promo_days} days. Join in time
-                and you keep it for as long as you stay subscribed.
+                {pricing.checkout_enabled
+                  ? `New players get this price for their first ${pricing.promo_days} days. Join in time and you keep it for as long as you stay subscribed.`
+                  : `This launch price is held for you. When payments open you'll have ${pricing.promo_days} days to claim it, and you keep it for as long as you stay subscribed.`}
               </p>
             )}
             {!pricing.checkout_enabled && (

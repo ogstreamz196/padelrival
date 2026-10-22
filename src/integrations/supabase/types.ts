@@ -339,6 +339,39 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: number
+          kind: string
+          link: string | null
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: never
+          kind: string
+          link?: string | null
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: never
+          kind?: string
+          link?: string | null
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       pro_members: {
         Row: {
           expires_at: string | null
@@ -731,6 +764,11 @@ export type Database = {
           _venue: string
         }
         Returns: Json
+      }
+      uk_today: { Args: never; Returns: string }
+      venue_match_counts: {
+        Args: never
+        Returns: { matches: number; venue: string }[]
       }
       void_match: { Args: { _match_id: string }; Returns: Json }
       weekly_leaderboard: {

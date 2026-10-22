@@ -50,7 +50,8 @@ export function AiCoach({ userId }: { userId: string }) {
   const sel = picked ?? new Set(rows.map((r) => r.matches!.id));
   const toggle = (id: string) => {
     const n = new Set(sel);
-    n.has(id) ? n.delete(id) : n.add(id);
+    if (n.has(id)) n.delete(id);
+    else n.add(id);
     setPicked(n);
   };
 

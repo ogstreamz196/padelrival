@@ -4,6 +4,7 @@ import { Home, Megaphone, Plus, Swords, Trophy, User } from "lucide-react";
 import { useAuthGate } from "@/components/AuthPrompt";
 import { useMyProfile } from "@/hooks/use-auth";
 import { useAppSettings } from "@/hooks/use-settings";
+import { useNotifications } from "@/components/NotificationBell";
 import { cn } from "@/lib/utils";
 
 // `gate` marks tabs that only make sense with an account; guests get the sign-up sheet instead.
@@ -26,6 +27,7 @@ export function AppShell({ children, hideNav }: { children: ReactNode; hideNav?:
   const { pathname } = useLocation();
   const { settings } = useAppSettings();
   const note = settings.announcement;
+  const unread = (useNotifications(profile?.id).data ?? []).filter((n) => !n.read_at).length;
 
   if (loading) {
     return (
@@ -69,6 +71,7 @@ export function AppShell({ children, hideNav }: { children: ReactNode; hideNav?:
             {tabs.map((t) => {
               const active = pathname.startsWith(t.to);
               const Icon = t.icon;
+              const dot = t.to === "/home" && unread > 0 && !active;
               const onClick = (e: React.MouseEvent) => {
                 if ("gate" in t && !gate(t.gate)) e.preventDefault();
               };
@@ -95,7 +98,10 @@ export function AppShell({ children, hideNav }: { children: ReactNode; hideNav?:
                     active ? "text-primary" : "text-muted-foreground",
                   )}
                 >
-                  <Icon className="size-5" />
+                  <span className="relative">
+                    <Icon className="size-5" />
+                    {dot && <span className="absolute -right-1 -top-0.5 size-2 rounded-full bg-fire" aria-label="New notifications" />}
+                  </span>
                   {t.label}
                 </Link>
               );

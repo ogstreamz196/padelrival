@@ -49,10 +49,16 @@ export function ActivityFeed({ meId }: { meId: string | null }) {
     },
   });
 
+  // Only the reactions for matches in this feed, not the whole table.
+  const feedIds = (feed.data ?? []).map((m) => m.id);
   const reactions = useQuery({
-    queryKey: ["reactions"],
+    queryKey: ["reactions", feedIds],
+    enabled: feedIds.length > 0,
     queryFn: async () => {
-      const { data, error } = await supabase.from("match_reactions").select("match_id,user_id");
+      const { data, error } = await supabase
+        .from("match_reactions")
+        .select("match_id,user_id")
+        .in("match_id", feedIds);
       if (error) throw error;
       return data;
     },

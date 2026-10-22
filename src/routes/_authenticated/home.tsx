@@ -6,6 +6,7 @@ import { ActivityFeed } from "@/components/ActivityFeed";
 import { WeeklyLeague } from "@/components/WeeklyLeague";
 import { PageGuide } from "@/components/PageGuide";
 import { QuickLinks } from "@/components/QuickLinks";
+import { NotificationBell } from "@/components/NotificationBell";
 import { useIsAdmin } from "@/hooks/use-admin";
 import { ProOfferBanner } from "@/components/ProUpgrade";
 import { OpenBeacons } from "@/components/OpenBeacons";
@@ -76,7 +77,7 @@ function Home() {
               )}
             </div>
           </div>
-          <Link to="/me" className="text-xs font-bold text-muted-foreground">Profile</Link>
+          <NotificationBell meId={profile.id} />
         </section>
       )}
 

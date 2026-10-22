@@ -28,6 +28,9 @@
 - The boss dashboard (`/admin?tab=`) uses `admin_*` security-definer functions plus `admin.functions.ts` server fns (delete/suspend user, health checks) that need the service role; every boss action is written to `admin_log`.
 - Database migrations go in `drizzle/migrations/NNNN_name.sql` with a matching `meta/_journal.json` entry and `meta/NNNN_snapshot.json` (Lovable applies these); `supabase/migrations/` holds only the older history.
 - SEO: public pages (`/`, `/padel-courts`, `/padel-courts/$city`) are server-rendered outside `_authenticated` and use `seo()`/`jsonLd()` from `src/lib/seo.ts` for title, canonical, social tags and structured data; `/sitemap.xml` is a server route built from the `venues` table; `public/robots.txt`, `public/llms.txt` and `public/og-image.png` round it out. Private screens set `noindex`.
+- In-app notifications live in `notifications`, written only by security-definer triggers (open-match join/leave/full/cancel, someone logging a match with you, new follower); clients can read, mark read and delete their own. `NotificationBell` on Home plus a dot on the Home tab show them. No push or email yet.
+- Check-in "today" is the UK calendar day via `public.uk_today()`, used by the column default, the RLS policies and the client.
+- `src/server.ts` 301-redirects the old domain and www to padelrival.co.uk, except inside native app web views (old app builds only allow the old host).
 
 ## Workflow
 - The owner wants finished, checked work merged straight into `main` (no pull requests): validate (typecheck + build), push the working branch, then fast-forward or merge into `main` without rewriting history.

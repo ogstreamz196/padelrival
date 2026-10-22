@@ -348,8 +348,11 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
   );
 }
 
-function PRIVATE_NOTE(show: (k: any) => boolean) {
-  const hidden = ["show_record", "show_history", "show_partners", "show_rivalries", "show_achievements"].some((k) => !show(k));
+type PrivacyKey = "show_record" | "show_history" | "show_court_side" | "show_partners" | "show_rivalries" | "show_achievements";
+
+function PRIVATE_NOTE(show: (k: PrivacyKey) => boolean) {
+  const keys: PrivacyKey[] = ["show_record", "show_history", "show_partners", "show_rivalries", "show_achievements"];
+  const hidden = keys.some((k) => !show(k));
   return hidden ? <Empty>Some of this player's details are private.</Empty> : null;
 }
 

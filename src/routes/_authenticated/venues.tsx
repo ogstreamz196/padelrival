@@ -50,9 +50,10 @@ type Checkin = {
   profiles: { id: string; display_name: string; avatar: string; avatar_color: string } | null;
 };
 
-/** Check-ins are keyed by the database's date (UTC), matching `current_date` in the RLS policy. */
+/** Check-ins are keyed by the UK calendar day, matching `uk_today()` in the database. */
 function todayKey() {
-  return new Date().toISOString().slice(0, 10);
+  // en-CA formats as YYYY-MM-DD.
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/London" }).format(new Date());
 }
 
 function bookingLink(v: Venue) {
@@ -123,14 +124,8 @@ function VenuesPage() {
     queryKey: ["venue-match-counts"],
     staleTime: 10 * 60 * 1000,
     queryFn: async () => {
-      const { data } = await supabase
-        .from("matches")
-        .select("venue")
-        .not("venue", "is", null)
-        .limit(2000);
-      const counts = new Map<string, number>();
-      for (const r of data ?? []) counts.set(norm(r.venue), (counts.get(norm(r.venue)) ?? 0) + 1);
-      return counts;
+      const { data } = await supabase.rpc("venue_match_counts");
+      return new Map((data ?? []).map((r) => [r.venue, Number(r.matches)]));
     },
   });
 

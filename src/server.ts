@@ -44,8 +44,32 @@ function isH3SwallowedErrorBody(body: string): boolean {
   }
 }
 
+const CANONICAL_HOST = "padelrival.co.uk";
+const OLD_HOSTS = new Set(["padel.ogbot.co.uk", "www.padelrival.co.uk"]);
+
+/**
+ * Permanently redirect the old domain and www to padelrival.co.uk so links and search
+ * rankings consolidate. Native app builds made before the move still load the old
+ * domain inside a web view and only allow navigation there, so those requests
+ * (Android "; wv)" or an iOS WebKit UA without "Safari/") are left alone.
+ */
+function canonicalRedirect(request: Request): Response | null {
+  if (request.method !== "GET" && request.method !== "HEAD") return null;
+  const url = new URL(request.url);
+  if (!OLD_HOSTS.has(url.hostname)) return null;
+  const ua = request.headers.get("user-agent") ?? "";
+  const nativeWebView = /; wv\)/.test(ua) || (/AppleWebKit/.test(ua) && /Mobile\//.test(ua) && !/Safari\//.test(ua));
+  if (nativeWebView) return null;
+  url.hostname = CANONICAL_HOST;
+  url.protocol = "https:";
+  url.port = "";
+  return Response.redirect(url.toString(), 301);
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
+    const redirect = canonicalRedirect(request);
+    if (redirect) return redirect;
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);

@@ -124,7 +124,14 @@ export function PricingPanel() {
       <Panel title="Payments">
         <Toggle
           on={p.checkout_enabled}
-          onChange={(v) => setP({ ...p, checkout_enabled: v })}
+          onChange={(v) =>
+            setP({
+              ...p,
+              checkout_enabled: v,
+              // Starts every player's offer clock from today rather than their sign-up date.
+              checkout_opened_at: v ? (p.checkout_opened_at ?? new Date().toISOString()) : null,
+            })
+          }
           label="Accept payments"
           hint="Leave off until Stripe is connected — the button shows “Billing opens soon”"
         />

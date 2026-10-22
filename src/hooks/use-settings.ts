@@ -11,6 +11,8 @@ export type Pricing = {
   /** Days after sign-up that a new player can claim the offer price. */
   promo_days: number;
   checkout_enabled: boolean;
+  /** When payments were switched on; each player's offer window starts no earlier than this. */
+  checkout_opened_at?: string | null;
 };
 export type Features = { beacons: boolean; venues: boolean; dossier: boolean; ai_coach: boolean };
 export type Announcement = { enabled: boolean; text: string; tone: "info" | "promo" | "warning" };
@@ -59,7 +61,11 @@ export function formatPrice(n: number, currency = "GBP") {
 
 /** The price a player sees right now, and when their launch offer runs out. */
 export function proOffer(p: Pricing, signedUpAt?: string | null, now = Date.now()) {
-  const endsAt = signedUpAt ? new Date(signedUpAt).getTime() + p.promo_days * 86400000 : null;
+  // While payments are off nobody can buy, so the offer clock doesn't run (endsAt null = no countdown).
+  // Once they open, a player's window starts at the later of sign-up and the opening date.
+  const opened = p.checkout_opened_at ? new Date(p.checkout_opened_at).getTime() : now;
+  const start = signedUpAt ? Math.max(new Date(signedUpAt).getTime(), opened) : null;
+  const endsAt = p.checkout_enabled && start !== null ? start + p.promo_days * 86400000 : null;
   const eligible = p.promo_enabled && (endsAt === null || endsAt > now);
   const msLeft = endsAt ? Math.max(0, endsAt - now) : 0;
   return {
