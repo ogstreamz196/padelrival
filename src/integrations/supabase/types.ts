@@ -339,6 +339,47 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: number
+          kind: string
+          link: string | null
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: never
+          kind: string
+          link?: string | null
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: never
+          kind?: string
+          link?: string | null
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pro_members: {
         Row: {
           expires_at: string | null
@@ -641,6 +682,10 @@ export type Database = {
         Returns: string
       }
       admin_void_match: { Args: { _match_id: string }; Returns: Json }
+      beacon_when: {
+        Args: { _b: Database["public"]["Tables"]["beacons"]["Row"] }
+        Returns: string
+      }
       cancel_beacon: { Args: { _beacon_id: string }; Returns: string }
       claim_boss: { Args: never; Returns: boolean }
       claim_guest_matches: { Args: { _alias: string }; Returns: Json }
@@ -722,6 +767,16 @@ export type Database = {
       }
       join_beacon: { Args: { _beacon_id: string }; Returns: string }
       leave_beacon: { Args: { _beacon_id: string }; Returns: string }
+      notify: {
+        Args: {
+          _body: string
+          _kind: string
+          _link: string
+          _title: string
+          _user: string
+        }
+        Returns: undefined
+      }
       record_match: {
         Args: {
           _match_type: string
@@ -731,6 +786,14 @@ export type Database = {
           _venue: string
         }
         Returns: Json
+      }
+      uk_today: { Args: never; Returns: string }
+      venue_match_counts: {
+        Args: never
+        Returns: {
+          matches: number
+          venue: string
+        }[]
       }
       void_match: { Args: { _match_id: string }; Returns: Json }
       weekly_leaderboard: {
