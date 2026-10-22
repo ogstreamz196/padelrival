@@ -11,6 +11,7 @@ import { useIsAdmin } from "@/hooks/use-admin";
 import { ProOfferBanner } from "@/components/ProUpgrade";
 import { OpenBeacons } from "@/components/OpenBeacons";
 import { PlayersAtYourLevel } from "@/components/PlayersAtYourLevel";
+import { WeeklyChallenges } from "@/components/WeeklyChallenges";
 import { useViewMode, ViewModeToggle } from "@/hooks/use-view-mode";
 
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
@@ -142,6 +143,8 @@ function Home() {
           </Link>
 
           <QuickLinks className="mt-3" />
+
+          {profile && <WeeklyChallenges meId={profile.id} detailed={advanced} />}
         </div>
         <div className={cn(advanced && "lg:[&>*:first-child]:mt-0")}>
           {advanced && revenge.length > 0 && (

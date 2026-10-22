@@ -18,7 +18,11 @@ export function TierProgress({ rating, compact }: { rating: number; compact?: bo
         {t.next ? (
           <>
             <span className="font-bold tabular-nums text-foreground">{t.toGo}</span> rating to {t.next}
-            {t.toGo <= 16 && <span className="ml-1 font-bold text-primary">· one win gets you there</span>}
+            {t.toGo <= 16 ? (
+              <span className="ml-1 font-bold text-primary">· one win gets you there</span>
+            ) : (
+              <span className="ml-1">· about {Math.ceil(t.toGo / 16)} wins</span>
+            )}
           </>
         ) : (
           "You're in the top tier — hold your ground."

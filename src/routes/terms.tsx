@@ -33,7 +33,7 @@ function Terms() {
         ← Padel Rival
       </Link>
       <h1 className="mt-6 font-display text-3xl font-black">Terms of Service</h1>
-      <p className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Last updated 30 September 2026</p>
+      <p className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Last updated 22 October 2026</p>
 
       <P>
         These terms are an agreement between you and the operator of Padel Rival ("we", "us"), contactable at{" "}
@@ -96,7 +96,14 @@ function Terms() {
       <ul className="list-disc pl-5">
         <Li>Do not attack, disrupt, reverse-engineer, scrape or overload the service, or try to access other players' accounts or data.</Li>
         <Li>Do not use automated tools to create accounts, log matches or interact with the app.</Li>
+        <Li>Do not harass, threaten or abuse other players, or post hateful, sexual or offensive names, avatars or notes.</Li>
+        <Li>Do not use open matches or notes to advertise, spam or scam.</Li>
       </ul>
+      <P>
+        You can report a player, an open match or a logged match from the ··· menu next to it, and block any player.
+        We review reports, normally within 24 hours, and may remove content, void matches, or suspend or delete accounts
+        that break these terms.
+      </P>
 
       <H>Paid features</H>
       <P>

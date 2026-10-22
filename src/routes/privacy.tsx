@@ -77,6 +77,11 @@ function Privacy() {
           in-app notifications we send you about these.
         </Li>
         <Li>
+          <strong className="text-foreground">Reports and blocks.</strong> If you report something we store the reason,
+          any details you add and what it was about, so we can review it. The person you report is never told who sent
+          it. If you block a player we store that so we can hide their content from you.
+        </Li>
+        <Li>
           <strong className="text-foreground">Technical and security data.</strong> IP address, device and browser
           information, session records and error logs, needed to keep the service secure, prevent abuse and fix faults.
         </Li>
@@ -182,7 +187,7 @@ function Privacy() {
       <H>Local storage and cookies</H>
       <P>
         The app stores a small amount of data in your browser's local storage: your sign-in session, your dismissed
-        tips, and whether you have dismissed the install banner. These are strictly necessary for the app to work. We
+        tips, your Simple or Advanced view choice, and whether you have dismissed the install banner. These are strictly necessary for the app to work. We
         use no advertising cookies and no third-party tracking.
       </P>
 
