@@ -11,6 +11,11 @@ Everything needed to publish Padel Rival on Google Play, set up as a fresh app. 
 | `graphics/icon-512.png` | Play Store icon |
 | `graphics/feature-graphic-1024x500.png` | Feature graphic |
 | `graphics/phone-screenshots/` | 8 phone screenshots, 1080 × 1920, in upload order |
+| `graphics/tablet-7in-screenshots/` | 4 screenshots for 7-inch tablets, 1200 × 1920 |
+| `graphics/tablet-10in-screenshots/` | 6 screenshots for 10-inch tablets, 2560 × 1600 (the app now has a proper tablet layout) |
+| `graphics/promotional-content/` | 1920 × 1080 images for Play Console → Grow → Promotional content (launch Double XP event, Performance lab) |
+| `graphics/store-items/` | 512 × 512 artwork for Pro monthly, Pro yearly, the launch offer and Double XP, for when Pro goes on sale |
+| `../../marketing/videos/08-play-promo-landscape.mp4` | Upload to YouTube and paste the link as the store listing's promo video |
 
 ## Already done in the code
 

@@ -24,7 +24,13 @@ Padel Rival is the free score tracker for padel players who want every match to 
 Log a 2v2 match in about 20 seconds. Pick your partner and opponents, tap the set scores and you're done. Ratings, XP and win streaks update for all four players straight away.
 
 A REAL PADEL RATING
-Everyone starts at 1000. Beat a stronger pair and you climb faster; lose to a weaker pair and you drop more. Your first five matches settle your rating, then you climb through Bronze, Silver, Gold and Platinum to Diamond.
+Everyone starts at 1000. Beat a stronger pair and you climb faster; lose to a weaker pair and you drop more. Your first five matches settle your rating, then you climb through Bronze, Silver, Gold and Platinum to Diamond. Your card also shows your approximate padel level on the familiar 1 to 7 scale.
+
+KNOW YOUR ODDS
+Before you save a match, see each team's chance of winning and exactly how much rating is at stake for a win or a loss.
+
+STATS NOBODY ELSE GIVES YOU
+Switch to Advanced view for the Performance lab: your rating trend match by match, sets and games won, deciding-set and tie-break records, comebacks, results against stronger teams and your best club. Prefer it simple? One tap switches to a clean view with just the essentials.
 
 RIVALRIES THAT REMEMBER
 Play the same people twice and a rivalry starts on its own. See your head-to-head record and sets won, get a revenge alert when someone is beating you, and set up the rematch in one tap.
@@ -35,8 +41,11 @@ Short of a fourth? Post an open match with your club, time and how many spots ar
 PADEL CLUBS NEAR YOU
 Browse padel clubs across the UK, see indoor and outdoor courts, jump straight to court booking and see which friends are playing today.
 
-LEADERBOARDS AND WEEKLY DIVISIONS
-Climb the all-time ladder or race your division this week. Your weekly standing resets every Monday, so there's always something to play for.
+LEADERBOARDS, WEEKLY DIVISIONS AND CHALLENGES
+Climb the all-time ladder or race your division this week. Every Monday brings three fresh challenges that track themselves as you play, and special events like Double XP week.
+
+PLAYERS AT YOUR LEVEL
+See players rated close to you and add them as friends in one tap. Even games are the best games.
 
 YOUR PLAYER CARD
 Your rating, level, form, badges, best partners and full match history, with left and right court-side win rates. Share it to Instagram or the group chat.
@@ -46,6 +55,12 @@ Put any two players side by side: rating, head-to-head record, win rate, streaks
 
 MADE FOR YOUR GROUP
 Friends not on the app yet? Add them as a guest by typing their name. When they join, the matches you logged under that name move to their record.
+
+WORKS ON PHONE, TABLET AND DESKTOP
+Turn your phone sideways or open it on a tablet and the app uses the extra space properly.
+
+SAFE AND FRIENDLY
+Report a player, an open match or a result from the ··· menu, and block anyone you don't want to play with.
 
 Free to use, with no ads. An optional Pro plan with deeper stats and extra share cards is on the way.
 
@@ -75,8 +90,9 @@ Questions or ideas? Email Ogbot196@gmail.com.
 | App icon | `graphics/icon-512.png` | 512 × 512 PNG, up to 1 MB |
 | Feature graphic | `graphics/feature-graphic-1024x500.png` | 1024 × 500 JPG or 24-bit PNG |
 | Phone screenshots | `graphics/phone-screenshots/1-home.png` … `8-dossier.png` | 2 to 8 images, 9:16, at least 1080 px on the short side for promotion |
-| 7-inch and 10-inch tablet screenshots | Skip | Optional; the app is laid out for phones |
-| Video | Skip for now | Optional YouTube link |
+| 7-inch tablet screenshots | `graphics/tablet-7in-screenshots/` (4) | 1200 × 1920 |
+| 10-inch tablet screenshots | `graphics/tablet-10in-screenshots/` (6) | 2560 × 1600. Uploading these helps the app show up for tablet users |
+| Video | Upload `marketing/videos/08-play-promo-landscape.mp4` to YouTube | Paste the YouTube link. Unlisted is fine; ads must be off on the video |
 
 Upload the screenshots in number order. The first three are the ones most people see.
 

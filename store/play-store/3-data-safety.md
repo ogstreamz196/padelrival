@@ -23,11 +23,11 @@ For each type, set processing to **"Not processed ephemerally"** unless the tabl
 | Personal info → **User IDs** | Required (account ID and @username) | App functionality, Account management |
 | Personal info → **Other info** | Optional (avatar and preferred court side) | App functionality |
 | App activity → **App interactions** | Required | App functionality, Analytics |
-| App activity → **Other user-generated content** | Required (match results, venue names, open-match notes, guest names) | App functionality |
+| App activity → **Other user-generated content** | Required (match results, venue names, open-match notes, guest names, reports you send) | App functionality, Fraud prevention, security and compliance |
 | App info and performance → **Crash logs** | Required | App functionality, Analytics |
 | App info and performance → **Diagnostics** | Required | App functionality, Analytics |
 
-App interactions covers friends, reactions, club check-ins, joining open matches and notifications.
+App interactions covers friends, blocked players, reactions, club check-ins, joining open matches and notifications.
 
 ## Data types NOT collected (leave unticked)
 
