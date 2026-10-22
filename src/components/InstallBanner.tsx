@@ -161,7 +161,7 @@ export function InstallBanner() {
 
   return (
     <div
-      className="fixed inset-x-0 bottom-[calc(max(env(safe-area-inset-bottom),0.75rem)+5.5rem)] z-50 mx-auto max-w-md px-3"
+      className="fixed inset-x-0 bottom-[calc(max(env(safe-area-inset-bottom),0.75rem)+5.5rem)] z-50 mx-auto max-w-md px-3 wide:bottom-4 wide:left-auto wide:right-4 wide:mx-0 wide:w-96 wide:px-0"
       role="region"
       aria-labelledby="install-title"
     >

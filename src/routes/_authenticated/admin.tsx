@@ -83,7 +83,7 @@ function AdminPage() {
   }
 
   return (
-    <AppShell>
+    <AppShell wide>
       <div className="mb-3 flex items-center gap-2">
         <Crown className="size-6 text-primary" />
         <h1 className="text-2xl font-black">Boss dashboard</h1>

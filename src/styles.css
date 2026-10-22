@@ -3,6 +3,16 @@
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+/* "wide" = tablets and desktops, plus phones turned sideways (short landscape screens).
+   The app switches from the bottom tab bar to a side rail on these. */
+@custom-variant wide {
+  @media (min-width: 768px) {
+    @slot;
+  }
+  @media (orientation: landscape) and (max-height: 560px) {
+    @slot;
+  }
+}
 
 @theme inline {
   --font-display: "Unbounded", system-ui, sans-serif;
