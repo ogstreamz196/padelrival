@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Flame, Share2, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { ACHIEVEMENTS, formatSets, levelInfo, rankTier, type SetScore } from "@/lib/game";
+import { ACHIEVEMENTS, formatSets, levelInfo, padelLevel, rankTier, type SetScore } from "@/lib/game";
 import { PlayerAvatar } from "./PlayerAvatar";
 import { FormStrip, TierProgress } from "./RankProgress";
 import { RankCrest, tierTheme } from "./RankCrest";
@@ -178,6 +178,9 @@ export function PlayerProfile({ userId, isMe }: { userId: string; isMe?: boolean
               {rankTier(p.rating)} · Rating
             </div>
             <div className="font-display text-5xl font-black tabular-nums">{p.rating}</div>
+            <div className="mt-0.5 text-xs font-bold text-muted-foreground" title="Approximate level on the 1–7 club scale, worked out from rating">
+              Padel level <span className="text-foreground tabular-nums">{padelLevel(p.rating).toFixed(1)}</span>
+            </div>
           </div>
           <RankCrest rating={p.rating} size="lg" />
           <div className="text-right">

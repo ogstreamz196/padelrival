@@ -10,6 +10,7 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { useIsAdmin } from "@/hooks/use-admin";
 import { ProOfferBanner } from "@/components/ProUpgrade";
 import { OpenBeacons } from "@/components/OpenBeacons";
+import { PlayersAtYourLevel } from "@/components/PlayersAtYourLevel";
 import { useViewMode, ViewModeToggle } from "@/hooks/use-view-mode";
 
 import { RivalryCard, type Rivalry } from "@/components/RivalryCard";
@@ -155,6 +156,8 @@ function Home() {
           )}
 
           <OpenBeacons meId={meId} />
+
+          {profile && <PlayersAtYourLevel meId={profile.id} rating={profile.rating} limit={advanced ? 5 : 3} />}
 
           <section className="mt-7">
             <SectionTitle>Latest matches</SectionTitle>

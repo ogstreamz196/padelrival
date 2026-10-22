@@ -158,3 +158,12 @@ export function ratingSwing(chance: number) {
   const round = (x: number) => Math.sign(x) * Math.round(Math.abs(x));
   return { win: round(ELO_K * (1 - chance)), loss: round(ELO_K * (0 - chance)) };
 }
+
+/**
+ * Approximate padel level on the familiar 1–7 club scale, from Elo.
+ * 700 ≈ 1.0, a new player (1000) ≈ 2.8, 1700+ ≈ 7.0. A guide, not an official grading.
+ */
+export function padelLevel(rating: number) {
+  const lvl = 1 + ((rating - 700) / 1000) * 6;
+  return Math.round(Math.max(0.5, Math.min(7, lvl)) * 10) / 10;
+}
