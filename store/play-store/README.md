@@ -86,7 +86,7 @@ Everything needed to publish Padel Rival on Google Play, set up as a fresh app. 
 
 ## Before you submit: things that could cause a rejection
 
-1. **Report and block.** Players can see each other's names, avatars and notes, and Google expects a way to report and block other players. That isn't built yet. It's the most likely reason for a rejection, so I recommend adding it first. See the end of [2-app-content.md](2-app-content.md).
+1. **Report and block is built.** Every player card, open match and feed match has a ··· menu to report it or block the player, and reports land in the boss dashboard under Reports. Check that tab every day or two while the app is in review, because Google expects reports to be handled. The database part is migration `0006_report_and_block`, which Lovable applies.
 2. **"Just a website in an app."** Google can reject apps that are only a website in a frame. Padel Rival handles the back button, shows an offline notice and uses native touches such as haptics and the splash screen, which usually passes. Push notifications would make it safer still.
 3. **Sign-in settings.** Your sign-in (auth) settings must allow `padelrival.co.uk`, so that sign-up confirmations and password resets open the right place.
 

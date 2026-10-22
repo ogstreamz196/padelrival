@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useBeacons, useNow } from "@/hooks/use-beacons";
+import { useHideBlocked } from "@/hooks/use-blocks";
 import { BEACON_SIDES, BEACON_TIERS, sideLabel, tierLabel } from "@/lib/beacons";
 import { supabase } from "@/integrations/supabase/client";
 import { cn, haptic } from "@/lib/utils";
@@ -80,6 +81,7 @@ function BeaconsPage() {
   const post = () =>
     gate("Create a free account to post an open match and let other players join you.") && setOpen(true);
   const beacons = useBeacons();
+  const hidden = useHideBlocked();
   const now = useNow();
   const [venue, setVenue] = useState(search.post ? "all" : (search.venue ?? "all"));
   const [day, setDay] = useState<DayFilter>("all");
@@ -96,7 +98,7 @@ function BeaconsPage() {
     [beacons.data, venue],
   );
   const list = (beacons.data ?? []).filter(
-    (b) => (venue === "all" || b.venue === venue) && inDay(b.scheduled_at, day),
+    (b) => (venue === "all" || b.venue === venue) && inDay(b.scheduled_at, day) && !hidden([b.created_by]),
   );
   const mine = list.filter((b) => b.beacon_players.some((p) => p.user_id === meId));
   const others = list.filter((b) => !b.beacon_players.some((p) => p.user_id === meId));

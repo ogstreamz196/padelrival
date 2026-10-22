@@ -43,6 +43,13 @@
       "when": 1792632731170,
       "tag": "0005_apply_pending_notifications_and_fixes",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792703539569,
+      "tag": "0006_report_and_block",
+      "breakpoints": true
     }
   ]
 }

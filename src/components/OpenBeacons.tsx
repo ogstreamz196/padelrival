@@ -3,15 +3,17 @@ import { UsersRound } from "lucide-react";
 import { BeaconCard } from "@/components/BeaconCard";
 import { SectionTitle } from "@/components/PlayerProfile";
 import { useBeacons, useNow } from "@/hooks/use-beacons";
+import { useHideBlocked } from "@/hooks/use-blocks";
 import { useAppSettings } from "@/hooks/use-settings";
 
 /** Home-screen carousel of open matches that still have free spots. */
 export function OpenBeacons({ meId }: { meId: string | null }) {
   const beacons = useBeacons(12);
+  const hidden = useHideBlocked();
   const now = useNow();
   const { settings } = useAppSettings();
   const list = (beacons.data ?? [])
-    .filter((b) => b.status === "open" || b.beacon_players.some((p) => p.user_id === meId))
+    .filter((b) => (b.status === "open" || b.beacon_players.some((p) => p.user_id === meId)) && !hidden([b.created_by]))
     .slice(0, 6);
 
   if (beacons.isLoading || !settings.features.beacons) return null;

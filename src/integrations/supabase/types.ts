@@ -14,6 +14,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      blocks: {
+        Row: { blocked: string; blocker: string; created_at: string }
+        Insert: { blocked: string; blocker: string; created_at?: string }
+        Update: { blocked?: string; blocker?: string; created_at?: string }
+        Relationships: []
+      }
       achievements: {
         Row: {
           code: string
@@ -409,6 +415,48 @@ export type Database = {
           },
         ]
       }
+      reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: number
+          kind: string
+          reason: string
+          reporter: string
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          target_id: string | null
+          target_user: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: never
+          kind: string
+          reason: string
+          reporter: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          target_id?: string | null
+          target_user?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: never
+          kind?: string
+          reason?: string
+          reporter?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          target_id?: string | null
+          target_user?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar: string
@@ -582,6 +630,31 @@ export type Database = {
           signups: number
         }[]
       }
+      admin_reports: {
+        Args: { _status?: string }
+        Returns: {
+          created_at: string
+          details: string
+          id: number
+          kind: string
+          reason: string
+          reporter: string
+          reporter_name: string
+          status: string
+          target_id: string
+          target_name: string
+          target_reports: number
+          target_user: string
+          target_username: string
+        }[]
+      }
+      admin_resolve_report: { Args: { _id: number; _status: string }; Returns: Json }
+      block_player: { Args: { _user: string }; Returns: Json }
+      report_content: {
+        Args: { _details?: string; _kind: string; _reason: string; _target_id: string; _target_user: string }
+        Returns: Json
+      }
+      unblock_player: { Args: { _user: string }; Returns: Json }
       admin_cancel_beacon: { Args: { _id: string }; Returns: Json }
       admin_delete_venue: { Args: { _id: string }; Returns: Json }
       admin_log_external: {

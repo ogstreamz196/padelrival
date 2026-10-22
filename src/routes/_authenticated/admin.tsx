@@ -5,6 +5,7 @@ import { AppShell } from "@/components/AppShell";
 import { MatchLog } from "@/components/BossControls";
 import { OverviewPanel } from "@/components/boss/Overview";
 import { PlayersPanel } from "@/components/boss/PlayersPanel";
+import { ReportsPanel } from "@/components/boss/ReportsPanel";
 import { ClubsPanel, GamesPanel } from "@/components/boss/ContentPanels";
 import {
   LogPanel,
@@ -18,6 +19,7 @@ import { requireUser } from "./route";
 const TABS = [
   { id: "overview", label: "Overview" },
   { id: "players", label: "Players" },
+  { id: "reports", label: "Reports" },
   { id: "matches", label: "Matches" },
   { id: "games", label: "Open matches" },
   { id: "clubs", label: "Clubs" },
@@ -89,7 +91,7 @@ function AdminPage() {
         <h1 className="text-2xl font-black">Boss dashboard</h1>
       </div>
 
-      <div className="sticky top-0 z-30 -mx-4 mb-4 bg-background/90 px-4 py-2 backdrop-blur-xl">
+      <div className="sticky top-0 z-30 -mx-4 mb-4 bg-background/90 px-4 py-2 backdrop-blur-xl wide:-mx-6 wide:px-6">
         <div className="flex gap-1.5 overflow-x-auto">
           {TABS.map((t) => (
             <button
@@ -110,6 +112,7 @@ function AdminPage() {
 
       {tab === "overview" && <OverviewPanel onOpen={go} />}
       {tab === "players" && <PlayersPanel meId={user.id} />}
+      {tab === "reports" && <ReportsPanel />}
       {tab === "matches" && <MatchLog />}
       {tab === "games" && <GamesPanel />}
       {tab === "clubs" && <ClubsPanel />}

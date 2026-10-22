@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useAuthGate } from "@/components/AuthPrompt";
 import { useFriendIds } from "@/hooks/use-friends";
+import { useHideBlocked } from "@/hooks/use-blocks";
+import { SafetyMenu } from "@/components/SafetyMenu";
 
 type FeedPlayer = {
   team: number;
@@ -35,6 +37,7 @@ export function ActivityFeed({ meId }: { meId: string | null }) {
   const [expanded, setExpanded] = useState(false);
   const [scope, setScope] = useState<"all" | "friends">("all");
   const friends = useFriendIds(meId);
+  const hidden = useHideBlocked();
 
   const feed = useQuery({
     queryKey: ["feed"],
@@ -105,7 +108,8 @@ export function ActivityFeed({ meId }: { meId: string | null }) {
     );
 
   const friendSet = new Set([...(friends.data ?? []), ...(meId ? [meId] : [])]);
-  const filtered = scope === "friends" ? feed.data.filter((m) => m.match_players.some((p) => p.user_id && friendSet.has(p.user_id))) : feed.data;
+  const unblocked = feed.data.filter((m) => !hidden(m.match_players.map((p) => p.user_id)));
+  const filtered = scope === "friends" ? unblocked.filter((m) => m.match_players.some((p) => p.user_id && friendSet.has(p.user_id))) : unblocked;
   const visible = expanded ? filtered : filtered.slice(0, 2);
   const tab = (on: boolean) => cn("flex-1 rounded-lg py-1.5 text-xs font-bold uppercase", on ? "bg-primary text-primary-foreground" : "text-muted-foreground");
 
@@ -158,6 +162,16 @@ export function ActivityFeed({ meId }: { meId: string | null }) {
                 <Link to="/player/$id" params={{ id: winners[0].user_id }} className="text-xs font-bold text-muted-foreground">
                   View player
                 </Link>
+              )}
+              {!iAmIn && m.created_by !== meId && (
+                <SafetyMenu
+                  meId={meId}
+                  userId={m.created_by}
+                  name={m.match_players.find((p) => p.user_id === m.created_by)?.profiles?.display_name.split(" ")[0] ?? "the player who logged it"}
+                  kind="match"
+                  targetId={m.id}
+                  className="ml-auto size-7"
+                />
               )}
               {left > 0 && (
                 <button

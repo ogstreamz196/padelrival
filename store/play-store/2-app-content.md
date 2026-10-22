@@ -93,4 +93,9 @@ Players can see each other's display names, avatars and open-match notes. Google
 - A way to block another player.
 - Terms that forbid abuse.
 
-The terms page covers the third. The first two aren't built yet. Many apps of this size get approved without them, but it's the most likely reason for a rejection or a later warning. I recommend adding a simple "Report" and "Block" option to player cards and open matches before you submit.
+All three are in place:
+- **Report:** the ··· button on any player card, open match or match in the feed. Players pick a reason and can add details. Reports are private and go to the boss dashboard's Reports tab.
+- **Block:** the same ··· menu. A blocked player's open matches and matches disappear for you, they can't join your games, and any follow between you is removed. Players can unblock from Settings → Blocked players.
+- **Terms:** the terms page forbids abuse and fake results.
+
+If the review form asks how you moderate, say that reports are reviewed by the developer within 24 hours and accounts can be suspended or deleted from the admin dashboard.

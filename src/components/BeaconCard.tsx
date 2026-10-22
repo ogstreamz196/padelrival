@@ -17,6 +17,7 @@ import {
   type Beacon,
 } from "@/lib/beacons";
 import { whatsappUrl } from "@/lib/share";
+import { SafetyMenu } from "@/components/SafetyMenu";
 import { cn, haptic } from "@/lib/utils";
 
 export function BeaconCard({
@@ -71,7 +72,7 @@ export function BeaconCard({
             <MapPin className="size-4 shrink-0 text-court" />
             <span className="truncate">{b.venue}</span>
           </div>
-          <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <div className="mt-1 flex items-center gap-1.5 whitespace-nowrap text-xs text-muted-foreground">
             <Clock className="size-3.5" />
             <span className="capitalize">{dayWord(b.scheduled_at)}</span> ·{" "}
             {timeLabel(b.scheduled_at)}
@@ -145,6 +146,9 @@ export function BeaconCard({
               {isHost ? "you" : b.host.display_name.split(" ")[0]}
             </span>
           </span>
+        )}
+        {b.host && !isHost && !compact && (
+          <SafetyMenu meId={meId} userId={b.host.id} name={b.host.display_name.split(" ")[0]!} kind="open_match" targetId={b.id} className="ml-auto size-7" />
         )}
       </div>
 

@@ -21,6 +21,7 @@ import { deleteMyAccount } from "@/lib/account.functions";
 import { requireUser } from "./route";
 import { useAppSettings } from "@/hooks/use-settings";
 import { seo } from "@/lib/seo";
+import { BlockedPlayers } from "@/components/SafetyMenu";
 import { useViewMode, ViewModeToggle } from "@/hooks/use-view-mode";
 
 
@@ -140,6 +141,10 @@ function Me() {
 
             <div className="mt-6">
               <PrivacySettings profile={profile} />
+            </div>
+
+            <div className="mt-6">
+              <BlockedPlayers />
             </div>
 
             <div className="mt-6">
