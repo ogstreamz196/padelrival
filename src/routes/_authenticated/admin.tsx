@@ -6,6 +6,7 @@ import { MatchLog } from "@/components/BossControls";
 import { OverviewPanel } from "@/components/boss/Overview";
 import { PlayersPanel } from "@/components/boss/PlayersPanel";
 import { ReportsPanel } from "@/components/boss/ReportsPanel";
+import { LaunchPanel, MessagesPanel } from "@/components/boss/LaunchPanels";
 import { ClubsPanel, GamesPanel } from "@/components/boss/ContentPanels";
 import {
   LogPanel,
@@ -18,12 +19,14 @@ import { requireUser } from "./route";
 
 const TABS = [
   { id: "overview", label: "Overview" },
+  { id: "launch", label: "Launch" },
   { id: "players", label: "Players" },
   { id: "reports", label: "Reports" },
   { id: "matches", label: "Matches" },
   { id: "games", label: "Open matches" },
   { id: "clubs", label: "Clubs" },
   { id: "pricing", label: "Pricing" },
+  { id: "messages", label: "Messages" },
   { id: "settings", label: "Settings" },
   { id: "system", label: "System" },
   { id: "log", label: "Log" },
@@ -112,6 +115,8 @@ function AdminPage() {
 
       {tab === "overview" && <OverviewPanel onOpen={go} />}
       {tab === "players" && <PlayersPanel meId={user.id} />}
+      {tab === "launch" && <LaunchPanel onOpen={go} />}
+      {tab === "messages" && <MessagesPanel />}
       {tab === "reports" && <ReportsPanel />}
       {tab === "matches" && <MatchLog />}
       {tab === "games" && <GamesPanel />}

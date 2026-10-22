@@ -49,7 +49,7 @@ export function useHealth(enabled = true) {
 export function OverviewPanel({
   onOpen,
 }: {
-  onOpen: (tab: "system" | "players" | "pricing") => void;
+  onOpen: (tab: "system" | "players" | "pricing" | "reports" | "launch") => void;
 }) {
   const stats = useQuery({
     queryKey: ["admin-overview"],
@@ -74,6 +74,15 @@ export function OverviewPanel({
     },
   });
   const health = useHealth();
+  const launch = useQuery({
+    queryKey: ["admin-launch"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("admin_launch_status");
+      if (error) throw error;
+      return data as unknown as { open_reports: number };
+    },
+  });
+  const openReports = launch.data?.open_reports ?? 0;
   const s = stats.data;
   const down = (health.data ?? []).filter((h) => h.status === "down");
   const live = (health.data ?? []).filter((h) => h.status === "live").length;
@@ -119,6 +128,29 @@ export function OverviewPanel({
         </div>
         <span className="text-xs font-bold text-muted-foreground">Details</span>
       </button>
+
+      <div className="grid grid-cols-2 gap-2">
+        <button
+          onClick={() => onOpen("reports")}
+          className={cn(
+            "rounded-2xl border p-3 text-left",
+            openReports ? "border-fire/60 bg-fire/10" : "bg-card",
+          )}
+        >
+          <p className={cn("font-display text-2xl font-black tabular-nums", openReports && "text-fire")}>
+            {launch.isLoading ? "…" : openReports}
+          </p>
+          <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+            Reports to review
+          </p>
+        </button>
+        <button onClick={() => onOpen("launch")} className="rounded-2xl border bg-card p-3 text-left">
+          <p className="font-display text-2xl font-black">🚀</p>
+          <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+            Launch checklist
+          </p>
+        </button>
+      </div>
 
       <Panel title="Players">
         <div className="grid grid-cols-3 gap-2">

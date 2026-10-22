@@ -19,6 +19,8 @@ import {
   type AppSettings,
   type Features,
   type Pricing,
+  type XpEvent,
+  activeXpEvent,
 } from "@/hooks/use-settings";
 import type { HealthCheck } from "@/lib/admin.functions";
 import { cn } from "@/lib/utils";
@@ -187,10 +189,81 @@ export function SettingsPanel() {
   const { settings } = useAppSettings();
   const [f, setF, fDirty] = useDraft<Features>(settings.features);
   const [a, setA, aDirty] = useDraft<Announcement>(settings.announcement);
+  const [x, setX, xDirty] = useDraft<XpEvent>(settings.xp_event);
   const save = useSaveSetting();
+  const live = activeXpEvent(settings.xp_event);
+  const endsLocal = x.ends_at ? toLocalInput(new Date(x.ends_at)) : "";
 
   return (
     <div className="space-y-4">
+      <Panel title="XP event">
+        <div
+          className={cn(
+            "mb-2 rounded-xl border px-3 py-2 text-xs font-bold",
+            live ? "border-fire/60 bg-fire/10 text-fire" : "text-muted-foreground",
+          )}
+        >
+          {live ? `⚡ ${live.label} is live for everyone (${live.multiplier}x XP)` : "No XP event running"}
+        </div>
+        <Toggle
+          on={x.enabled}
+          onChange={(v) => setX({ ...x, enabled: v })}
+          label="Run an XP event"
+          hint="Every match earns extra XP. Ratings are never changed."
+        />
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <label className="text-xs font-bold text-muted-foreground">
+            Name
+            <input value={x.label} onChange={(e) => setX({ ...x, label: e.target.value.slice(0, 30) })} className={cn(inputCls, "mt-1")} />
+          </label>
+          <label className="text-xs font-bold text-muted-foreground">
+            Multiplier
+            <select
+              value={String(x.multiplier)}
+              onChange={(e) => setX({ ...x, multiplier: Number(e.target.value) })}
+              className={cn(inputCls, "mt-1")}
+            >
+              {[1.5, 2, 3].map((m) => (
+                <option key={m} value={m}>
+                  {m}x XP
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
+        <label className="mt-2 block text-xs font-bold text-muted-foreground">
+          Ends (leave empty to run until you switch it off)
+          <input
+            type="datetime-local"
+            value={endsLocal}
+            onChange={(e) => setX({ ...x, ends_at: e.target.value ? new Date(e.target.value).toISOString() : null })}
+            className={cn(inputCls, "mt-1")}
+          />
+        </label>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {[
+            ["a weekend", 3],
+            ["7 days", 7],
+          ].map(([l, d]) => (
+            <button
+              key={l}
+              onClick={() => setX({ ...x, enabled: true, ends_at: new Date(Date.now() + Number(d) * 86400000).toISOString() })}
+              className="rounded-full border px-3 py-1 text-xs font-bold text-muted-foreground"
+            >
+              Run for {l}
+            </button>
+          ))}
+        </div>
+        <button
+          disabled={!xDirty || save.isPending}
+          onClick={() => save.mutate({ key: "xp_event", value: x })}
+          className="mt-3 w-full rounded-xl bg-primary py-2.5 text-xs font-black uppercase text-primary-foreground disabled:opacity-40"
+        >
+          {xDirty ? "Save XP event" : "Saved"}
+        </button>
+        <p className="mt-2 text-[11px] text-muted-foreground">Players see a banner at the top of the app while it runs.</p>
+      </Panel>
+
       <Panel title="Features">
         <div className="divide-y divide-border">
           {(Object.keys(FEATURE_LABELS) as (keyof Features)[]).map((k) => (
@@ -354,6 +427,9 @@ const ACTION_LABEL: Record<string, string> = {
   delete_user: "Deleted player",
   suspend_user: "Suspended player",
   unsuspend_user: "Restored player",
+  resolve_report: "Reviewed report",
+  broadcast: "Messaged players",
+  message: "Messaged a player",
 };
 
 export function LogPanel() {
@@ -415,4 +491,10 @@ export function LogPanel() {
       ))}
     </div>
   );
+}
+
+/** Value for <input type="datetime-local"> in local time. */
+function toLocalInput(d: Date) {
+  const off = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - off).toISOString().slice(0, 16);
 }

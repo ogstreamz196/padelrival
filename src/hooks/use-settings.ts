@@ -17,7 +17,10 @@ export type Pricing = {
 export type Features = { beacons: boolean; venues: boolean; dossier: boolean; ai_coach: boolean };
 export type Announcement = { enabled: boolean; text: string; tone: "info" | "promo" | "warning" };
 
-export type AppSettings = { pricing: Pricing; features: Features; announcement: Announcement };
+/** Boss-run XP event, e.g. Double XP for launch week. Only XP is multiplied, never rating. */
+export type XpEvent = { enabled: boolean; multiplier: number; ends_at: string | null; label: string };
+
+export type AppSettings = { pricing: Pricing; features: Features; announcement: Announcement; xp_event: XpEvent };
 
 export const DEFAULT_SETTINGS: AppSettings = {
   pricing: {
@@ -32,6 +35,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   },
   features: { beacons: true, venues: true, dossier: true, ai_coach: true },
   announcement: { enabled: false, text: "", tone: "info" },
+  xp_event: { enabled: false, multiplier: 2, ends_at: null, label: "Double XP" },
 };
 
 /** Boss-controlled app settings; falls back to defaults until the table exists or loads. */
@@ -49,6 +53,7 @@ export function useAppSettings() {
         pricing: { ...DEFAULT_SETTINGS.pricing, ...(by.pricing ?? {}) },
         features: { ...DEFAULT_SETTINGS.features, ...(by.features ?? {}) },
         announcement: { ...DEFAULT_SETTINGS.announcement, ...(by.announcement ?? {}) },
+        xp_event: { ...DEFAULT_SETTINGS.xp_event, ...(by.xp_event ?? {}) },
       };
     },
   });
@@ -79,4 +84,12 @@ export function proOffer(p: Pricing, signedUpAt?: string | null, now = Date.now(
     hoursLeft: Math.floor((msLeft % 86400000) / 3600000),
     savePct: p.monthly > 0 ? Math.round((1 - p.promo_monthly / p.monthly) * 100) : 0,
   };
+}
+
+/** The XP event running right now, or null. Mirrors the check in record_match. */
+export function activeXpEvent(e: XpEvent, now = Date.now()) {
+  if (!e.enabled || e.multiplier <= 1) return null;
+  const ends = e.ends_at ? new Date(e.ends_at).getTime() : null;
+  if (ends !== null && ends <= now) return null;
+  return { multiplier: Math.min(3, e.multiplier), label: e.label || `${e.multiplier}x XP`, endsAt: ends };
 }

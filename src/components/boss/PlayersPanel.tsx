@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Ban, ChevronDown, Crown, Search, Sparkles, Trash2 } from "lucide-react";
+import { Ban, ChevronDown, Crown, Download, Search, Send, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PlayerAvatar } from "@/components/PlayerAvatar";
 import { supabase } from "@/integrations/supabase/client";
@@ -132,11 +132,20 @@ export function PlayersPanel({ meId }: { meId: string }) {
           </button>
         ))}
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">
-        {roster.isLoading
-          ? "Loading players…"
-          : `${list.length} of ${roster.data?.length ?? 0} players`}
-      </p>
+      <div className="mt-2 flex items-center justify-between gap-2">
+        <p className="text-xs text-muted-foreground">
+          {roster.isLoading
+            ? "Loading players…"
+            : `${list.length} of ${roster.data?.length ?? 0} players`}
+        </p>
+        <button
+          disabled={!list.length}
+          onClick={() => downloadCsv(list)}
+          className="flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold disabled:opacity-40"
+        >
+          <Download className="size-3.5" /> Export CSV
+        </button>
+      </div>
       {roster.error && <p className="mt-2 text-sm text-destructive">{roster.error.message}</p>}
 
       <div className="mt-2 space-y-2">
@@ -198,6 +207,8 @@ export function PlayersPanel({ meId }: { meId: string }) {
                         : "no"}
                     </dd>
                   </dl>
+
+                  <MessagePlayer id={p.id} name={p.display_name} />
 
                   <RatingEditor
                     current={p.rating}
@@ -327,4 +338,69 @@ function RatingEditor({ current, onSave }: { current: number; onSave: (rating: n
       </button>
     </div>
   );
+}
+
+/** One in-app message to this player; it lands in their notification bell. */
+function MessagePlayer({ id, name }: { id: string; name: string }) {
+  const [title, setTitle] = useState("");
+  const send = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.rpc("admin_message", { _user: id, _title: title.trim() });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success(`Sent to ${name}`);
+      setTitle("");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  return (
+    <div className="flex items-center gap-2">
+      <input
+        value={title}
+        onChange={(e) => setTitle(e.target.value.slice(0, 80))}
+        placeholder={`Message ${name.split(" ")[0]}…`}
+        className={cn(inputCls, "flex-1")}
+      />
+      <button
+        disabled={!title.trim() || send.isPending}
+        onClick={() => send.mutate()}
+        aria-label="Send message"
+        className="grid size-10 shrink-0 place-items-center rounded-xl border text-primary disabled:opacity-40"
+      >
+        <Send className="size-4" />
+      </button>
+    </div>
+  );
+}
+
+type RosterRow = {
+  username: string;
+  display_name: string;
+  email: string | null;
+  rating: number;
+  xp: number;
+  wins: number;
+  losses: number;
+  matches: number;
+  is_pro: boolean;
+  is_admin: boolean;
+  created_at: string;
+  last_sign_in_at: string | null;
+};
+
+function downloadCsv(rows: RosterRow[]) {
+  const cols = ["username", "display_name", "email", "rating", "xp", "wins", "losses", "matches", "is_pro", "is_admin", "created_at", "last_sign_in_at"] as const;
+  const cell = (v: unknown) => {
+    const s = v == null ? "" : String(v);
+    // Quote everything and neutralise spreadsheet formulas.
+    return `"${(/^[=+\-@]/.test(s) ? `'${s}` : s).replace(/"/g, '""')}"`;
+  };
+  const csv = [cols.join(","), ...rows.map((r) => cols.map((c) => cell(c === "email" && r.email?.endsWith("@players.padelrival.app") ? "" : r[c])).join(","))].join("\n");
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `padel-rival-players-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 }

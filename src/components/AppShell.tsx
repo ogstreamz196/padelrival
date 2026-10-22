@@ -1,9 +1,9 @@
 import { Link, Navigate, useLocation } from "@tanstack/react-router";
 import type { ReactNode } from "react";
-import { Home, MapPin, Megaphone, Plus, ScrollText, Swords, Trophy, User, UsersRound } from "lucide-react";
+import { Home, MapPin, Megaphone, Plus, ScrollText, Swords, Trophy, User, UsersRound, Zap } from "lucide-react";
 import { useAuthGate } from "@/components/AuthPrompt";
 import { useMyProfile } from "@/hooks/use-auth";
-import { useAppSettings } from "@/hooks/use-settings";
+import { activeXpEvent, useAppSettings } from "@/hooks/use-settings";
 import { useNotifications } from "@/components/NotificationBell";
 import { ViewModeToggle } from "@/hooks/use-view-mode";
 import { cn } from "@/lib/utils";
@@ -29,6 +29,7 @@ export function AppShell({ children, hideNav, wide }: { children: ReactNode; hid
   const { pathname } = useLocation();
   const { settings } = useAppSettings();
   const note = settings.announcement;
+  const xpEvent = activeXpEvent(settings.xp_event);
   const unread = (useNotifications(profile?.id).data ?? []).filter((n) => !n.read_at).length;
 
   if (loading) {
@@ -66,6 +67,22 @@ export function AppShell({ children, hideNav, wide }: { children: ReactNode; hid
             wide ? "wide:max-w-6xl" : "wide:max-w-3xl",
           )}
         >
+          {xpEvent && (
+            <Link
+              to="/record"
+              className="xp-event mb-4 flex items-center gap-3 overflow-hidden rounded-2xl border border-fire/60 px-3 py-2.5 active:scale-[0.99]"
+            >
+              <Zap className="size-5 shrink-0 fill-fire text-fire" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate font-display text-sm font-black uppercase tracking-wide">{xpEvent.label} is live</span>
+                <span className="block truncate text-xs text-muted-foreground">
+                  Every match earns {xpEvent.multiplier}x XP
+                  {xpEvent.endsAt ? ` · ends ${endsIn(xpEvent.endsAt)}` : ""}
+                </span>
+              </span>
+              <span className="shrink-0 rounded-full bg-fire px-2.5 py-1 text-[10px] font-black uppercase text-primary-foreground">Play</span>
+            </Link>
+          )}
           {note.enabled && note.text.trim() && (
             <div
               className={cn(
@@ -207,4 +224,12 @@ function SideRail({ navProps }: { navProps: NavProps }) {
       </div>
     </aside>
   );
+}
+
+function endsIn(at: number) {
+  const ms = at - Date.now();
+  const h = Math.floor(ms / 3600000);
+  if (h >= 48) return `in ${Math.floor(h / 24)} days`;
+  if (h >= 1) return `in ${h}h`;
+  return "soon";
 }

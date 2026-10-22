@@ -655,6 +655,15 @@ export type Database = {
         Returns: Json
       }
       unblock_player: { Args: { _user: string }; Returns: Json }
+      admin_broadcast: {
+        Args: { _audience?: string; _body?: string; _link?: string; _title: string }
+        Returns: number
+      }
+      admin_launch_status: { Args: never; Returns: Json }
+      admin_message: {
+        Args: { _body?: string; _link?: string; _title: string; _user: string }
+        Returns: Json
+      }
       admin_cancel_beacon: { Args: { _id: string }; Returns: Json }
       admin_delete_venue: { Args: { _id: string }; Returns: Json }
       admin_log_external: {

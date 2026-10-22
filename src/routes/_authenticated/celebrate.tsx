@@ -31,6 +31,7 @@ type Result = {
   rating_delta: number;
   xp_gained: number;
   xp_before: number;
+  xp_multiplier?: number;
   streak: number;
   best_streak: number;
   unlocked: string[];
@@ -118,6 +119,11 @@ function Celebrate() {
           <div className="animate-rise rounded-3xl border bg-card p-4 text-center" style={{ animationDelay: "400ms" }}>
             <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">XP earned</div>
             <div className="font-display text-4xl font-black tabular-nums text-primary">+{xp}</div>
+            {Number(r.xp_multiplier ?? 1) > 1 && (
+              <div className="mx-auto mt-1 w-fit rounded-full bg-fire/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-fire">
+                ⚡ {Number(r.xp_multiplier)}x XP event
+              </div>
+            )}
             <div className="text-sm text-muted-foreground">{leveledUp ? <span className="font-bold text-primary">Level up! Lv {lvAfter.level}</span> : `Lv ${lvAfter.level}`}</div>
           </div>
         </div>
