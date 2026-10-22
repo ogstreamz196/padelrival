@@ -1,4 +1,4 @@
-package uk.co.ogbot.padelrival;
+package uk.co.padelrival.app;
 
 import com.getcapacitor.BridgeActivity;
 

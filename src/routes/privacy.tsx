@@ -33,7 +33,7 @@ function Privacy() {
         ← Padel Rival
       </Link>
       <h1 className="mt-6 font-display text-3xl font-black">Privacy Policy</h1>
-      <p className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Last updated 30 September 2026</p>
+      <p className="mt-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">Last updated 22 October 2026</p>
 
       <P>
         Padel Rival ("we", "us", "the app") is a padel match tracker and ranking service. This policy explains what
@@ -69,6 +69,12 @@ function Privacy() {
         <Li>
           <strong className="text-foreground">Guest names.</strong> If you log a match with someone who has no
           account, only the name you type is stored against that match.
+        </Li>
+        <Li>
+          <strong className="text-foreground">Open matches, check-ins and friends.</strong> When you post an open
+          match we store the club, time, spots and any note you add, and who joins it. If you tap “I'm playing today”
+          we store which club you chose for that day (not your location). We store who you add as a friend, and the
+          in-app notifications we send you about these.
         </Li>
         <Li>
           <strong className="text-foreground">Technical and security data.</strong> IP address, device and browser
@@ -115,9 +121,12 @@ function Privacy() {
 
       <H>What other players can see</H>
       <P>
-        Padel Rival is a social ranking app, so some information is visible to other signed-in players: your display
-        name, username, avatar, rating and rank tier, wins and losses, streaks, level, badges, and the matches you took
-        part in, including set scores and the venue you entered.
+        Padel Rival is a social ranking app, so some information is public: your display name, username, avatar,
+        rating and rank tier, wins and losses, streaks, level, badges, the matches you took part in (including set
+        scores and the venue you entered) and open matches you post or join. This can be seen by other players and by
+        visitors browsing the app without an account. You can hide parts of your player card, such as your record,
+        match history and court side, under Profile → Edit → Privacy. Club check-ins and friend lists are only visible
+        to signed-in players and the people involved.
       </P>
       <P>
         <strong className="text-foreground">Your email address is never shown to other players.</strong> Neither are
@@ -134,6 +143,12 @@ function Privacy() {
         <Li>Our managed hosting, database and authentication provider, which stores accounts, profiles and match data.</Li>
         <Li>Google, if you choose "Continue with Google", which shares your name, email and profile picture with us when you sign in.</Li>
         <Li>Our email delivery provider, for account confirmation and password reset emails.</Li>
+        <Li>
+          AI providers that write the optional AI coach insights (Groq or xAI, Google Gemini, OpenRouter and
+          Pollinations, tried in that order). Only when you ask for insights, and only the matches you tick are sent:
+          scores, dates, venues, ratings and the names of the players in those matches. Your email and account details
+          are never sent.
+        </Li>
       </ul>
       <P>
         We never sell your personal data, and we do not share it with advertisers. We will disclose data to authorities
@@ -176,7 +191,7 @@ function Privacy() {
       <ul className="list-disc pl-5">
         <Li>Access — get a copy of the personal data we hold about you.</Li>
         <Li>Rectification — correct inaccurate data. You can edit your display name, username, avatar and court side at any time in Profile → Edit.</Li>
-        <Li>Erasure — delete your account and profile permanently from Profile → Edit → Delete my account, or ask us to do it.</Li>
+        <Li>Erasure — delete your account and profile permanently from Profile → Edit → Delete my account, or ask us to do it (see padelrival.co.uk/delete-account).</Li>
         <Li>Restriction — ask us to pause processing while a dispute is resolved.</Li>
         <Li>Portability — receive your account and match data in a structured, commonly used format.</Li>
         <Li>Objection — object to processing based on legitimate interests.</Li>

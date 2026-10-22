@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
-  appId: "uk.co.ogbot.padelrival",
+  appId: "uk.co.padelrival.app",
   appName: "Padel Rival",
   webDir: "cap-shell",
   backgroundColor: "#0b1020",

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Padel Rival brand: navy background, neon lime accent. -->
+    <color name="colorPrimary">#01113F</color>
+    <color name="colorPrimaryDark">#01113F</color>
+    <color name="colorAccent">#D7FF3E</color>
+</resources>

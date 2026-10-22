@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "uk.co.ogbot.padelrival"
+    namespace = "uk.co.padelrival.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "uk.co.ogbot.padelrival"
+        applicationId "uk.co.padelrival.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

@@ -31,6 +31,7 @@
 - In-app notifications live in `notifications`, written only by security-definer triggers (open-match join/leave/full/cancel, someone logging a match with you, new follower); clients can read, mark read and delete their own. `NotificationBell` on Home plus a dot on the Home tab show them. No push or email yet.
 - Check-in "today" is the UK calendar day via `public.uk_today()`, used by the column default, the RLS policies and the client.
 - `src/server.ts` 301-redirects the old domain and www to padelrival.co.uk, except inside native app web views (old app builds only allow the old host).
+- Android/iOS package ID is `uk.co.padelrival.app` (fixed forever once uploaded to Play). The Play Store kit (listing text, policy answers, Data safety, monetisation plan, icon, feature graphic, screenshots) lives in `store/play-store/`; `/delete-account` is the public deletion page Google requires.
 
 ## Workflow
 - The owner wants finished, checked work merged straight into `main` (no pull requests): validate (typecheck + build), push the working branch, then fast-forward or merge into `main` without rewriting history.
