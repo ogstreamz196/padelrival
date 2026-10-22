@@ -52,7 +52,7 @@ function ClubsHub() {
         </p>
       )}
 
-      <ul className="mt-6 space-y-2">
+      <ul className="mt-6 grid gap-2 md:grid-cols-2">
         {cities.map((g) => (
           <li key={g.slug}>
             <Link

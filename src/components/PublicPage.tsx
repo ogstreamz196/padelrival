@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 /** Server-rendered shell for public, search-indexed pages (no app nav, no sign-in needed). */
 export function PublicPage({ children }: { children: ReactNode }) {
   return (
-    <div className="mx-auto min-h-dvh max-w-md px-5 pb-12 pt-[max(env(safe-area-inset-top),1.25rem)]">
+    <div className="mx-auto min-h-dvh max-w-md px-5 pb-12 pt-[max(env(safe-area-inset-top),1.25rem)] md:max-w-3xl md:px-8 md:pt-8">
       <header className="mb-6 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
           <img

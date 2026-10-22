@@ -5,6 +5,18 @@
 @custom-variant dark (&:is(.dark *));
 /* "wide" = tablets and desktops, plus phones turned sideways (short landscape screens).
    The app switches from the bottom tab bar to a side rail on these. */
+/* Phones turned sideways: very little height to work with. */
+/* Width of the side rail on wide screens; content is offset by the same amount. */
+:root {
+  --rail: 5rem;
+}
+@media (min-width: 1024px) {
+  :root {
+    --rail: 16rem;
+  }
+}
+
+@custom-variant short (@media (orientation: landscape) and (max-height: 560px));
 @custom-variant wide {
   @media (min-width: 768px) {
     @slot;

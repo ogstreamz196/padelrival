@@ -107,7 +107,7 @@ function CityPage() {
         below, then log your match on Padel Rival to get a rating and track your rivals.
       </p>
 
-      <ul className="mt-6 space-y-3">
+      <ul className="mt-6 grid gap-3 md:grid-cols-2">
         {clubs.map((c) => (
           <li key={c.id} className="rounded-3xl border bg-card p-4">
             <h2 className="font-display text-base font-black">{c.name}</h2>

@@ -54,14 +54,15 @@ export function AppShell({ children, hideNav, wide }: { children: ReactNode; hid
       <div
         className={cn(
           "mx-auto max-w-md pb-28",
-          shown && "wide:ml-20 wide:pb-10 lg:ml-64",
+          shown && "wide:ml-[var(--rail)] wide:pb-10",
           "wide:max-w-none wide:pr-[env(safe-area-inset-right)]",
         )}
       >
         <main
           className={cn(
-            "px-4 pt-[max(env(safe-area-inset-top),1rem)] wide:mx-auto wide:max-w-2xl wide:px-6 wide:pt-6 xl:max-w-3xl",
-            wide && "lg:max-w-5xl xl:max-w-6xl",
+            "px-4 pt-[max(env(safe-area-inset-top),1rem)] wide:mx-auto wide:px-6 wide:pt-6",
+            // One width rule each: Tailwind orders the custom "wide" variant after lg/xl, so mixing them loses.
+            wide ? "wide:max-w-6xl" : "wide:max-w-3xl",
           )}
         >
           {note.enabled && note.text.trim() && (
@@ -141,7 +142,7 @@ type NavProps = (t: (typeof tabs)[number]) => { active: boolean; dot: boolean; o
 function SideRail({ navProps }: { navProps: NavProps }) {
   const { pathname } = useLocation();
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 hidden w-20 flex-col border-r bg-card/70 pb-[max(env(safe-area-inset-bottom),0.75rem)] pl-[env(safe-area-inset-left)] pt-[max(env(safe-area-inset-top),0.75rem)] backdrop-blur-xl wide:flex lg:w-64">
+    <aside className="fixed inset-y-0 left-0 z-40 hidden w-[var(--rail)] flex-col border-r bg-card/70 pb-[max(env(safe-area-inset-bottom),0.75rem)] pl-[env(safe-area-inset-left)] pt-[max(env(safe-area-inset-top),0.75rem)] backdrop-blur-xl wide:flex">
       <Link to="/home" className="mb-4 flex items-center justify-center gap-2.5 px-3 lg:justify-start lg:px-5">
         <img src="/icon-192.png" alt="Padel Rival" width={36} height={36} className="size-9 rounded-xl" />
         <span className="hidden font-display text-base font-black lg:inline">PADEL RIVAL</span>

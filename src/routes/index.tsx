@@ -96,9 +96,9 @@ function Landing() {
   }, [navigate]);
 
   return (
-    <div className="mx-auto max-w-md px-6">
-      <section className="flex min-h-dvh flex-col justify-between py-10">
-        <header className="flex items-center gap-2">
+    <div className="mx-auto max-w-md px-6 md:max-w-3xl md:px-10 lg:max-w-6xl">
+      <section className="flex min-h-dvh flex-col justify-between py-10 lg:grid lg:grid-cols-[1.1fr_0.9fr] lg:grid-rows-[auto_1fr_auto] lg:gap-x-16 short:grid short:min-h-0 short:grid-cols-[1.3fr_1fr] short:items-end short:gap-x-8 short:gap-y-4 short:py-6">
+        <header className="flex items-center gap-2 lg:col-span-2 short:col-span-2">
           <img
             src="/icon-192.png"
             alt="Padel Rival logo"
@@ -109,11 +109,11 @@ function Landing() {
           <span className="font-display text-lg font-black">PADEL RIVAL</span>
         </header>
 
-        <div className="animate-rise">
+        <div className="animate-rise lg:self-end">
           <p className="mb-4 text-sm font-bold uppercase tracking-[0.3em] text-primary">
             Season 1 is live
           </p>
-          <h1 className="text-[2.5rem] font-black leading-[0.95]">
+          <h1 className="text-[2.5rem] font-black leading-[0.95] md:text-6xl short:text-[2.1rem]">
             Every match
             <br />
             counts.
@@ -122,11 +122,11 @@ function Landing() {
             <br />
             remembered.
           </h1>
-          <p className="mt-6 text-lg text-muted-foreground">
+          <p className="mt-6 text-lg text-muted-foreground short:mt-3 short:text-sm">
             The free padel score tracker. Log your 2v2 games in seconds, climb the Elo ladder, keep
             the streak on fire and never let a rival forget who won last.
           </p>
-          <div className="mt-8 grid grid-cols-3 gap-2 text-center">
+          <div className="mt-8 grid grid-cols-3 gap-2 text-center short:mt-4">
             {[
               ["1000", "Starting Elo"],
               ["+100", "XP per win"],
@@ -140,7 +140,7 @@ function Landing() {
           </div>
         </div>
 
-        <div>
+        <div className="lg:max-w-md lg:self-start lg:pt-8 short:self-end short:pt-0">
           <Link
             to="/home"
             className="block rounded-2xl bg-primary py-4 text-center font-display text-lg font-black uppercase text-primary-foreground glow active:scale-[0.98]"
@@ -160,11 +160,21 @@ function Landing() {
             How it works <ChevronDown className="size-3.5" />
           </a>
         </div>
+        <div className="hidden lg:col-start-2 lg:row-span-2 lg:row-start-2 lg:flex lg:items-center lg:justify-center">
+          <img
+            src="/screens/app-home.webp"
+            alt="Padel Rival home screen showing a player's rating, weekly division and rivalries"
+            width={540}
+            height={997}
+            loading="lazy"
+            className="max-h-[78vh] w-auto rounded-[2.5rem] border-[10px] border-card shadow-2xl"
+          />
+        </div>
       </section>
 
       <section id="how-it-works" className="py-10">
         <h2 className="text-2xl font-black">How Padel Rival works</h2>
-        <ol className="mt-5 space-y-3">
+        <ol className="mt-5 space-y-3 md:grid md:grid-cols-3 md:gap-3 md:space-y-0">
           {[
             ["Play your match", "Any 2v2 padel game, at any club, with anyone."],
             ["Log the score", "Pick your partner and opponents, tap the sets. About 20 seconds."],
@@ -188,7 +198,7 @@ function Landing() {
 
       <section className="py-10">
         <h2 className="text-2xl font-black">Everything your padel group needs</h2>
-        <div className="mt-5 grid gap-3">
+        <div className="mt-5 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map(({ icon: Icon, title, body }) => (
             <article key={title} className="flex gap-3 rounded-2xl border bg-card p-4">
               <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
@@ -211,7 +221,7 @@ function Landing() {
         </p>
         <Link
           to="/padel-courts"
-          className="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-court/60 py-3.5 font-bold text-court"
+          className="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-court/60 py-3.5 font-bold text-court md:inline-flex md:px-8"
         >
           <MapPin className="size-4" /> Browse UK padel clubs
         </Link>
@@ -219,7 +229,7 @@ function Landing() {
 
       <section className="py-10">
         <h2 className="text-2xl font-black">Questions</h2>
-        <div className="mt-5 space-y-2">
+        <div className="mt-5 max-w-3xl space-y-2">
           {FAQ.map((f) => (
             <details key={f.q} className="group rounded-2xl border bg-card p-4">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 font-bold">
@@ -237,7 +247,7 @@ function Landing() {
         <p className="mt-2 text-muted-foreground">Free to use. No download needed.</p>
         <Link
           to="/home"
-          className="mt-5 block rounded-2xl bg-primary py-4 font-display text-lg font-black uppercase text-primary-foreground glow"
+          className="mx-auto mt-5 block max-w-sm rounded-2xl bg-primary py-4 font-display text-lg font-black uppercase text-primary-foreground glow"
         >
           Start playing
         </Link>
