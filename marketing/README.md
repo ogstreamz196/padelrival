@@ -6,7 +6,7 @@ Everything you need for the launch: videos, images and the words to go with them
 
 | Folder | What it is | Sizes |
 |---|---|---|
-| `videos/` | 6 one-minute promo videos, a 16-second teaser and a 30-second landscape cut | 1080×1920 vertical (Reels, TikTok, Shorts, Stories) and 1920×1080 |
+| `videos/` | 10 one-minute promo videos, a 16-second teaser, a 30-second landscape cut and a one-minute landscape feature tour | 1080×1920 vertical (Reels, TikTok, Shorts, Stories) and 1920×1080 |
 | `social/instagram-posts/` | 17 feed posts | 1080×1350 (4:5, also fine on Facebook and LinkedIn) |
 | `social/stories/` | 15 stories | 1080×1920 |
 | `social/square/` | Square post | 1080×1080 |
@@ -28,6 +28,11 @@ Every video has burned-in captions, so it works on mute, and its own backing tra
 | `06-climb-the-ladder.mp4` | Bronze to Diamond, challenges, Double XP | Week 2, when people are already playing |
 | `07-teaser-16s.mp4` | "Something is coming to your court." | The day before launch |
 | `08-play-promo-landscape.mp4` | 30-second overview | Upload to YouTube (unlisted is fine) and paste the link into Play Console as the promo video |
+| `09-every-feature-in-60-seconds.mp4` | "12 features. 60 seconds. Go." Numbered feature countdown | The all-in-one explainer, great as a pinned post or ad |
+| `10-hype-trailer.mp4` | Court drawing itself, "Every point. Every rival. Every match.", 3D phone carousel, confetti | Launch day trailer, the most cinematic one |
+| `11-your-app-your-way.mp4` | Simple/Advanced switch flipping live, phone/tablet/desktop, report and block | Showing it's easy for beginners and deep for stat lovers |
+| `12-match-day.mp4` | A Thursday night told by the clock: check in, claim a spot, odds, victory, rank up | Relatable story post, good for TikTok |
+| `13-every-feature-landscape.mp4` | Landscape cut of video 09 | YouTube, Facebook, your website |
 
 ## Captions ready to paste
 
@@ -59,6 +64,22 @@ Every video has burned-in captions, so it works on mute, and its own backing tra
 > Something is coming to your court. 👀 Tomorrow.
 > #padel #padelUK #comingsoon
 
+**09 Every feature in 60 seconds**
+> 12 features in 60 seconds ⏱️ Scores, ratings, odds, rivalries, open matches, clubs, weekly challenges and more. All free, no ads. Which one would you use first? 👇
+> #padel #padelUK #padelapp #padeltennis #padelrival
+
+**10 Hype trailer**
+> Every point. Every rival. Every match. Season 1 of Padel Rival starts now 🎾🔥
+> #padel #padelUK #padellife #padelseason
+
+**11 Your app, your way**
+> New to padel? Keep it Simple. Love the numbers? Flip to Advanced. Works on your phone, tablet and laptop too ✨
+> #padel #padelbeginner #padelUK #padelapp
+
+**12 Match day**
+> 18:05 check in. 18:20 spot claimed. 19:00 underdogs at 29%. 20:31 VICTORY 🏆 What does your Thursday look like?
+> #padel #padelUK #padelnight #padelcommunity
+
 ## A simple surprise launch plan
 
 1. **The day before:** post the teaser (07) as a Reel and a story, using the "Something is coming to your court" post and story. Don't name a date or link anything yet.
@@ -66,7 +87,7 @@ Every video has burned-in captions, so it works on mute, and its own backing tra
    - In the boss dashboard, switch on **Double XP** for 7 days (Settings → XP event → "Run for 7 days").
    - Post video 01, pin it, and send the Facebook cover and X header live at the same time.
    - Message every player from Boss → Messages, for example "Double XP is live this week ⚡" linking to Record.
-3. **Days 2 to 7:** post one video a day in this order: 05, 02, 04, 03, 06. Run the stories alongside them, and use "Tag the pair you still owe a rematch" (post 17) on the weekend.
+3. **Days 2 to 7:** post one video a day in this order: 10 (hype trailer), 05, 12, 04, 09, 11. Keep 02, 03 and 06 for the second week. Run the stories alongside them, and use "Tag the pair you still owe a rematch" (post 17) on the weekend.
 4. **Clubs:** share video 05 and the "Never short of a fourth" post in local padel club WhatsApp and Facebook groups. That's where your first players are.
 5. **After the first week:** switch Double XP off (it ends by itself if you set an end time), then message lapsed players from Boss → Messages → "Not played for 14 days".
 
