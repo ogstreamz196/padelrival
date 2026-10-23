@@ -57,6 +57,13 @@
       "when": 1792704891451,
       "tag": "0007_boss_tools",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792772929997,
+      "tag": "0008_report_block_and_boss_tools",
+      "breakpoints": true
     }
   ]
 }
