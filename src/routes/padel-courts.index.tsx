@@ -86,6 +86,15 @@ function ClubsHub() {
         >
           See open matches
         </Link>
+        <p className="mt-3 text-center text-sm text-muted-foreground">
+          <Link to="/find-padel-players" className="font-bold text-primary">
+            How to find padel players
+          </Link>{" "}
+          ·{" "}
+          <Link to="/padel-rating" className="font-bold text-primary">
+            Padel rating calculator
+          </Link>
+        </p>
       </section>
     </PublicPage>
   );

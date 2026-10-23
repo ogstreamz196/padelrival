@@ -27,6 +27,8 @@ export function PublicPage({ children }: { children: ReactNode }) {
       <footer className="mt-12 flex flex-wrap justify-center gap-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
         <Link to="/">Home</Link>
         <Link to="/padel-courts">Padel clubs</Link>
+        <Link to="/find-padel-players">Find players</Link>
+        <Link to="/padel-rating">Rating calculator</Link>
         <Link to="/privacy">Privacy</Link>
         <Link to="/terms">Terms</Link>
       </footer>

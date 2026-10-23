@@ -58,12 +58,38 @@ function canonicalRedirect(request: Request): Response | null {
   const url = new URL(request.url);
   if (!OLD_HOSTS.has(url.hostname)) return null;
   const ua = request.headers.get("user-agent") ?? "";
-  const nativeWebView = /; wv\)/.test(ua) || (/AppleWebKit/.test(ua) && /Mobile\//.test(ua) && !/Safari\//.test(ua));
+  const nativeWebView =
+    /; wv\)/.test(ua) || (/AppleWebKit/.test(ua) && /Mobile\//.test(ua) && !/Safari\//.test(ua));
   if (nativeWebView) return null;
   url.hostname = CANONICAL_HOST;
   url.protocol = "https:";
   url.port = "";
   return Response.redirect(url.toString(), 301);
+}
+
+// Signed-in app screens render in the browser, so Google would only see a generic shell with the
+// home page's title. Keep them out of the index and let the public pages rank instead.
+const APP_PATHS =
+  /^\/(home|rivals|record|leaderboard|me|player|beacons|venues|compare|admin|onboarding|celebrate|auth|reset-password)(\/|$)/;
+
+/** Adds X-Robots-Tag for app screens and for any copy of the site not on padelrival.co.uk. */
+function withRobots(request: Request, response: Response): Response {
+  const url = new URL(request.url);
+  const local = url.hostname === "localhost" || url.hostname === "127.0.0.1";
+  const tag =
+    !local && url.hostname !== CANONICAL_HOST
+      ? "noindex, nofollow"
+      : APP_PATHS.test(url.pathname)
+        ? "noindex, follow"
+        : null;
+  if (!tag || !(response.headers.get("content-type") ?? "").includes("text/html")) return response;
+  const headers = new Headers(response.headers);
+  headers.set("X-Robots-Tag", tag);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
 
 export default {
@@ -73,7 +99,7 @@ export default {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      return withRobots(request, await normalizeCatastrophicSsrResponse(response));
     } catch (error) {
       console.error(error);
       return new Response(renderErrorPage(), {

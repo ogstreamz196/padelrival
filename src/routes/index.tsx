@@ -16,7 +16,17 @@ export const Route = createFileRoute("/")({
     scripts: [
       jsonLd({
         "@context": "https://schema.org",
+        "@type": "Organization",
+        name: SITE_NAME,
+        url: SITE_URL,
+        logo: `${SITE_URL}/icon-512.png`,
+        email: "Ogbot196@gmail.com",
+        areaServed: "GB",
+      }),
+      jsonLd({
+        "@context": "https://schema.org",
         "@type": "WebSite",
+        alternateName: ["PadelRival", "Padel Rival app"],
         name: SITE_NAME,
         url: SITE_URL,
         description: DESCRIPTION,
@@ -276,6 +286,8 @@ function Landing() {
 
       <footer className="flex flex-wrap justify-center gap-4 pb-12 pt-4 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
         <Link to="/padel-courts">Padel clubs</Link>
+        <Link to="/find-padel-players">Find padel players</Link>
+        <Link to="/padel-rating">Padel rating calculator</Link>
         <Link to="/privacy">Privacy</Link>
         <Link to="/terms">Terms</Link>
       </footer>

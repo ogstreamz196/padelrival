@@ -150,6 +150,15 @@ function CityPage() {
         >
           Start for free
         </Link>
+        <p className="mt-3 text-center text-sm text-muted-foreground">
+          <Link to="/find-padel-players" className="font-bold text-primary">
+            Find padel players in {city}
+          </Link>{" "}
+          ·{" "}
+          <Link to="/padel-rating" className="font-bold text-primary">
+            Padel rating calculator
+          </Link>
+        </p>
       </section>
 
       {others.length > 0 && (
