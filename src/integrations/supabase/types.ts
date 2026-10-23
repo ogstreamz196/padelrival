@@ -174,6 +174,39 @@ export type Database = {
           },
         ]
       }
+      blocks: {
+        Row: {
+          blocked: string
+          blocker: string
+          created_at: string
+        }
+        Insert: {
+          blocked: string
+          blocker: string
+          created_at?: string
+        }
+        Update: {
+          blocked?: string
+          blocker?: string
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blocks_blocked_fkey"
+            columns: ["blocked"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blocks_blocker_fkey"
+            columns: ["blocker"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       follows: {
         Row: {
           created_at: string
@@ -475,6 +508,63 @@ export type Database = {
         }
         Relationships: []
       }
+      reports: {
+        Row: {
+          created_at: string
+          details: string | null
+          id: number
+          kind: string
+          reason: string
+          reporter: string
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+          target_id: string | null
+          target_user: string | null
+        }
+        Insert: {
+          created_at?: string
+          details?: string | null
+          id?: never
+          kind: string
+          reason: string
+          reporter: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          target_id?: string | null
+          target_user?: string | null
+        }
+        Update: {
+          created_at?: string
+          details?: string | null
+          id?: never
+          kind?: string
+          reason?: string
+          reporter?: string
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+          target_id?: string | null
+          target_user?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reports_reporter_fkey"
+            columns: ["reporter"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reports_target_user_fkey"
+            columns: ["target_user"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -582,8 +672,18 @@ export type Database = {
           signups: number
         }[]
       }
+      admin_broadcast: {
+        Args: {
+          _audience?: string
+          _body?: string
+          _link?: string
+          _title: string
+        }
+        Returns: number
+      }
       admin_cancel_beacon: { Args: { _id: string }; Returns: Json }
       admin_delete_venue: { Args: { _id: string }; Returns: Json }
+      admin_launch_status: { Args: never; Returns: Json }
       admin_log_external: {
         Args: {
           _action: string
@@ -606,6 +706,10 @@ export type Database = {
           venue: string
           winner_team: number
         }[]
+      }
+      admin_message: {
+        Args: { _body?: string; _link?: string; _title: string; _user: string }
+        Returns: Json
       }
       admin_note: {
         Args: { _action: string; _detail?: Json; _target: string }
@@ -632,6 +736,28 @@ export type Database = {
           wins: number
           xp: number
         }[]
+      }
+      admin_reports: {
+        Args: { _status?: string }
+        Returns: {
+          created_at: string
+          details: string
+          id: number
+          kind: string
+          reason: string
+          reporter: string
+          reporter_name: string
+          status: string
+          target_id: string
+          target_name: string
+          target_reports: number
+          target_user: string
+          target_username: string
+        }[]
+      }
+      admin_resolve_report: {
+        Args: { _id: number; _status: string }
+        Returns: Json
       }
       admin_roster: {
         Args: never
@@ -686,6 +812,7 @@ export type Database = {
         Args: { _b: Database["public"]["Tables"]["beacons"]["Row"] }
         Returns: string
       }
+      block_player: { Args: { _user: string }; Returns: Json }
       cancel_beacon: { Args: { _beacon_id: string }; Returns: string }
       claim_boss: { Args: never; Returns: boolean }
       claim_guest_matches: { Args: { _alias: string }; Returns: Json }
@@ -787,7 +914,18 @@ export type Database = {
         }
         Returns: Json
       }
+      report_content: {
+        Args: {
+          _details?: string
+          _kind: string
+          _reason: string
+          _target_id: string
+          _target_user: string
+        }
+        Returns: Json
+      }
       uk_today: { Args: never; Returns: string }
+      unblock_player: { Args: { _user: string }; Returns: Json }
       venue_match_counts: {
         Args: never
         Returns: {
